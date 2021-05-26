@@ -9,6 +9,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"url"
 
 	"github.com/99designs/gqlgen/graphql/handler"
 	"github.com/99designs/gqlgen/graphql/playground"
@@ -36,7 +37,7 @@ func main() {
 }
 
 func connectToDb() {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://collab-backend-user:S3cure@collab-cluster.yfhxg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -7,6 +7,7 @@ import (
     "encoding/json"
     "context"
 	"time"
+	"url"
 
     "github.com/graphql-go/graphql"
 
@@ -31,7 +32,7 @@ func httpJsonHandler(w http.ResponseWriter, r *http.Request) {
     
 }
 func connectToDb() {
-	client, err := mongo.NewClient(options.Client().ApplyURI("mongodb+srv://collab-backend-user:S3cure@collab-cluster.yfhxg.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"))
+	client, err := mongo.NewClient(options.Client().ApplyURI(url))
 	if err != nil {
 		log.Fatal(err)
 	}
