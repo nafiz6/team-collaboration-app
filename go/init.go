@@ -7,7 +7,12 @@ import (
 )
 
 func handler(w http.ResponseWriter, r *http.Request) {
+    enableCors(&w)
     fmt.Fprintf(w, "HELLO FROM GO")
+}
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Origin", "*")
 }
 
 func main() {

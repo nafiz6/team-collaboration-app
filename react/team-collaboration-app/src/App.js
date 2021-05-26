@@ -4,7 +4,10 @@ import './App.css';
 function App() {
   let message = ''
   fetch('http://localhost:8080')
-    .then(res=> message = res);
+    .then(res=> {
+      message = res;
+      console.log(message);
+    });
   return (
     <div className="App">
       <header className="App-header">
