@@ -1,0 +1,42 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+#react
+# dependencies
+/react/team-collaboration-app/node_modules
+/react/team-collaboration-app/.pnp
+/react/team-collaboration-app/.pnp.js
+
+# testing
+/react/team-collaboration-app/coverage
+
+# production
+/react/team-collaboration-app/build
+
+# misc
+/react/team-collaboration-app/.DS_Store
+/react/team-collaboration-app/.env.local
+/react/team-collaboration-app/.env.development.local
+/react/team-collaboration-app/.env.test.local
+/react/team-collaboration-app/.env.production.local
+
+/react/team-collaboration-app/npm-debug.log*
+/react/team-collaboration-app/yarn-debug.log*
+/react/team-collaboration-app/yarn-error.log*
+
+
+#go gitignore
+#Binaries for programs and plugins
+/go/*.exe
+/go/*.exe~
+/go/*.dll
+/go/*.so
+/go/*.dylib
+
+# Test binary, built with `go test -c`
+/go/*.test
+
+# Output of the go coverage tool, specifically when used with LiteIDE
+*/go/.out
+
+# Dependency directories (remove the comment below to include it)
+# vendor/#
