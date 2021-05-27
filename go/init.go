@@ -1,4 +1,6 @@
 package main
+/*
+package main2
 
 import (
     "fmt"
@@ -7,8 +9,6 @@ import (
     "encoding/json"
     "context"
 	"time"
-	"url"
-
     "github.com/graphql-go/graphql"
 
 	"go.mongodb.org/mongo-driver/bson"
@@ -93,3 +93,4 @@ func main() {
     fmt.Println("Running Go Server at port 8080")
     log.Fatal(http.ListenAndServe(":8080", nil))
 }
+*/
