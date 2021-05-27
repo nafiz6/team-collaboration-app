@@ -2,9 +2,10 @@ package router
 
 import (
 	//"teams/middleware/accountsHandler"
-	//"teams/middleware/chatHandler"
+	"teams/middleware/chatHandler"
 	"teams/middleware/workspaceHandler"
 	"github.com/gorilla/mux"
+	
 )
 
 
@@ -12,6 +13,8 @@ import (
 func Router() *mux.Router {
 
 	router := mux.NewRouter()
+
+    router.HandleFunc("/ws", chatHandler.ServeWs)
 
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.GetAllTask).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
