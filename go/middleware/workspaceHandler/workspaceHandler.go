@@ -9,6 +9,7 @@ import (
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -153,7 +154,7 @@ func AssignUserToSubTask(w http.ResponseWriter, r *http.Request) {
 	// 	)
 
 	// var user User
-	user := bson.M{}
+	user := bson.M{ "has_completed": 0}
 	decodeErr := userDetails.Decode(&user)
 
 	if decodeErr != nil {
@@ -372,8 +373,8 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 	params := mux.Vars(r)
 	var completion struct {
-		uid string
-		status int
+		Uid string
+		Status int
 	}
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&completion)
@@ -396,7 +397,7 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("objID: %+v", objID)
 
-	userID, err := primitive.ObjectIDFromHex(completion.uid)
+	userID, err := primitive.ObjectIDFromHex(completion.Uid)
 	if err != nil {
 		panic(err)
 	}
@@ -406,14 +407,14 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 	
 
 	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
-			{  "workspaces._id", objID    },
+			{  "workspaces.tasks.subtasks._id", objID    },
 		}, bson.D{
-			{ "$set", bson.D{{ "workspaces.tasks.subtasks.$[subtask].assigned_users.$[user].has_completed", completion.status }},  },
+			{ "$set", bson.D{{ "workspaces.$[].tasks.$[].subtasks.$[subtask].assigned_users.$[user].has_completed", completion.Status }},  },
 		}, options.Update().SetArrayFilters(options.ArrayFilters{ 
-			Filters: []interface{}{bson.D{
-				{"subtask._id", objID  },
-				{"user._id", userID },
-			 }},
+			Filters: []interface{}{
+				bson.D{{"subtask._id", objID  }},
+				bson.D{{"user._id", userID }},
+			 },
 		}),
 	)
 
@@ -572,6 +573,7 @@ func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
 	var newUpdate Update
 	_ = json.NewDecoder(r.Body).Decode(&newUpdate)
 	//insert newTask into db
+	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 
 
 	fmt.Printf("new sub task %+v\n", newUpdate)
@@ -668,7 +670,7 @@ func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("Inserted: %+v\n", insertResult)
-	json.NewEncoder(w).Encode(insertResult)
+	json.NewEncoder(w).Encode(newWorkspace.ID)
 
 
 
@@ -762,6 +764,12 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 	var newProject Project
 	_ = json.NewDecoder(r.Body).Decode(&newProject)
+	newProject.Workspaces = append(newProject.Workspaces, Workspace{
+		Name: "General",
+		ID: primitive.NewObjectID(),
+		Users: []User{},
+		Tasks: []Task{},
+	})
 
 
 	fmt.Printf("new task %+v\n", newProject)
