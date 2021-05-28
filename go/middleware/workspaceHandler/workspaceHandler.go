@@ -36,7 +36,6 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newTask)
 	//insert newTask into db
-	json.NewEncoder(w).Encode(params["workspace-id"])
 
 
 	fmt.Printf("new task %+v\n", newTask)
@@ -69,11 +68,14 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	decodeErr := insertResult.Decode(&doc)
 
 	if decodeErr != nil {
-		fmt.Printf("Error: %s", err.Error())
+		fmt.Printf("Error: %s", decodeErr.Error())
+		json.NewEncoder(w).Encode(decodeErr.Error())
+		return
 	}
 
 	fmt.Printf("Inserted: %+v\n", doc)
 
+	json.NewEncoder(w).Encode(doc)
 
 
 
@@ -86,7 +88,6 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newSubTask)
 	//insert newTask into db
-	json.NewEncoder(w).Encode(params["task-id"])
 
 
 	fmt.Printf("new sub task %+v\n", newSubTask)
@@ -133,11 +134,14 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 	decodeErr := insertResult.Decode(&doc)
 
 	if decodeErr != nil {
-		log.Fatal(err)
+		fmt.Printf("Error: %s", decodeErr.Error())
+		json.NewEncoder(w).Encode(decodeErr.Error())
+		return
 	}
 
 
 	fmt.Printf("Inserted: %+v\n", doc)
+	json.NewEncoder(w).Encode(doc)
 
 
 
@@ -162,9 +166,7 @@ func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 
 func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
-	params := mux.Vars(r)
 
-	json.NewEncoder(w).Encode(params)
 	var projects []Project
 
 	cur, err := db.Projects.Find(context.Background(), bson.D{{}})
@@ -189,6 +191,7 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 	cur.Close(context.Background())
 
 	fmt.Printf("Found a single document: %+v\n", projects)
+	json.NewEncoder(w).Encode(projects)
 	
 
 
