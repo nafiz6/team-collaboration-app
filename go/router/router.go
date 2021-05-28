@@ -23,25 +23,26 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.GetAllTask).Methods("GET", "OPTIONS")
 
 	// create task
-	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")	//DONE
 
 	// create subtask
-	router.HandleFunc("/api/subtask/{task-id}", workspaceHandler.CreateSubTask).Methods("POST", "OPTIONS") 
+	router.HandleFunc("/api/subtask/{task-id}", workspaceHandler.CreateSubTask).Methods("POST", "OPTIONS")	//DONE
 
 	// assign user to workspace
-	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspace).Methods("POST", "OPTIONS")	//DONE 
 
 	// assign user to projects
-	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	//this adds users to "General" workspace of specified project, since project doesnt have users[]
+	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.AssignUserToProject).Methods("POST", "OPTIONS")	//DONE
 
 	// assign user to subtask
-	router.HandleFunc("/api/assign-subtask/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/assign-subtask/{subTask-id}", workspaceHandler.AssignUserToSubTask).Methods("POST", "OPTIONS")	//DONE, but need to select user from workspace instead of Users
 
 	// edits (renames/ change deadline/ budget)
-	router.HandleFunc("/api/update-task/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/update-task/{task-id}", workspaceHandler.EditTask).Methods("POST", "OPTIONS")	//DONE for name and budget only
 
 	// mark as completed
-	router.HandleFunc("/api/mark-subTask-complete/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/mark-subTask-complete/{subTask-id}", workspaceHandler.CompleteSubTask).Methods("POST", "OPTIONS")	//CODED, NOT CHECKED
 
 	// add updates
 	router.HandleFunc("/api/subtask-updates/{subTask-id}", workspaceHandler.SubtaskUpdates).Methods("POST", "OPTIONS") // FIZZ
@@ -61,10 +62,10 @@ func Router() *mux.Router {
 	/*
 		PROJECT
 	*/
-	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")    //DONE
 	router.HandleFunc("/api/project", workspaceHandler.CreateProject).Methods("POST", "OPTIONS") // FIZZ - DONE
 
-	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")	//DONE
+	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")	//DONE
 	return router
 }

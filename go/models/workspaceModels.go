@@ -43,7 +43,7 @@ type Subtask struct {
 	Budget int
 	Assigned_users[] struct{
 		User User
-		HasCompleted int
+		Has_Completed int
 	}
 	Updates [] Update
 }
