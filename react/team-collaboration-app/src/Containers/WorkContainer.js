@@ -1,6 +1,7 @@
 import React from "react"
 import '../MyStyles.css'
 import TaskContainer from "./TaskContainer";
+import TaskPage from "./TaskPage";
 
 const WorkContainer = () => 
 {
@@ -11,10 +12,12 @@ const WorkContainer = () =>
         <TaskContainer name="NFS: Most Wanted" time="6"/>
     ]
 
+    const taskPage = <TaskPage name="Among Us" time="5"/>
 
     return(
         <div className='work-Style'>
             {tasks}
+            {/*taskPage*/} 
         </div>
     );
 }
