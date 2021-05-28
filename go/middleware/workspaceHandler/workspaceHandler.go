@@ -166,6 +166,56 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w);
+	params := mux.Vars(r)
+	var newUpdate Update
+	_ = json.NewDecoder(r.Body).Decode(&newUpdate)
+	//insert newTask into db
+
+
+	fmt.Printf("new sub task %+v\n", newUpdate)
+
+	
+	id := params["subTask-id"]
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v\n", objID)
+
+
+	insertResult, insertErr := db.Projects.UpdateOne(
+		context.TODO(), 
+		bson.M{ "workspaces.tasks.subtasks._id": objID },
+	    bson.D{
+			{ "$push", bson.D{
+				{ "workspaces.$[workspace].tasks.$[task].subtasks.$[subtask].updates", newUpdate },
+			}},
+		},	options.Update().SetArrayFilters(options.ArrayFilters{ 
+			Filters: []interface{}{
+				bson.D{{"subtask._id", objID  }}, 
+				bson.D{{ "task.subtasks", bson.D{{ "$exists", true }}  }}, 
+				bson.D{{ "workspace.tasks.subtasks", bson.D{{ "$exists", true }}  }},
+			},
+		},
+	))
+
+	// {"workspace.tasks", bson.D{{ "$exists", true }} }
+
+	if insertErr != nil {
+		fmt.Printf("Error: %s", insertErr.Error())
+		json.NewEncoder(w).Encode(insertErr.Error())
+		return
+	}
+
+	fmt.Printf("Inserted: %+v\n", insertResult)
+	json.NewEncoder(w).Encode(insertResult)
+
+}
+
 func GetAllWorkspaces(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 	params := mux.Vars(r)
@@ -176,10 +226,53 @@ func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 	params := mux.Vars(r)
 	var newWorkspace Workspace
+	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newWorkspace)
+	//insert newTask into db
 
 
-	json.NewEncoder(w).Encode(params["project-id"])
+	fmt.Printf("new workspace %+v\n", newWorkspace)
+
+	newWorkspace.ID = primitive.NewObjectID()
+	// newTask.Subtasks = []Subtask
+
+
+	
+	id := params["project-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", objID)
+
+	
+
+	insertResult, insertErr := db.Projects.UpdateOne(
+		context.TODO(), 
+		bson.M{ "_id": objID },
+	    bson.D{
+			{ "$push", bson.D{
+				{ "workspaces", newWorkspace },
+			}},
+		},
+	)
+
+	if insertErr != nil {
+		fmt.Printf("Error: %s", insertErr.Error())
+		json.NewEncoder(w).Encode(insertErr.Error())
+		return
+	}
+
+	fmt.Printf("Inserted: %+v\n", insertResult)
+	json.NewEncoder(w).Encode(insertResult)
+
+
+
+
 }
 
 func GetAllProjects(w http.ResponseWriter, r *http.Request) {
@@ -267,9 +360,30 @@ func GetOneUser(w http.ResponseWriter, r *http.Request) {
 
 func CreateProject(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
-	params := mux.Vars(r)
 	var newProject Project
 	_ = json.NewDecoder(r.Body).Decode(&newProject)
 
-	json.NewEncoder(w).Encode(params)
+
+	fmt.Printf("new task %+v\n", newProject)
+
+	newProject.ID = primitive.NewObjectID()
+	// newTask.Subtasks = []Subtask
+
+	insertResult, err := db.Projects.InsertOne(context.TODO(), newProject)
+
+
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	fmt.Printf("Inserted: %+v\n", insertResult.InsertedID)
+
+	json.NewEncoder(w).Encode(insertResult.InsertedID)
+
+
+
+
 }

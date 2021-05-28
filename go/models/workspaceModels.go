@@ -45,10 +45,12 @@ type Subtask struct {
 		User User
 		HasCompleted int
 	}
-	Updates [] struct{
-		User User
-		Text string
-		Timestamp primitive.DateTime
-		
-	}
+	Updates [] Update
+}
+
+type Update struct {
+	User User
+	Text string
+	Timestamp primitive.DateTime
+	
 }

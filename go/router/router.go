@@ -19,7 +19,7 @@ func Router() *mux.Router {
 	/*
 	  TASKS
 	 */
-	// fetches all tasks and their subtasks  || NO NEED
+	// fetches all tasks and their subtasks  || no need
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.GetAllTask).Methods("GET", "OPTIONS")
 
 	// create task
@@ -34,7 +34,7 @@ func Router() *mux.Router {
 	// assign user to projects
 	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
-	// assign user to task
+	// assign user to subtask
 	router.HandleFunc("/api/assign-subtask/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
 	// edits (renames/ change deadline/ budget)
@@ -44,15 +44,16 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/mark-subTask-complete/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
 	// add updates
-	router.HandleFunc("/api/subtask-updates/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS") // FIZZ
+	router.HandleFunc("/api/subtask-updates/{subTask-id}", workspaceHandler.SubtaskUpdates).Methods("POST", "OPTIONS") // FIZZ
 
 
 
 	/*
 		WORKSPACE
 	*/
+	// fetches all workspace under this project and their tasks  || no need
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.GetAllWorkspaces).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspace).Methods("POST", "OPTIONS") // FIZZ
+	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspace).Methods("POST", "OPTIONS") // FIZZ -- DONE
 
 
 
@@ -61,7 +62,7 @@ func Router() *mux.Router {
 		PROJECT
 	*/
 	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/project", workspaceHandler.CreateProject).Methods("POST", "OPTIONS") // FIZZ
+	router.HandleFunc("/api/project", workspaceHandler.CreateProject).Methods("POST", "OPTIONS") // FIZZ - DONE
 
 	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")
