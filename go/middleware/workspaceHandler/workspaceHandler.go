@@ -42,6 +42,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("new task %+v\n", newTask)
 
 	newTask.ID = primitive.NewObjectID()
+	// newTask.Subtasks = []Subtask
 
 
 	
@@ -58,7 +59,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	
 
-	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{{  "workspaces", bson.D{{"$elemMatch",bson.D{{"_id", objID}}}}    }}, bson.D{{ "$push", bson.D{{ "workspaces.$[workspace].tasks", newTask }},  }}, options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ Filters: []interface{}{bson.D{{"workspace._id", bson.D{{ "$eq", objID  }}   } }}}))
+	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{{  "workspaces._id", objID    }}, bson.D{{ "$push", bson.D{{ "workspaces.$[workspace].tasks", newTask }},  }}, options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ Filters: []interface{}{bson.D{{"workspace._id", objID  } }}}))
 	
 
 
@@ -94,19 +95,36 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 
 
 	
-	id := "60b0aa2b60c6feaec02b30f8"
+	id := params["task-id"]
 
 	objID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("objID: %+v", objID)
+	fmt.Printf("objID: %+v\n", objID)
+
+	findResult := db.Projects.FindOne(context.TODO(), bson.D{{ "workspaces.tasks._id", objID }})
+
+	// findResult := db.Projects.FindOne(context.TODO(), bson.D{{ "name", "Cyberpunk" }})
+
+
+	var elem Project
+	errr := findResult.Decode(&elem)
+	if errr != nil {
+		log.Fatal(err)
+	}
+
+	fmt.Printf("found: %+v\n\n", elem)
 
 	
 
-	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{{  "workspaces", bson.D{{"$elemMatch",bson.D{{"_id", objID}}}}    }}, bson.D{{ "$push", bson.D{{ "workspaces.$[workspace].tasks", newSubTask }},  }}, options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ Filters: []interface{}{bson.D{{"workspace._id", bson.D{{ "$eq", objID  }}   } }}}))
+	// bson.D{{  "workspaces", bson.D{{"$elemMatch", bson.D{{ "tasks", bson.D{{ "$elemMatch", bson.D{{ "_id", objID }} }} }} }}    }}
+	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{{ "workspaces.tasks._id", objID }}, bson.D{{ "$push", bson.D{{ "workspaces.$[workspace].tasks.$[task].subtasks", newSubTask }}  }}, 	options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ Filters: []interface{}{bson.D{{"task._id", objID  }}, bson.D{{ "workspace.tasks", bson.D{{ "$exists", true }}  }}}}))
+
+
 	
+	// {"workspace.tasks", bson.D{{ "$exists", true }} }
 
 
 
@@ -115,8 +133,9 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 	decodeErr := insertResult.Decode(&doc)
 
 	if decodeErr != nil {
-		fmt.Printf("Error: %s", err.Error())
+		log.Fatal(err)
 	}
+
 
 	fmt.Printf("Inserted: %+v\n", doc)
 
