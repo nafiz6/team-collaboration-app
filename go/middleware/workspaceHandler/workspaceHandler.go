@@ -58,7 +58,14 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	
 
-	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{{  "workspaces._id", objID    }}, bson.D{{ "$push", bson.D{{ "workspaces.$[workspace].tasks", newTask }},  }}, options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ Filters: []interface{}{bson.D{{"workspace._id", objID  } }}}))
+	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{
+			{  "workspaces._id", objID    },
+		}, bson.D{
+			{ "$push", bson.D{{ "workspaces.$[workspace].tasks", newTask }},  },
+		}, options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ 
+			Filters: []interface{}{bson.D{{"workspace._id", objID  } }},
+		}),
+	)
 	
 
 
@@ -75,7 +82,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Inserted: %+v\n", doc)
 
-	json.NewEncoder(w).Encode(doc)
+	json.NewEncoder(w).Encode(newTask.ID.Hex())
 
 
 
@@ -121,7 +128,18 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 	
 
 	// bson.D{{  "workspaces", bson.D{{"$elemMatch", bson.D{{ "tasks", bson.D{{ "$elemMatch", bson.D{{ "_id", objID }} }} }} }}    }}
-	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{{ "workspaces.tasks._id", objID }}, bson.D{{ "$push", bson.D{{ "workspaces.$[workspace].tasks.$[task].subtasks", newSubTask }}  }}, 	options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ Filters: []interface{}{bson.D{{"task._id", objID  }}, bson.D{{ "workspace.tasks", bson.D{{ "$exists", true }}  }}}}))
+	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{
+		{ "workspaces.tasks._id", objID },
+	}, bson.D{
+		{ "$push", bson.D{
+			{ "workspaces.$[workspace].tasks.$[task].subtasks", newSubTask },
+		}  }}, 	options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ 
+			Filters: []interface{}{
+				bson.D{{"task._id", objID  }}, 
+				bson.D{{ "workspace.tasks", bson.D{{ "$exists", true }}  }},
+			},
+		},
+	))
 
 
 	
@@ -141,7 +159,7 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 
 
 	fmt.Printf("Inserted: %+v\n", doc)
-	json.NewEncoder(w).Encode(doc)
+	json.NewEncoder(w).Encode(newSubTask.ID.Hex())
 
 
 
@@ -199,14 +217,13 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
-	params := mux.Vars(r)
 
-	json.NewEncoder(w).Encode(params)
 	var users []User
 
 	cur, err := db.Users.Find(context.Background(), bson.D{{}})
 
 	if err != nil {
+		json.NewEncoder(w).Encode(err)
 		log.Fatal(err)
 	}
 	// Finding multiple documents returns a cursor
@@ -226,6 +243,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	cur.Close(context.Background())
 
 	fmt.Println((users))
+	json.NewEncoder(w).Encode((users))
 
 }
 

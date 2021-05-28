@@ -27,7 +27,7 @@ type Task struct {
 	Name string
 	Deadline primitive.DateTime
 	Budget int
-	Comments []Comment
+	Description string
 	Subtasks []Subtask
 	
 }
@@ -41,12 +41,14 @@ type Subtask struct {
 	Name string
 	Description string 
 	Budget int
-	Assigned_users []User
+	Assigned_users[] struct{
+		User User
+		HasCompleted int
+	}
 	Updates [] struct{
-		user User
-		text string
-		status int
-
+		User User
+		Text string
+		Timestamp primitive.DateTime
 		
 	}
 }

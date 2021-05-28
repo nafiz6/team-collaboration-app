@@ -19,23 +19,32 @@ func Router() *mux.Router {
 	/*
 	  TASKS
 	 */
-	// fetches all tasks and their subtasks
+	// fetches all tasks and their subtasks  || NO NEED
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.GetAllTask).Methods("GET", "OPTIONS")
 
 	// create task
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
 	// create subtask
-	router.HandleFunc("/api/subtask/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/subtask/{task-id}", workspaceHandler.CreateSubTask).Methods("POST", "OPTIONS") 
 
-	router.HandleFunc("/api/assign-subtask/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	// assign user to workspace
+	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
-	// edits 
+	// assign user to projects
+	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+
+	// assign user to task
+	router.HandleFunc("/api/assign-subtask/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+
+	// edits (renames/ change deadline/ budget)
 	router.HandleFunc("/api/update-task/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/mark-task-complete/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
-	// add notes on progress
-	router.HandleFunc("/api/subtask-progress/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	// mark as completed
+	router.HandleFunc("/api/mark-subTask-complete/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+
+	// add updates
+	router.HandleFunc("/api/subtask-updates/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS") // FIZZ
 
 
 
@@ -43,7 +52,7 @@ func Router() *mux.Router {
 		WORKSPACE
 	*/
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.GetAllWorkspaces).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspace).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspace).Methods("POST", "OPTIONS") // FIZZ
 
 
 
@@ -52,10 +61,9 @@ func Router() *mux.Router {
 		PROJECT
 	*/
 	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/project", workspaceHandler.CreateProject).Methods("POST", "OPTIONS") // FIZZ
 
 	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/addtask/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
-	router.HandleFunc("/api/addsubtask/{task-id}", workspaceHandler.CreateSubTask).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")
 	return router
 }
