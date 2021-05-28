@@ -31,6 +31,9 @@
 /go/*.dll
 /go/*.so
 /go/*.dylib
+/go/dbUrl.go
+/go/middleware/url/dbUrl.go
+/go-ql/dbUrl.go
 
 # Test binary, built with `go test -c`
 /go/*.test
