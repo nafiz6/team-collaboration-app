@@ -23,6 +23,9 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspace).Methods("POST", "OPTIONS")
 
 	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")
-	router.HandleFunc("/api/project", workspaceHandler.CreateProject).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")
+
+	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/addtask/{workspace-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 	return router
 }

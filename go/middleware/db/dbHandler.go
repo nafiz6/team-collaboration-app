@@ -10,12 +10,18 @@ import(
 	"context"
 	"time"
 )
+var Users *mongo.Collection
+var Projects *mongo.Collection
+
+
 
 
 
 // don't change function name
 // called when this package is initialized
 func init() {
+	
+	
 	client, err := mongo.NewClient(options.Client().ApplyURI(url.Mongo))
 	if err != nil {
 		log.Fatal(err)
@@ -31,6 +37,9 @@ func init() {
 		log.Fatal(err)
 	}
 	fmt.Println(databases)
+
+	Users = client.Database("collab").Collection("users")
+	Projects = client.Database("collab").Collection("projects")
 }
 
 func DoNothing(){
