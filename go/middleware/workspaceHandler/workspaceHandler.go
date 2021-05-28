@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"teams/middleware/cors"
 	"teams/middleware/db"
-	"teams/models"
+	. "teams/models"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -134,7 +134,7 @@ func GetAllWorkspaces(w http.ResponseWriter, r *http.Request) {
 func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 	params := mux.Vars(r)
-	var newWorkspace models.Workspace
+	var newWorkspace Workspace
 	_ = json.NewDecoder(r.Body).Decode(&newWorkspace)
 
 
@@ -228,7 +228,7 @@ func GetOneUser(w http.ResponseWriter, r *http.Request) {
 func CreateProject(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 	params := mux.Vars(r)
-	var newProject models.Project
+	var newProject Project
 	_ = json.NewDecoder(r.Body).Decode(&newProject)
 
 	json.NewEncoder(w).Encode(params)
