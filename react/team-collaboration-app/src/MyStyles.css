@@ -1,0 +1,136 @@
+.page-Style
+{
+  display: flex;
+  background-color: #282c34;
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  bottom: 0px;
+  left: 0px;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+}
+
+.header-Style
+{
+    display: flex;
+    background-color:black;
+    height: 50px;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: space-around;
+    flex-grow : 1
+}
+
+.button-Style
+{
+    background-color: skyblue;
+    border-radius: 5px;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.bottom-Style
+{
+    display: flex;
+    background-color: #282c34;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-grow: 50;
+}
+
+.project-Style
+{
+    display: flex;
+    background-color: gray;
+    flex-grow: 0.3;
+    flex-direction: column;
+    justify-content: flex-start;
+}
+
+.rooms-Style
+{
+    display: flex;
+    background-color: darkslategray;
+    flex-grow: 1.3;
+    border-style: solid;
+    border-width: 0.1px;
+    border-color: black;
+    flex-direction: column;
+}
+
+.taskWork-Style
+{
+    display: flex;
+    background-color: #282c34;
+    flex-direction: column;
+    flex-grow: 10;
+}
+
+.navBar-Style
+{
+    display: flex;
+    flex-direction: row;
+    background-color: darkslategray;
+    flex-basis: 50px;
+    justify-content: space-around;
+}
+
+.work-Style{
+    display: flex;
+    background-color: #282c34;
+    flex-basis: 600px;
+}
+
+.projectButton-Style
+{
+    background-color: blueviolet;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    height: 60px;
+    width: 60px;
+}
+
+.projectAddButton-Style
+{
+    background-color: cyan;
+    border-radius: 40px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 25px;
+    height: 50px;
+    width: 50px;
+}
+
+.roomButton-Style
+{
+    background-color: darkcyan;
+    height: 75px;
+    justify-content: center;
+}
+
+.projName-Style
+{
+    background-color: darkcyan;
+    height: 75px;
+    text-align: center;
+    padding-top: 30px;
+    border-width: 0.1px;
+    border-style: solid;
+    border-color:black;
+}
+
+.navBarButton-Style
+{
+    background-color: blueviolet;
+    width:100px;
+    height: 30px;
+    border-radius: 10px;
+    text-align: center;
+    margin-top: 10px;
+}

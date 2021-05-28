@@ -1,38 +1,33 @@
-import logo from './logo.svg';
-import './App.css';
-import React, { useEffect, useState } from 'react'
-import ReactDOM from 'react-dom'
+import './MyStyles.css'
+import React from 'react'
+import HeaderContainer from './Containers/HeaderContainer';
+import ProjectContainer from './Containers/ProjectContainer';
+import RoomsContainer from './Containers/RoomsContainer';
+import NavBar from './Containers/NavBar';
+import WorkContainer from './Containers/WorkContainer';
 
 function App() {
 
-
-  const [message, setMessage] = useState()
-
-  // console.log("AAAAA");
-  // let message = ''
-
-  useEffect(() => {
-    fetch('http://localhost:8080')
-      .then(res => {
-        // message = res;
-        // console.log(res);
-        // setMessage(res);
-        // console.log(message);
-        // console.log(message);
-        return res.text()
-      }).then(res2 => setMessage(res2))
-  });
-
   return (
 
-    <div className="App">
+   /* <div className="App">
       <header className="App-header">
-        {/* <img src={logo} className="App-logo" alt="logo" /> */}
-        {/* <p>{message}</p> */}
-        <div>{message}</div>
+        { <img src={logo} className="App-logo" alt="logo" /> }
       </header>
-    </div>
+    </div> */
+      <div className='page-Style'>
+        <HeaderContainer/>
+        <div className='bottom-Style'>
+          <ProjectContainer/>
+          <RoomsContainer/>
+          <div className = 'taskWork-Style'>
+            <NavBar/>
+            <WorkContainer/> 
+          </div>
+        </div>
+      </div>
+    
   );
 }
 
-export default App;
+export default App
