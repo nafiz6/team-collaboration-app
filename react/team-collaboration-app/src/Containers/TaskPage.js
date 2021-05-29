@@ -14,6 +14,7 @@ const TaskPage = (props) =>
 
     return (
         <div className="taskPage-Style">
+            <CreateSubtaskButton taskId=""/>
             <text>Task: {props.name}</text>
             <text>Due: In {props.time} days</text>
             {subtasks}

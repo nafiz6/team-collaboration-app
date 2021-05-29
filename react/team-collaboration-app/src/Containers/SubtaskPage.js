@@ -10,6 +10,7 @@ const SubtaskPage = (props) =>
            <text> Description:  {props.des}</text>
           <text>  Budget: {props.budget}</text>
           <text>  Assigned to: {props.user}</text>
+          <AddUpdate user="60af82dccbe1709146f71669" subtaskId=""/>
         </div>
     )
 }

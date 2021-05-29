@@ -15,7 +15,8 @@ const RoomsContainer = (props) => {
 
         const rooms = [
             <div className='projName-Style'>{props.project.Name}</div>,
-            ...createRooms
+            ...createRooms,
+            <CreateWorkspaceButton projectId={props.project.id} />
         ]
         return (
             <div className='rooms-Style'>{rooms}</div>

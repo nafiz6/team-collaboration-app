@@ -1,11 +1,13 @@
 import React, { useContext } from "react"
 import { currWSContext } from "../App";
+import CreateTaskButton from "../Components/CreateTask";
 import '../MyStyles.css'
 import TaskContainer from "./TaskContainer";
 import TaskPage from "./TaskPage";
 
 
 const WorkContainer = (props) => {
+    /*
     if (props.ws) {
         const tasks = props.ws.Tasks.map(
             task => <TaskContainer key={task.id} task={task} />
@@ -13,7 +15,9 @@ const WorkContainer = (props) => {
 
         return (
             <div className='work-Style'>
+                <CreateTaskButton workspaceId={props.ws.id} />
                 {tasks}
+                
             </div>
         )
     }
@@ -23,8 +27,8 @@ const WorkContainer = (props) => {
             </div>
         )
     }
+    */
 
-    /*
     const tasks = [
         <TaskContainer name="Prince of Persia" time="3"/>,
         <TaskContainer name="GTA Vice City" time="4"/>,
@@ -36,10 +40,10 @@ const WorkContainer = (props) => {
 
     return(
         <div className='work-Style'>
-            {tasks}
+            {/*tasks*/}
             {taskPage} 
         </div>
-    ) */
+    ) 
 
 }
 
