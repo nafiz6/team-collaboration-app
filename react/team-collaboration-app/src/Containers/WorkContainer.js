@@ -16,8 +16,8 @@ const WorkContainer = () =>
 
     return(
         <div className='work-Style'>
-            {tasks}
-            {/*taskPage*/} 
+            {/*tasks*/}
+            {taskPage} 
         </div>
     );
 }
