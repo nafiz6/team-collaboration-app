@@ -1,5 +1,5 @@
 import React from 'react'
-import CreateTaskButton from '../Components/CreateTask'
+import CreateSubtaskButton from '../Components/CreateSubtask'
 import '../MyStyles.css'
 import SubtaskPage from './SubtaskPage'
 

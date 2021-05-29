@@ -185,6 +185,12 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&newSubTask)
 	//insert newTask into db
 
+	if (newSubTask.Name == ""){
+
+		json.NewEncoder(w).Encode("Name Cannot Be Empty");
+		return;
+	}
+
 
 	fmt.Printf("new sub task %+v\n", newSubTask)
 
@@ -263,6 +269,11 @@ func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
 	//insert newTask into db
 	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 
+	if (newUpdate.Text == ""){
+
+		json.NewEncoder(w).Encode("Text Cannot Be Empty");
+		return;
+	}
 
 	fmt.Printf("new sub task %+v\n", newUpdate)
 

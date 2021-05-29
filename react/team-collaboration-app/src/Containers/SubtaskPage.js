@@ -1,4 +1,5 @@
 import React from 'react'
+import AddUpdate from '../Components/AddUpdate'
 import '../MyStyles.css'
 
 const SubtaskPage = (props) => 
