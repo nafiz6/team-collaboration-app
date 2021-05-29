@@ -1,25 +1,40 @@
-import React from 'react'
+import React, { useContext, useEffect } from 'react'
 import CreateSubtaskButton from '../Components/CreateSubtask'
 import '../MyStyles.css'
 import SubtaskPage from './SubtaskPage'
+import { taskContext } from '../App'
+
+
 
 const TaskPage = (props) => 
 {
-    const subtasks = [
-        <SubtaskPage name="Level Make" des="Making a fun level" budget="30000" user="Somik and Nafiz"/>,
-        <SubtaskPage name="Boss Make" des="Making a scary boss" budget="10000" user="Somik and Abrar"/>,
-        <SubtaskPage name="Music Make" des="Making a soothing track" budget="5000" user="Abrar and Nafiz"/>,
-        <SubtaskPage name="Game Make" des="Making a great game" budget="100000" user="Embros"/>,
-    ]
+    const [task,setTask] = useContext(taskContext)
+
+    console.log(task)
+
+    if(task){
+
+    const subtasks = task.Subtasks.map(
+        subtask => <SubtaskPage key = {subtask.id} subtask = {subtask}/>
+    )
 
     return (
         <div className="taskPage-Style">
-            <CreateSubtaskButton taskId=""/>
-            <text>Task: {props.name}</text>
-            <text>Due: In {props.time} days</text>
+            <CreateSubtaskButton taskId={task.id}/>
+            <text>Task: {task.name}</text>
+            <text>Due: In {task.time} days</text>
             {subtasks}
         </div>
     )
+    }
+    else{
+        return (
+            <div className="taskPage-Style">
+               
+            </div>
+        )
+
+    }
 }
 
 export default TaskPage;

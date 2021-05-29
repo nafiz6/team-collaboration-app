@@ -10,12 +10,16 @@ import axios from 'axios';
 
 export const currProjContext = React.createContext();
 export const currWSContext = React.createContext();
+export const stateContext = React.createContext();
+export const taskContext = React.createContext();
 
 function App() {
 
   const [projects, setProjects] = useState([]);
   const [currProj, setCurrProj] = useState(null);
   const [currWS, setCurrWS] = useState(null);
+  const [state, setState] = useState(0);
+  const [task, setTask] = useState(null);
 
   const dataFetch = useCallback(async () => {
     let res = await axios.get('http://localhost:8080/api/project')
@@ -32,25 +36,29 @@ function App() {
 
   return (
 
-    // <h1>{currProj?.Name}</h1>
-
-
     <div className='page-Style'>
       <HeaderContainer />
       <div className='bottom-Style'>
         <currProjContext.Provider value={[currProj, setCurrProj]}>
-          <ProjectContainer projects={projects} />
+          <stateContext.Provider value={[state, setState]}>
+            <ProjectContainer projects={projects} />
+          </stateContext.Provider>
         </currProjContext.Provider>
         <currWSContext.Provider value={[currWS, setCurrWS]}>
-          <RoomsContainer project={currProj} />
+          <stateContext.Provider value={[state, setState]}>
+            <RoomsContainer project={currProj} />
+          </stateContext.Provider>
         </currWSContext.Provider>
         <div className='taskWork-Style'>
           <NavBar />
-          <WorkContainer ws={currWS} />
+          <stateContext.Provider value={[state, setState]}>
+            <taskContext.Provider value={[task,setTask]}>
+            <WorkContainer ws={currWS} />
+            </taskContext.Provider>
+          </stateContext.Provider>
         </div>
       </div>
     </div>
-
 
   );
 }
