@@ -4,20 +4,25 @@ import '../MyStyles.css'
 import CreateWorkspaceButton from "../Components/CreateWorkspace";
 
 
-const RoomsContainer = () => 
-{
-    const rooms = [
-        <div className='projName-Style'>My Project</div>,
-        <RoomButton name="ROOM 1"/>,
-        <RoomButton name="ROOM 2"/>,
-        <RoomButton name="ROOM 3"/>,
-        <RoomButton name="ROOM 4"/>,
-    ]   
-    return(
-        <div className='rooms-Style'>{rooms}
-            <CreateWorkspaceButton projectId='60b21eb1da6a7a91ae769b3d'/>
-        </div>
-    );
+const RoomsContainer = (props) => {
+
+    if (props.project) {
+
+        const createRooms = props.project.Workspaces.map(
+            workspace => <RoomButton key={workspace.id} workspace={workspace} />
+        )
+
+
+        const rooms = [
+            <div className='projName-Style'>{props.project.Name}</div>,
+            ...createRooms
+        ]
+        return (
+            <div className='rooms-Style'>{rooms}</div>
+        );
+    }
+    else return <div className='rooms-Style'></div>
+
 }
 
 export default RoomsContainer;
