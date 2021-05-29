@@ -10,3 +10,8 @@
     background: #2b323c;
     color: white;
 }
+
+.workspace-form .p-button {
+    font-size: 10px;
+    float: right;
+}
