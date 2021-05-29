@@ -17,7 +17,7 @@ type Workspace struct {
 	Tasks []Task
 }
 type User struct {
-	Uid primitive.ObjectID `json:"id" bson:"uid,omitempty"`
+	ID primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name string
 	
 }
@@ -42,7 +42,8 @@ type Subtask struct {
 	Description string 
 	Budget int
 	Assigned_users[] struct{
-		User User
+		ID primitive.ObjectID	`json:"id" bson:"_id,omitempty"`
+		Name string
 		Has_Completed int
 	}
 	Updates [] Update
