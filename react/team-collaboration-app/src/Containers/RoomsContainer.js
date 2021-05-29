@@ -3,10 +3,10 @@ import RoomButton from "../Components/RoomButton";
 import '../MyStyles.css'
 
 
-const RoomsContainer = () => 
+const RoomsContainer = (props) => 
 {
     const rooms = [
-        <div className='projName-Style'>My Project</div>,
+        <div className='projName-Style'>{props.project?.Name}</div>,
         <RoomButton name="ROOM 1"/>,
         <RoomButton name="ROOM 2"/>,
         <RoomButton name="ROOM 3"/>,

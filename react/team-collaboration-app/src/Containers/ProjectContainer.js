@@ -4,15 +4,16 @@ import ProjectButton from "../Components/ProjectButton";
 import '../MyStyles.css'
 
 
-const ProjectContainer = () => 
+const ProjectContainer = (props) => 
 {
-    const projButtons = [
-        <ProjectButton name="1"/>, <ProjectButton name = "2"/>, <ProjectButton name ="3"/>, <ProjectAddButton/>
-    ]
+    const projButtons = props.projects.map(
+        project => <ProjectButton key={project.id} project={project} />
+    )
 
     return(
         <div className='project-Style'>
             {projButtons}
+            <ProjectAddButton/>
         </div>
     );
 
