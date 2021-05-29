@@ -13,16 +13,21 @@ const WorkContainer = (props) => {
     const [state,setState] = useContext(stateContext)
         
     if (props.ws) {
-        const tasks = props.ws.Tasks.map(
+        let tasks = props.ws.Tasks.map(
             tsk => <TaskContainer key={tsk.id} task={tsk} />
         )
 
+        tasks = [
+                ...tasks
+        ]
         if(state == 0){
         return (
-            <div className='work-Style'>
-                <CreateTaskButton workspaceId={props.ws.id} />
-                {tasks}
-                
+            <div className="createTask">
+                <CreateTaskButton key={props.ws.id} workspaceId={props.ws.id} />
+                <div className='work-Style'>
+                    {tasks}
+                    
+                </div>
             </div>
         )
         }

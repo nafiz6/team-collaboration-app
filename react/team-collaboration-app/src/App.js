@@ -41,7 +41,11 @@ function App() {
       <div className='bottom-Style'>
         <currProjContext.Provider value={[currProj, setCurrProj]}>
           <stateContext.Provider value={[state, setState]}>
-            <ProjectContainer projects={projects} />
+              <taskContext.Provider value={[task,setTask]}>
+                <currWSContext.Provider value={[currWS, setCurrWS]}>
+                  <ProjectContainer projects={projects} />
+                </currWSContext.Provider>
+              </taskContext.Provider>
           </stateContext.Provider>
         </currProjContext.Provider>
         <currWSContext.Provider value={[currWS, setCurrWS]}>

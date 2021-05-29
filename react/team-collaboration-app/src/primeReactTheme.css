@@ -11,9 +11,21 @@
     color: white;
 }
 
+.p-multiselect-label {
+    color: black
+}
+
 .workspace-form .p-button {
     font-size: 10px;
     float: right;
+}
+
+.work-Style .p-button {
+    float:  right;
+}
+
+.createTask {
+    padding: 20px;
 }
 
 button {

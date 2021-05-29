@@ -8,8 +8,13 @@ const SubtaskPage = (props) =>
         user => user.Name ).join(",")
 
     const updates = props.subtask.Updates.map(
-        update => update.User.Name + " : " + update.Text
-    ).join("\n")
+        update => <p>{update.User.Name + " : " + update.Text }
+    </p>)
+
+    let userObj = {
+        Name: "Marques Brownlee",
+        id: "60af82dccbe1709146f71669"
+    }
         
     return (
         <div className='subtaskPage-Style'>
@@ -18,7 +23,7 @@ const SubtaskPage = (props) =>
            <text>  Budget: {props.subtask.Budget}</text>
            <text>  Assigned to: {assignedTo}</text>
            <text>  Updates: {updates}</text>
-          <AddUpdate user="60af82dccbe1709146f71669" subtaskId={props.subtask.id}/>
+          <AddUpdate user={userObj} subtaskId={props.subtask.id}/>
         </div>
     )
 }
