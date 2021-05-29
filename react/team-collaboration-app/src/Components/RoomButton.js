@@ -4,7 +4,7 @@ import '../MyStyles.css'
 const RoomButton = (props) => 
 {
     return (
-        <button className='roomButton-Style'>{props.name}</button>
+        <button className='roomButton-Style'>{props.workspace.Name}</button>
     )
 }
 

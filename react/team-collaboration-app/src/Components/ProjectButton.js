@@ -16,7 +16,7 @@ const ProjectButton = (props) =>
                 console.log(project)
             }
         }
-        >{props.name}</button>
+        >{props.project.Name}</button>
     )
 }
 

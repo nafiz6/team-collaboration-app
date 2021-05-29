@@ -12,7 +12,7 @@ export const currProjContext = React.createContext();
 
 function App() {
 
-  const [projects, setProjects] = useState(null);
+  const [projects, setProjects] = useState([]);
   const [currProj, setCurrProj] = useState(null);
 
   const dataFetch = useCallback(async () => {
@@ -20,23 +20,19 @@ function App() {
 
     setProjects(res.data);
     setCurrProj(res.data[0]);
-    console.log(projects)
-    console.log(currProj)
-
 
   }, [])
 
   useEffect(() => {
     dataFetch();
-
   }, [dataFetch])
 
 
   return (
 
-    <h1>{currProj?.Name}</h1>
+   // <h1>{currProj?.Name}</h1>
 
-    /*
+    
     <div className='page-Style'>
       <HeaderContainer />
       <div className='bottom-Style'>
@@ -50,7 +46,7 @@ function App() {
         </div>
       </div>
     </div>
-    */
+    
 
   );
 }
