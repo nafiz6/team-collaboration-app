@@ -9,11 +9,13 @@ import axios from 'axios';
 
 
 export const currProjContext = React.createContext();
+export const currWSContext = React.createContext();
 
 function App() {
 
   const [projects, setProjects] = useState([]);
   const [currProj, setCurrProj] = useState(null);
+  const [currWS, setCurrWS] = useState(null);
 
   const dataFetch = useCallback(async () => {
     let res = await axios.get('http://localhost:8080/api/project')
@@ -30,23 +32,25 @@ function App() {
 
   return (
 
-   // <h1>{currProj?.Name}</h1>
+    // <h1>{currProj?.Name}</h1>
 
-    
+
     <div className='page-Style'>
       <HeaderContainer />
       <div className='bottom-Style'>
         <currProjContext.Provider value={[currProj, setCurrProj]}>
           <ProjectContainer projects={projects} />
         </currProjContext.Provider>
-        <RoomsContainer project={currProj} />
+        <currWSContext.Provider value={[currWS, setCurrWS]}>
+          <RoomsContainer project={currProj} />
+        </currWSContext.Provider>
         <div className='taskWork-Style'>
           <NavBar />
-          <WorkContainer />
+          <WorkContainer ws={currWS} />
         </div>
       </div>
     </div>
-    
+
 
   );
 }

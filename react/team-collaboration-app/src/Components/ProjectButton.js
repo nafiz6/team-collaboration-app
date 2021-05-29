@@ -6,7 +6,6 @@ import {currProjContext} from '../App'
 const ProjectButton = (props) => 
 {
     const [project,setProject] = useContext(currProjContext)
-    console.log(project)
 
     return (
         <button className='projectButton-Style'

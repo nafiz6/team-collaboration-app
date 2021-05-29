@@ -4,7 +4,7 @@ import '../MyStyles.css'
 const Deadline = (props) => 
 {
     return (
-        <div className='deadline-Style'>Due in {props.time} days</div>
+        <div className='deadline-Style'>{props.time}</div>
     )
 }
 
