@@ -60,8 +60,10 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 		Tasks: []Task{},
 	})
 
+	// fmt.Printf("Project %+v\n", newProject)
 
-	fmt.Printf("new task %+v\n", newProject)
+
+	// fmt.Printf("new task %+v\n", newProject)
 
 	newProject.ID = primitive.NewObjectID()
 	// newTask.Subtasks = []Subtask
