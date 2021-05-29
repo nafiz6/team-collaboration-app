@@ -28,13 +28,6 @@ func Router() *mux.Router {
 	// create subtask
 	router.HandleFunc("/api/subtask/{task-id}", workspaceHandler.CreateSubTask).Methods("POST", "OPTIONS")	//DONE
 
-	// assign user to workspace
-	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspace).Methods("POST", "OPTIONS")	//DONE 
-
-	// assign user to projects
-	//this adds users to "General" workspace of specified project, since project doesnt have users[]
-	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.AssignUserToProject).Methods("POST", "OPTIONS")	//DONE
-
 	// assign user to subtask
 	router.HandleFunc("/api/assign-subtask/{subTask-id}", workspaceHandler.AssignUserToSubTask).Methods("POST", "OPTIONS")	//DONE, but need to select user from workspace instead of Users
 
@@ -46,6 +39,12 @@ func Router() *mux.Router {
 
 	// add updates
 	router.HandleFunc("/api/subtask-updates/{subTask-id}", workspaceHandler.SubtaskUpdates).Methods("POST", "OPTIONS") // FIZZ
+	
+	// delete tasks
+	router.HandleFunc("/api/delete-task/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")	
+
+	// delete subtasks
+	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
 
 
 
@@ -56,6 +55,9 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.GetAllWorkspaces).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspace).Methods("POST", "OPTIONS") // FIZZ -- DONE
 
+	// assign user to workspace
+	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspace).Methods("POST", "OPTIONS")	//DONE 
+
 
 
 
@@ -64,6 +66,11 @@ func Router() *mux.Router {
 	*/
 	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS")    //DONE
 	router.HandleFunc("/api/project", workspaceHandler.CreateProject).Methods("POST", "OPTIONS") // FIZZ - DONE
+
+	// assign user to projects
+	//this adds users to "General" workspace of specified project, since project doesnt have users[]
+	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.AssignUserToProject).Methods("POST", "OPTIONS")	//DONE
+
 
 	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")	//DONE
 	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")	//DONE
