@@ -2,11 +2,14 @@ import React, { useState } from 'react'
 import '../MyStyles.css'
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { createProject } from '../api/Project.js';
 
 const ProjectAddButton = () => 
 {
     const [displayBasic, setDisplayBasic] = useState(false);
     const [position, setPosition] = useState('center');
+    const [projectName, setProjectName] = useState('');
 
     const dialogFuncMap = {
         'displayBasic': setDisplayBasic,
@@ -24,23 +27,32 @@ const ProjectAddButton = () =>
         dialogFuncMap[`${name}`](false);
     }
 
+    const creatingProject = (name) => {
+        dialogFuncMap[`${name}`](false);
+        createProject(projectName)
+
+    }
+
     const renderFooter = (name) => {
         return (
             <div>
-                <Button label="No" icon="pi pi-times" onClick={() => onHide(name)} className="p-button-text" />
-                <Button label="Yes" icon="pi pi-check" onClick={() => onHide(name)} autoFocus />
+                <Button label="Create" icon="pi pi-check" onClick={() => creatingProject(name)} autoFocus />
             </div>
         );
     }
 
+    const CreateProjectFrom =
+            <div>
+                <h5>Project Name</h5>
+                <InputText value={projectName} onChange={(e) => setProjectName(e.target.value)} />
+            </div>
+
+
     return (
         <div>
             <button className='projectAddButton-Style' position={position} onClick={() => onClick('displayBasic')}>+</button>
-            <Dialog header="Header" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
-                Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
-                cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <Dialog header="Create Project" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+                {CreateProjectFrom}
             </Dialog>
         </div>
     )
