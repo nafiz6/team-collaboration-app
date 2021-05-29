@@ -15,7 +15,7 @@ function App() {
   const [projects, setProjects] = useState(null);
   const [currProj, setCurrProj] = useState(null);
 
-  const dataFetch = async () => {
+  const dataFetch = useCallback(async () => {
     let res = await axios.get('http://localhost:8080/api/project')
 
     setProjects(res.data);
@@ -24,7 +24,7 @@ function App() {
     console.log(currProj)
 
 
-  }
+  }, [])
 
   useEffect(() => {
     dataFetch();
