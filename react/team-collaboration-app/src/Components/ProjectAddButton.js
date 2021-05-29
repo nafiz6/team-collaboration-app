@@ -1,15 +1,30 @@
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import '../MyStyles.css'
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
+import { MultiSelect } from 'primereact/multiselect';
 import { InputText } from 'primereact/inputtext';
 import { createProject } from '../api/Project.js';
+import axios from 'axios';
 
-const ProjectAddButton = () => 
-{
+const ProjectAddButton = () => {
     const [displayBasic, setDisplayBasic] = useState(false);
     const [position, setPosition] = useState('center');
     const [projectName, setProjectName] = useState('');
+    const [users, setUsers] = useState([]);
+    const [allUsers, setAllUsers] = useState([]);
+
+
+    const dataFetch = useCallback(async () => {
+        let res = await axios.get('http://localhost:8080/api/users')
+
+        setAllUsers(res.data);
+
+    }, [])
+
+    useEffect(() => {
+        dataFetch();
+    }, [dataFetch])
 
     const dialogFuncMap = {
         'displayBasic': setDisplayBasic,
@@ -29,7 +44,7 @@ const ProjectAddButton = () =>
 
     const creatingProject = (name) => {
         dialogFuncMap[`${name}`](false);
-        createProject(projectName)
+        createProject(projectName, users)
 
     }
 
@@ -42,10 +57,17 @@ const ProjectAddButton = () =>
     }
 
     const CreateProjectFrom =
-            <div>
-                <h5>Project Name</h5>
-                <InputText value={projectName} onChange={(e) => setProjectName(e.target.value)} />
-            </div>
+        <div>
+            <h5>Project Name</h5>
+            <InputText value={projectName} onChange={(e) => setProjectName(e.target.value)} />
+
+            <h5>Select Users to add to Project</h5>
+            <MultiSelect optionLabel="name" value={users} options={allUsers} onChange={(e) => {
+                setUsers(e.value)
+                console.log(e.value);
+
+            }} optionLabel="Name" optionValue="id" />
+        </div>
 
 
     return (
