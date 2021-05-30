@@ -21,8 +21,7 @@ const SubtaskPage = (props) =>
            <text> Name: {props.subtask.Name}</text>
            <text> Description:  {props.subtask.Description}</text>
            <text>  Budget: {props.subtask.Budget}</text>
-           <text>  Assigned to: {assignedTo}</text>
-           <text>  Updates: {updates}</text>
+             {updates}
           <AddUpdate user={userObj} subtaskId={props.subtask.id}/>
         </div>
     )

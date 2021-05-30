@@ -26,6 +26,7 @@ function App() {
 
     setProjects(res.data);
     setCurrProj(res.data[0]);
+    setCurrWS(res.data[0].Workspaces[0]);
 
   }, [])
 
