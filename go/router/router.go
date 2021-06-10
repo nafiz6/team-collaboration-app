@@ -5,6 +5,7 @@ import (
 	"teams/middleware/chatHandler"
 	"teams/middleware/workspaceHandler"
 	"github.com/gorilla/mux"
+	"net/http"
 	
 )
 
@@ -76,5 +77,14 @@ func Router() *mux.Router {
 
 	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")	//DONE
 	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")	//DONE
+
+
+	/*
+		File server
+	*/
+	fs := http.FileServer(http.Dir("./static/"))
+	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+
+
 	return router
 }
