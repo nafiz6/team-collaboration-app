@@ -84,6 +84,7 @@ func Router() *mux.Router {
 	*/
 	fs := http.FileServer(http.Dir("./static/"))
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
+	router.HandleFunc("/api/upload-file/{workspace-id}", chatHandler.UploadFile).Methods("POST", "OPTIONS")
 
 
 	return router
