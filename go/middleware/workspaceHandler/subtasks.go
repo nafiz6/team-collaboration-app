@@ -17,17 +17,82 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+func GetSubtasks(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	// _ = json.NewDecoder(r.Body).Decode(&p)
+
+	fmt.Printf("received taskID: %+v", params["task-id"])
+
+	var subtasks []NewSubtask
+
+	TaskID, err := primitive.ObjectIDFromHex(params["task-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	cur, err := db.Subtasks.Find(context.Background(), bson.D{
+		{"_taskID", TaskID},
+	})
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewSubtask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		subtasks = append(subtasks, elem)
+	}
+
+	json.NewEncoder(w).Encode(subtasks)
+}
+
+func GetSubtaskUpdates(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	// _ = json.NewDecoder(r.Body).Decode(&p)
+
+	fmt.Printf("received subtaskID: %+v", params["subTask-id"])
+
+	var updates []NewSubtaskUpdate
+
+	subtaskID, err := primitive.ObjectIDFromHex(params["subTask-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	cur, err := db.SubtaskUpdates.Find(context.Background(), bson.D{
+		{"_subtask_id", subtaskID},
+	})
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewSubtaskUpdate
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		updates = append(updates, elem)
+	}
+
+	json.NewEncoder(w).Encode(updates)
+}
+
 func AssignUserToSubTask(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var uid struct {
-		Uid string
+		Uid  string
 		Role int
 	}
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&uid)
 	//insert newTask into db
-
 
 	fmt.Printf("received user id %+v\n", uid)
 
@@ -51,8 +116,7 @@ func AssignUserToSubTask(w http.ResponseWriter, r *http.Request) {
 
 	//find user's name and role from db from uid
 
-
-	userDetails := db.Users.FindOne(context.TODO(), bson.D{{ "_id", userID }})
+	userDetails := db.Users.FindOne(context.TODO(), bson.D{{"_id", userID}})
 	//LATER find user from this workspace
 	// userDetails := db.Projects.FindOne(context.TODO(),
 	// 		bson.D{{
@@ -64,7 +128,7 @@ func AssignUserToSubTask(w http.ResponseWriter, r *http.Request) {
 	// 	)
 
 	// var user User
-	user := bson.M{ "has_completed": 0}
+	user := bson.M{"has_completed": 0}
 	decodeErr := userDetails.Decode(&user)
 
 	if decodeErr != nil {
@@ -74,33 +138,25 @@ func AssignUserToSubTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("user deets %+v", user)
-	
-
-	
-	
-
-	
 
 	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
-			{  "workspaces.tasks.subtasks._id", objID    },
-		}, bson.D{
-			{ "$push", bson.D{{ "workspaces.$[workspace].tasks.$[task].subtasks.$[subtask].assigned_users", user }},  },
-		}, options.Update().SetArrayFilters(options.ArrayFilters{ 
-			Filters: []interface{}{
-				bson.D{{ "$and", bson.A{ bson.D{{ "subtask._id", objID }, { "subtask.assigned_users", bson.D{{
-					"$exists", true,
-				}}} } }   } }, 
-				bson.D{{ "workspace.tasks", bson.D{{
-					"$exists", true,
-				}}}},
-				bson.D{{ "task.subtasks", bson.D{{
-					"$exists", true,
-				}}}},
-			},
-		}),
+		{"workspaces.tasks.subtasks._id", objID},
+	}, bson.D{
+		{"$push", bson.D{{"workspaces.$[workspace].tasks.$[task].subtasks.$[subtask].assigned_users", user}}},
+	}, options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"$and", bson.A{bson.D{{"subtask._id", objID}, {"subtask.assigned_users", bson.D{{
+				"$exists", true,
+			}}}}}}},
+			bson.D{{"workspace.tasks", bson.D{{
+				"$exists", true,
+			}}}},
+			bson.D{{"task.subtasks", bson.D{{
+				"$exists", true,
+			}}}},
+		},
+	}),
 	)
-	
-
 
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
@@ -112,12 +168,10 @@ func AssignUserToSubTask(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(insertResult)
 
-
-
 }
 
 func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var uid struct {
 		Uid string
@@ -127,7 +181,6 @@ func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&uid)
 	//insert newTask into db
 
-
 	fmt.Printf("received user id %+v\n", uid)
 
 	userID, err := primitive.ObjectIDFromHex(uid.Uid)
@@ -150,8 +203,7 @@ func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	//find user's name and role from db from uid
 
-
-	userDetails := db.Users.FindOne(context.TODO(), bson.D{{ "_id", userID }})
+	userDetails := db.Users.FindOne(context.TODO(), bson.D{{"_id", userID}})
 	//LATER find user from this workspace
 	// userDetails := db.Projects.FindOne(context.TODO(),
 	// 		bson.D{{
@@ -163,7 +215,7 @@ func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	// 	)
 
 	// var user User
-	user := bson.M{ "has_completed": 0}
+	user := bson.M{"has_completed": 0}
 	decodeErr := userDetails.Decode(&user)
 
 	if decodeErr != nil {
@@ -173,21 +225,13 @@ func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("user deets %+v", user)
-	
-
-	
-	
-
-	
 
 	insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
-			{  "_id", objID    },
-		}, bson.D{
-			{ "$push", bson.D{{ "assigned_users", user }},  },
-		}, 
+		{"_id", objID},
+	}, bson.D{
+		{"$push", bson.D{{"assigned_users", user}}},
+	},
 	)
-	
-
 
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
@@ -199,29 +243,21 @@ func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(insertResult)
 
-
-
 }
 
-
-
 func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var completion struct {
-		Uid string
+		Uid    string
 		Status int
 	}
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&completion)
 	//insert newTask into db
 
-
 	fmt.Printf("new task %+v\n", completion)
 
-
-
-	
 	id := params["subTask-id"]
 
 	fmt.Printf("id: %+v", id)
@@ -240,18 +276,16 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("userID: %+v", userID)
 
-	
-
 	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
-			{  "workspaces.tasks.subtasks._id", objID    },
-		}, bson.D{
-			{ "$set", bson.D{{ "workspaces.$[].tasks.$[].subtasks.$[subtask].assigned_users.$[user].has_completed", completion.Status }},  },
-		}, options.Update().SetArrayFilters(options.ArrayFilters{ 
-			Filters: []interface{}{
-				bson.D{{"subtask._id", objID  }},
-				bson.D{{"user._id", userID }},
-			 },
-		}),
+		{"workspaces.tasks.subtasks._id", objID},
+	}, bson.D{
+		{"$set", bson.D{{"workspaces.$[].tasks.$[].subtasks.$[subtask].assigned_users.$[user].has_completed", completion.Status}}},
+	}, options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"subtask._id", objID}},
+			bson.D{{"user._id", userID}},
+		},
+	}),
 	)
 
 	if err != nil {
@@ -261,27 +295,22 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.NewEncoder(w).Encode(insertResult)
-
 
 }
 
 func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var completion struct {
-		Uid string
+		Uid    string
 		Status int
 	}
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&completion)
 	//insert newTask into db
 
-
 	fmt.Printf("new task %+v\n", completion)
 
-
-
-	
 	id := params["subTask-id"]
 
 	fmt.Printf("id: %+v", id)
@@ -300,17 +329,15 @@ func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("userID: %+v", userID)
 
-	
-
 	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
-			{  "_id", objID    },
-		}, bson.D{
-			{ "$set", bson.D{{ "assigned_users.$[user].has_completed", completion.Status }},  },
-		}, options.Update().SetArrayFilters(options.ArrayFilters{ 
-			Filters: []interface{}{
-				bson.D{{"user._id", userID }},
-			 },
-		}),
+		{"_id", objID},
+	}, bson.D{
+		{"$set", bson.D{{"assigned_users.$[user].has_completed", completion.Status}}},
+	}, options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"user._id", userID}},
+		},
+	}),
 	)
 
 	if err != nil {
@@ -321,31 +348,26 @@ func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(insertResult)
 
-
 }
 
-
 func CreateSubTask(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newSubTask Subtask
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newSubTask)
 	//insert newTask into db
 
-	if (newSubTask.Name == ""){
+	if newSubTask.Name == "" {
 
-		json.NewEncoder(w).Encode("Name Cannot Be Empty");
-		return;
+		json.NewEncoder(w).Encode("Name Cannot Be Empty")
+		return
 	}
-
 
 	fmt.Printf("new sub task %+v\n", newSubTask)
 
 	newSubTask.ID = primitive.NewObjectID()
 
-
-	
 	id := params["task-id"]
 
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -355,10 +377,9 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("objID: %+v\n", objID)
 
-	findResult := db.Projects.FindOne(context.TODO(), bson.D{{ "workspaces.tasks._id", objID }})
+	findResult := db.Projects.FindOne(context.TODO(), bson.D{{"workspaces.tasks._id", objID}})
 
 	// findResult := db.Projects.FindOne(context.TODO(), bson.D{{ "name", "Cyberpunk" }})
-
 
 	var elem Project
 	errr := findResult.Decode(&elem)
@@ -368,28 +389,21 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("found: %+v\n\n", elem)
 
-	
-
 	// bson.D{{  "workspaces", bson.D{{"$elemMatch", bson.D{{ "tasks", bson.D{{ "$elemMatch", bson.D{{ "_id", objID }} }} }} }}    }}
 	insertResult := db.Projects.FindOneAndUpdate(context.TODO(), bson.D{
-		{ "workspaces.tasks._id", objID },
+		{"workspaces.tasks._id", objID},
 	}, bson.D{
-		{ "$push", bson.D{
-			{ "workspaces.$[workspace].tasks.$[task].subtasks", newSubTask },
-		}  }}, 	options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{ 
-			Filters: []interface{}{
-				bson.D{{"task._id", objID  }}, 
-				bson.D{{ "workspace.tasks", bson.D{{ "$exists", true }}  }},
-			},
+		{"$push", bson.D{
+			{"workspaces.$[workspace].tasks.$[task].subtasks", newSubTask},
+		}}}, options.FindOneAndUpdate().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{
+			bson.D{{"task._id", objID}},
+			bson.D{{"workspace.tasks", bson.D{{"$exists", true}}}},
 		},
+	},
 	))
 
-
-	
 	// {"workspace.tasks", bson.D{{ "$exists", true }} }
-
-
-
 
 	doc := bson.M{}
 	decodeErr := insertResult.Decode(&doc)
@@ -400,36 +414,29 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	fmt.Printf("Inserted: %+v\n", doc)
 	json.NewEncoder(w).Encode(newSubTask.ID.Hex())
-
-
-
 
 }
 
 func CreateSubTaskNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newSubTask NewSubtask
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newSubTask)
 	//insert newTask into db
 
-	if (newSubTask.Name == ""){
+	if newSubTask.Name == "" {
 
-		json.NewEncoder(w).Encode("Name Cannot Be Empty");
-		return;
+		json.NewEncoder(w).Encode("Name Cannot Be Empty")
+		return
 	}
-
 
 	fmt.Printf("new sub task %+v\n", newSubTask)
 
 	newSubTask.ID = primitive.NewObjectID()
 
-
-	
 	id := params["task-id"]
 
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -441,10 +448,7 @@ func CreateSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	newSubTask.TaskID = objID
 
-
 	insertResult, err := db.Subtasks.InsertOne(context.TODO(), newSubTask)
-
-	
 
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
@@ -452,32 +456,27 @@ func CreateSubTaskNew(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-
 	fmt.Printf("Inserted: %+v\n", insertResult.InsertedID)
 	json.NewEncoder(w).Encode(insertResult.InsertedID)
-
-
-
 
 }
 
 func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newUpdate Update
 	_ = json.NewDecoder(r.Body).Decode(&newUpdate)
 	//insert newTask into db
 	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 
-	if (newUpdate.Text == ""){
+	if newUpdate.Text == "" {
 
-		json.NewEncoder(w).Encode("Text Cannot Be Empty");
-		return;
+		json.NewEncoder(w).Encode("Text Cannot Be Empty")
+		return
 	}
 
 	fmt.Printf("new sub task %+v\n", newUpdate)
 
-	
 	id := params["subTask-id"]
 
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -487,22 +486,21 @@ func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("objID: %+v\n", objID)
 
-
 	insertResult, insertErr := db.Projects.UpdateOne(
-		context.TODO(), 
-		bson.M{ "workspaces.tasks.subtasks._id": objID },
-	    bson.D{
-			{ "$push", bson.D{
-				{ "workspaces.$[workspace].tasks.$[task].subtasks.$[subtask].updates", newUpdate },
+		context.TODO(),
+		bson.M{"workspaces.tasks.subtasks._id": objID},
+		bson.D{
+			{"$push", bson.D{
+				{"workspaces.$[workspace].tasks.$[task].subtasks.$[subtask].updates", newUpdate},
 			}},
-		},	options.Update().SetArrayFilters(options.ArrayFilters{ 
+		}, options.Update().SetArrayFilters(options.ArrayFilters{
 			Filters: []interface{}{
-				bson.D{{"subtask._id", objID  }}, 
-				bson.D{{ "task.subtasks", bson.D{{ "$exists", true }}  }}, 
-				bson.D{{ "workspace.tasks.subtasks", bson.D{{ "$exists", true }}  }},
+				bson.D{{"subtask._id", objID}},
+				bson.D{{"task.subtasks", bson.D{{"$exists", true}}}},
+				bson.D{{"workspace.tasks.subtasks", bson.D{{"$exists", true}}}},
 			},
 		},
-	))
+		))
 
 	// {"workspace.tasks", bson.D{{ "$exists", true }} }
 
@@ -518,22 +516,21 @@ func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
 }
 
 func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newUpdate NewSubtaskUpdate
 	_ = json.NewDecoder(r.Body).Decode(&newUpdate)
 	//insert newTask into db
 	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 
-	if (newUpdate.Text == ""){
+	if newUpdate.Text == "" {
 
-		json.NewEncoder(w).Encode("Text Cannot Be Empty");
-		return;
+		json.NewEncoder(w).Encode("Text Cannot Be Empty")
+		return
 	}
 
 	fmt.Printf("new sub task %+v\n", newUpdate)
 
-	
 	id := params["subTask-id"]
 
 	objID, err := primitive.ObjectIDFromHex(id)
@@ -543,7 +540,6 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 	newUpdate.SubtaskID = objID
 
 	fmt.Printf("objID: %+v\n", objID)
-
 
 	insertResult, insertErr := db.SubtaskUpdates.InsertOne(
 		context.TODO(), newUpdate)

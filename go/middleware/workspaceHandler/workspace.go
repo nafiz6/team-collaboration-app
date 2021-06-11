@@ -15,170 +15,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-
-
-func AssignUserToWorkspace(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
-	params := mux.Vars(r)
-	var uid struct {
-		Uid string
-		Role int
-	}
-	// fmt.Printf("body %+v\n", r.Body)
-	_ = json.NewDecoder(r.Body).Decode(&uid)
-	//insert newTask into db
-
-
-	fmt.Printf("received user id %+v\n", uid)
-
-	userID, err := primitive.ObjectIDFromHex(uid.Uid)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("userID: %+v", userID)
-
-	//find user's name and role from db from uid
-
-
-	userDetails := db.Users.FindOne(context.TODO(), bson.D{{ "_id", userID }})
-
-	// var user User
-	user := bson.M{ "role": uid.Role}
-	decodeErr := userDetails.Decode(&user)
-
-	if decodeErr != nil {
-		fmt.Printf("Error: %s", decodeErr.Error())
-		json.NewEncoder(w).Encode(decodeErr.Error())
-		return
-	}
-
-	fmt.Printf("user deets %+v", user)
-	
-
-	
-	id := params["workspace-id"]
-
-	fmt.Printf("id: %+v", id)
-
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("objID: %+v", objID)
-
-	
-
-	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
-			{  "workspaces._id", objID    },
-		}, bson.D{
-			{ "$push", bson.D{{ "workspaces.$[workspace].users", user }},  },
-		}, options.Update().SetArrayFilters(options.ArrayFilters{ 
-			Filters: []interface{}{bson.D{{"workspace._id", objID  } }},
-		}),
-	)
-	
-
-
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-		json.NewEncoder(w).Encode(err.Error())
-		return
-	}
-
-	// fmt.Printf("Inserted: %+v\n", doc)
-
-	json.NewEncoder(w).Encode(insertResult)
-
-
-
-}
-
-func AssignUserToWorkspaceNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
-	params := mux.Vars(r)
-	var uid struct {
-		Uid string
-		Role int
-	}
-	// fmt.Printf("body %+v\n", r.Body)
-	_ = json.NewDecoder(r.Body).Decode(&uid)
-	//insert newTask into db
-
-
-	fmt.Printf("received user id %+v\n", uid)
-
-	userID, err := primitive.ObjectIDFromHex(uid.Uid)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("userID: %+v", userID)
-
-	//find user's name and role from db from uid
-
-
-	userDetails := db.Users.FindOne(context.TODO(), bson.D{{ "_id", userID }})
-
-	// var user User
-	user := bson.M{ "role": uid.Role}
-	decodeErr := userDetails.Decode(&user)
-
-	if decodeErr != nil {
-		fmt.Printf("Error: %s", decodeErr.Error())
-		json.NewEncoder(w).Encode(decodeErr.Error())
-		return
-	}
-
-	fmt.Printf("user deets %+v", user)
-	
-
-	
-	id := params["workspace-id"]
-
-	fmt.Printf("id: %+v", id)
-
-	objID, err := primitive.ObjectIDFromHex(id)
-	if err != nil {
-		panic(err)
-	}
-
-	fmt.Printf("objID: %+v", objID)
-
-	
-
-	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
-			{  "_id", objID    },
-		}, bson.D{
-			{ "$push", bson.D{{ "users", user }},  },
-		}, 
-	)
-	
-
-
-	if err != nil {
-		fmt.Printf("Error: %s", err.Error())
-		json.NewEncoder(w).Encode(err.Error())
-		return
-	}
-
-	// fmt.Printf("Inserted: %+v\n", doc)
-
-	json.NewEncoder(w).Encode(insertResult)
-
-
-
-}
-
-func GetAllWorkspaces(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
-	params := mux.Vars(r)
-	json.NewEncoder(w).Encode(params["project-id"])
-}
-
 func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	// _ = json.NewDecoder(r.Body).Decode(&p)
 
@@ -191,13 +29,12 @@ func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-
 	cur, err := db.Workspaces.Find(context.Background(), bson.D{
-		{ "_project_id", projectID},
+		{"_project_id", projectID},
 	})
 
 	for cur.Next(context.Background()) {
-		
+
 		// create a value into which the single document can be decoded
 		var elem NewWorkspace
 		err := cur.Decode(&elem)
@@ -207,27 +44,198 @@ func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
 
 		workspaces = append(workspaces, elem)
 	}
-	
-	json.NewEncoder(w).Encode(workspaces)}
 
+	json.NewEncoder(w).Encode(workspaces)
+}
 
+func GetWorkspaceUsers(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	// _ = json.NewDecoder(r.Body).Decode(&p)
+
+	fmt.Printf("received projectID: %+v", params["workspace-id"])
+
+	// var users []struct {
+	// 	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	// 	Role int                //role is diff in each workspace
+	// 	Name string             //name isnt changed much and is retrieved often here
+	// }
+
+	var workspace NewWorkspace
+
+	workspaceID, err := primitive.ObjectIDFromHex(params["workspace-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	workspaceDetails := db.Workspaces.FindOne(context.Background(), bson.D{
+		{"_id", workspaceID},
+	})
+
+	decodeErr := workspaceDetails.Decode(&workspace)
+
+	if decodeErr != nil {
+		fmt.Printf("Error: %s", decodeErr.Error())
+		json.NewEncoder(w).Encode(decodeErr.Error())
+		return
+	}
+
+	json.NewEncoder(w).Encode(workspace.Users)
+}
+
+func AssignUserToWorkspace(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	var uid struct {
+		Uid  string
+		Role int
+	}
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&uid)
+	//insert newTask into db
+
+	fmt.Printf("received user id %+v\n", uid)
+
+	userID, err := primitive.ObjectIDFromHex(uid.Uid)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("userID: %+v", userID)
+
+	//find user's name and role from db from uid
+
+	userDetails := db.Users.FindOne(context.TODO(), bson.D{{"_id", userID}})
+
+	// var user User
+	user := bson.M{"role": uid.Role}
+	decodeErr := userDetails.Decode(&user)
+
+	if decodeErr != nil {
+		fmt.Printf("Error: %s", decodeErr.Error())
+		json.NewEncoder(w).Encode(decodeErr.Error())
+		return
+	}
+
+	fmt.Printf("user deets %+v", user)
+
+	id := params["workspace-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", objID)
+
+	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
+		{"workspaces._id", objID},
+	}, bson.D{
+		{"$push", bson.D{{"workspaces.$[workspace].users", user}}},
+	}, options.Update().SetArrayFilters(options.ArrayFilters{
+		Filters: []interface{}{bson.D{{"workspace._id", objID}}},
+	}),
+	)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// fmt.Printf("Inserted: %+v\n", doc)
+
+	json.NewEncoder(w).Encode(insertResult)
+
+}
+
+func AssignUserToWorkspaceNew(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	var uid struct {
+		Uid  string
+		Role int
+	}
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&uid)
+	//insert newTask into db
+
+	fmt.Printf("received user id %+v\n", uid)
+
+	userID, err := primitive.ObjectIDFromHex(uid.Uid)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("userID: %+v", userID)
+
+	//find user's name and role from db from uid
+
+	userDetails := db.Users.FindOne(context.TODO(), bson.D{{"_id", userID}})
+
+	// var user User
+	user := bson.M{"role": uid.Role}
+	decodeErr := userDetails.Decode(&user)
+
+	if decodeErr != nil {
+		fmt.Printf("Error: %s", decodeErr.Error())
+		json.NewEncoder(w).Encode(decodeErr.Error())
+		return
+	}
+
+	fmt.Printf("user deets %+v", user)
+
+	id := params["workspace-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", objID)
+
+	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
+		{"_id", objID},
+	}, bson.D{
+		{"$push", bson.D{{"users", user}}},
+	},
+	)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// fmt.Printf("Inserted: %+v\n", doc)
+
+	json.NewEncoder(w).Encode(insertResult)
+
+}
+
+func GetAllWorkspaces(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	json.NewEncoder(w).Encode(params["project-id"])
+}
 
 func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newWorkspace Workspace
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newWorkspace)
 	//insert newTask into db
 
-
 	fmt.Printf("new workspace %+v\n", newWorkspace)
 
 	newWorkspace.ID = primitive.NewObjectID()
 	// newTask.Subtasks = []Subtask
 
-
-	
 	id := params["project-id"]
 
 	fmt.Printf("id: %+v", id)
@@ -239,14 +247,12 @@ func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("objID: %+v", objID)
 
-	
-
 	insertResult, insertErr := db.Projects.UpdateOne(
-		context.TODO(), 
-		bson.M{ "_id": objID },
-	    bson.D{
-			{ "$push", bson.D{
-				{ "workspaces", newWorkspace },
+		context.TODO(),
+		bson.M{"_id": objID},
+		bson.D{
+			{"$push", bson.D{
+				{"workspaces", newWorkspace},
 			}},
 		},
 	)
@@ -260,28 +266,22 @@ func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Inserted: %+v\n", insertResult)
 	json.NewEncoder(w).Encode(newWorkspace.ID)
 
-
-
-
 }
 
 func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newWorkspace NewWorkspace
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newWorkspace)
 	//insert newTask into db
 
-
 	fmt.Printf("new workspace %+v\n", newWorkspace)
 
 	newWorkspace.ID = primitive.NewObjectID()
 	// newTask.Subtasks = []Subtask
 
-
-	
 	id := params["project-id"]
 
 	fmt.Printf("id: %+v", id)
@@ -294,13 +294,10 @@ func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("objID: %+v", objID)
 	newWorkspace.Project_ID = objID
 
-	
-
 	insertResult, insertErr := db.Projects.InsertOne(
-		context.TODO(), 
+		context.TODO(),
 		newWorkspace,
 	)
-
 
 	if insertErr != nil {
 		fmt.Printf("Error: %s", insertErr.Error())
@@ -310,8 +307,5 @@ func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Inserted: %+v\n", insertResult)
 	json.NewEncoder(w).Encode(newWorkspace.ID)
-
-
-
 
 }
