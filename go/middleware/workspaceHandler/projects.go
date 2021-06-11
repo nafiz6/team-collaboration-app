@@ -9,6 +9,7 @@ import (
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -44,9 +45,36 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Found a single document: %+v\n", projects)
 	json.NewEncoder(w).Encode(projects)
-	
+}
 
+func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w);
 
+	var projects []NewProject
+
+	cur, err := db.Projects.Find(context.Background(), bson.D{{}})
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Finding multiple documents returns a cursor
+// Iterating through the cursor allows us to decode documents one at a time
+	for cur.Next(context.Background()) {
+		
+		// create a value into which the single document can be decoded
+		var elem NewProject
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		projects = append(projects, elem)
+	}
+	// Close the cursor once finished
+	cur.Close(context.Background())
+
+	fmt.Printf("Found projects: %+v\n", projects)
+	json.NewEncoder(w).Encode(projects)
 }
 
 func CreateProject(w http.ResponseWriter, r *http.Request) {
@@ -84,6 +112,68 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 
 
 
+
+}
+
+func CreateProjectNew(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w);
+	var newProject NewProject
+	_ = json.NewDecoder(r.Body).Decode(&newProject)
+
+
+
+	//CREATE NEW WORKSPACE GENERAL AND LINK TO THIS PROJECT
+
+
+	// newProject.Workspaces = append(newProject.Workspaces, Workspace{
+	// 	Name: "General",
+	// 	ID: primitive.NewObjectID(),
+	// 	Users: []User{},
+	// 	Tasks: []Task{},
+	// })
+	fmt.Printf("%+v", newProject)
+
+
+	newProject.ID = primitive.NewObjectID()
+	newProject.Date_created = primitive.NewDateTimeFromTime(time.Now())
+
+	insertProjectResult, err := db.Projects.InsertOne(context.TODO(), newProject)
+
+
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	var generalWorkspace NewWorkspace 
+
+	generalWorkspace.ID = primitive.NewObjectID()
+	generalWorkspace.Project_ID = newProject.ID
+	generalWorkspace.Name = "General"
+	generalWorkspace.Date_created =  primitive.NewDateTimeFromTime(time.Now())
+	generalWorkspace.Description = "General workspace forms global scope for project"
+	generalWorkspace.Users = []struct{
+		ID primitive.ObjectID	`json:"id" bson:"_id,omitempty"`
+		Role int	
+		Name string 
+	}{}
+	//add this user to general workspace
+
+	insertWorkspaceResult, err := db.Workspaces.InsertOne(context.TODO(), generalWorkspace)
+
+
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	fmt.Printf("Inserted: %+v\n", insertWorkspaceResult.InsertedID)
+
+	json.NewEncoder(w).Encode(insertProjectResult.InsertedID)
 
 }
 
@@ -165,6 +255,84 @@ func AssignUserToProject(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func AssignUserToProjectNew(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w);
+	params := mux.Vars(r)
+	var uid struct {
+		Uid string
+		Role int
+	}
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&uid)
+	//insert newTask into db
+
+
+	fmt.Printf("received user id %+v\n", uid)
+
+	userID, err := primitive.ObjectIDFromHex(uid.Uid)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("userID: %+v", userID)
+
+	//find user's name and role from db from uid
+
+
+	userDetails := db.Users.FindOne(context.TODO(), bson.D{{ "_id", userID }})
+
+	// var user User
+	user := bson.M{ "role": uid.Role}
+	decodeErr := userDetails.Decode(&user)
+
+	if decodeErr != nil {
+		fmt.Printf("Error: %s", decodeErr.Error())
+		json.NewEncoder(w).Encode(decodeErr.Error())
+		return
+	}
+
+	fmt.Printf("user deets %+v", user)
+	
+
+	
+	id := params["project-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", objID)
+
+	
+
+	//find workspaces with name "general" and projectID = id
+	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
+			{  "_project_id", id    },
+			{ "name", "General" },
+		}, bson.D{
+			{ "$push", bson.D{{ "users", user }},  },
+		}, 
+	)
+	
+
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// fmt.Printf("Inserted: %+v\n", doc)
+
+	json.NewEncoder(w).Encode(insertResult)
+
+
+
+}
+
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
 
@@ -196,6 +364,8 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode((users))
 
 }
+
+
 
 func GetOneUser(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w);
