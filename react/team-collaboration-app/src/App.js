@@ -15,6 +15,7 @@ export const taskContext = React.createContext();
 
 function App() {
 
+  /*
   const [projects, setProjects] = useState([]);
   const [currProj, setCurrProj] = useState(null);
   const [currWS, setCurrWS] = useState(null);
@@ -33,10 +34,13 @@ function App() {
   useEffect(() => {
     dataFetch();
   }, [dataFetch])
+  */
 
 
   return (
+    <div></div>
 
+    /*
     <div className='page-Style'>
       <HeaderContainer />
       <div className='bottom-Style'>
@@ -64,6 +68,7 @@ function App() {
         </div>
       </div>
     </div>
+    */
 
   );
 }

@@ -9,6 +9,9 @@ import (
 	"path/filepath"
 	"strings"
 
+	"teams/middleware/accountsHandler"
+	. "teams/models"
+
 	"github.com/gorilla/websocket"
 )
 
@@ -19,28 +22,12 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin: func(r *http.Request) bool { return true },
 }
 
-func reader(conn *websocket.Conn) {
-	for {
-		// read in a message
-		messageType, p, err := conn.ReadMessage()
-		if err != nil {
-			log.Println(err)
-			return
-		}
-		// print out that message for clarity
-		fmt.Println(string(p))
-
-		if err := conn.WriteMessage(messageType, p); err != nil {
-			log.Println(err)
-			return
-		}
-
-	}
-}
-
 // define our WebSocket endpoint
 func ServeWs(w http.ResponseWriter, r *http.Request) {
+	fmt.Printf("CHAT CLIENT REQ")
 	fmt.Println(r.Host)
+	UID := accountsHandler.GetUserId(r)
+	fmt.Println("UID: " + UID)
 
 	// upgrade this connection to a WebSocket
 	// connection
@@ -50,7 +37,13 @@ func ServeWs(w http.ResponseWriter, r *http.Request) {
 	}
 	// listen indefinitely for new messages coming
 	// through on our WebSocket connection
-	reader(ws)
+	client := &Client{
+		ID:    UID,
+		Conn:  ws,
+		Pools: make(map[string]*Pool),
+	}
+
+	client.Read()
 }
 
 func getFileType(filename string) string {
