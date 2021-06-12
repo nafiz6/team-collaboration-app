@@ -20,15 +20,16 @@ func Router() *mux.Router {
 	/*
 	  TASKS
 	*/
-
+	//GETS
 	router.HandleFunc("/api/task-users/{task-id}", workspaceHandler.GetTaskUsers).Methods("GET", "OPTIONS")
 	// fetches all tasks and their subtasks  || no need
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.GetWorkspaceTasks).Methods("GET", "OPTIONS")
 
 	router.HandleFunc("/api/subtask/{task-id}", workspaceHandler.GetSubtasks).Methods("GET", "OPTIONS")
 
-	router.HandleFunc("/api/updates/{subtask-id}", workspaceHandler.GetSubtasks).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/updates/{subtask-id}", workspaceHandler.GetSubtaskUpdates).Methods("GET", "OPTIONS")
 
+	//POSTS
 	// create task
 	router.HandleFunc("/api/task/{workspace-id}", workspaceHandler.CreateTaskNew).Methods("POST", "OPTIONS") //DONE
 
@@ -50,40 +51,45 @@ func Router() *mux.Router {
 	// add updates
 	router.HandleFunc("/api/subtask-updates/{subTask-id}", workspaceHandler.SubtaskUpdatesNew).Methods("POST", "OPTIONS") // FIZZ
 
-	// delete tasks
-	router.HandleFunc("/api/delete-task/{task-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	// delete task
+	router.HandleFunc("/api/delete-task/{task-id}", workspaceHandler.DeleteTask).Methods("POST", "OPTIONS")
 
-	// delete subtasks
-	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.CreateTask).Methods("POST", "OPTIONS")
+	// delete subtask
+	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.DeteleSubtask).Methods("POST", "OPTIONS")
 
 	/*
 		WORKSPACE
 	*/
 	// fetches all workspace under this project and their tasks  || no need
+	//GETS
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.GetProjectWorkspaces).Methods("GET", "OPTIONS")
-
 
 	router.HandleFunc("/api/workspace-users/{workspace-id}", workspaceHandler.GetWorkspaceUsers).Methods("GET", "OPTIONS")
 
-	
-
+	//POSTS
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspaceNew).Methods("POST", "OPTIONS") // FIZZ -- DONE
 
 	// assign user to workspace
 	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspaceNew).Methods("POST", "OPTIONS") //DONE
 
 	// delete workspace
-	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.CreateTaskNew).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.DeleteWorkspace).Methods("POST", "OPTIONS")
 
 	/*
 		PROJECT
 	*/
+
+	//GETS
 	router.HandleFunc("/api/project", workspaceHandler.GetAllProjectsNew).Methods("GET", "OPTIONS") //DONE
+
+	//POSTS
 	router.HandleFunc("/api/project", workspaceHandler.CreateProjectNew).Methods("POST", "OPTIONS") // FIZZ - DONE
 
 	// assign user to projects
 	//this adds users to "General" workspace of specified project, since project doesnt have users[]
-	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.AssignUserToProject).Methods("POST", "OPTIONS") //DONE
+	router.HandleFunc("/api/assign-projects/{project-id}", workspaceHandler.AssignUserToProjectNew).Methods("POST", "OPTIONS") //DONE
+
+	router.HandleFunc("/api/delete-project/{project-id}", workspaceHandler.DeleteProject).Methods("POST", "OPTIONS") //DONE
 
 	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")   //DONE
 	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS") //DONE
