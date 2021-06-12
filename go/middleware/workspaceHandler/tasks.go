@@ -12,6 +12,7 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	// "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -87,13 +88,13 @@ func GetTaskUsers(w http.ResponseWriter, r *http.Request) {
 	// 			{"user_ID", "$assigned_users._id"},
 	// 			{"name", "$assigned_users.name"},
 	// 			{"assigned_users", 0},
-				
+
 	// 		},
 	// 		},
 	// 	},
 	// })
-	task := db.Tasks.FindOne(context.Background(),  bson.D{
-		{ "_id", taskID },
+	task := db.Tasks.FindOne(context.Background(), bson.D{
+		{"_id", taskID},
 	})
 
 	var decodedTask NewTask
@@ -348,7 +349,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w);
+	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var uid struct {
 		Uid string
@@ -357,7 +358,6 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&uid)
 	//insert newTask into db
-
 
 	fmt.Printf("received user id %+v\n", uid)
 
@@ -381,8 +381,7 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 
 	//find user's name and role from db from uid
 
-
-	userDetails := db.Users.FindOne(context.TODO(), bson.D{{ "_id", userID }})
+	userDetails := db.Users.FindOne(context.TODO(), bson.D{{"_id", userID}})
 	//LATER find user from this workspace
 	// userDetails := db.Projects.FindOne(context.TODO(),
 	// 		bson.D{{
@@ -404,21 +403,13 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("user deets %+v", user)
-	
-
-	
-	
-
-	
 
 	insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
-			{  "_id", objID    },
-		}, bson.D{
-			{ "$push", bson.D{{ "assigned_users", user }},  },
-		}, 
+		{"_id", objID},
+	}, bson.D{
+		{"$push", bson.D{{"assigned_users", user}}},
+	},
 	)
-	
-
 
 	if err != nil {
 		fmt.Printf("Error: %s", err.Error())
@@ -429,8 +420,6 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 	// fmt.Printf("Inserted: %+v\n", doc)
 
 	json.NewEncoder(w).Encode(insertResult)
-
-
 
 }
 
@@ -473,5 +462,75 @@ func CreateTaskNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("Inserted: %+v\n", insertResult.InsertedID)
 
 	json.NewEncoder(w).Encode(insertResult.InsertedID)
+
+}
+
+func DeleteTask(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+
+	id := params["task-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	taskID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	//find subtasks
+	cur, err := db.Subtasks.Find(context.Background(), bson.D{
+		{"_id", taskID},
+	})
+
+	var subtaskIDs []primitive.ObjectID
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewSubtask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		subtaskIDs = append(subtaskIDs, elem.ID)
+	}
+
+	//delete sabtaskUpdates
+	deleteResult, err := db.SubtaskUpdates.DeleteMany(context.TODO(), bson.D{
+		{"_subtask_id", bson.D{
+			{"$in", subtaskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	//delete subtasks
+	deleteResult, err = db.Subtasks.DeleteMany(context.TODO(), bson.D{
+		{"_id", bson.D{
+			{"$in", subtaskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	//delete task
+	deleteResult, err = db.Tasks.DeleteOne(context.TODO(), bson.D{
+		{"_id", taskID},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	json.NewEncoder(w).Encode(deleteResult)
 
 }

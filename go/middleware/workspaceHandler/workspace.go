@@ -309,3 +309,103 @@ func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newWorkspace.ID)
 
 }
+
+func DeleteWorkspace(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+
+	id := params["workspace-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	workspaceID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	//find tasks
+	cur, err := db.Tasks.Find(context.Background(), bson.D{
+		{"_workspace_id", workspaceID},
+	})
+
+	var taskIDs []primitive.ObjectID
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewTask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		taskIDs = append(taskIDs, elem.ID)
+	}
+
+	//find subtasks
+	cur, err = db.Subtasks.Find(context.Background(), bson.D{
+		{"_task_id", bson.D{
+			{"$in", taskIDs},
+		}},
+	})
+
+	var subtaskIDs []primitive.ObjectID
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewSubtask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		subtaskIDs = append(subtaskIDs, elem.ID)
+	}
+
+	//delete sabtaskUpdates
+	deleteResult, err := db.SubtaskUpdates.DeleteMany(context.TODO(), bson.D{
+		{"_subtask_id", bson.D{
+			{"$in", subtaskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	//delete subtasks
+	deleteResult, err = db.Subtasks.DeleteMany(context.TODO(), bson.D{
+		{"_id", bson.D{
+			{"$in", subtaskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	//delete tasks
+	deleteResult, err = db.Tasks.DeleteMany(context.TODO(), bson.D{
+		{"_id", bson.D{
+			{"$in", taskIDs},
+		}},
+	})
+
+	//delete workspace
+	deleteResult, err = db.Workspaces.DeleteOne(context.TODO(), bson.D{
+		{"_id", workspaceID},
+	})
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+
+	}
+
+	json.NewEncoder(w).Encode(deleteResult)
+
+}

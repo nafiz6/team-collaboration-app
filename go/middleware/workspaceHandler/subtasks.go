@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -554,5 +555,90 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Inserted: %+v\n", insertResult)
 	json.NewEncoder(w).Encode(insertResult)
+
+}
+
+func DeleteSubtaskHelper(subtaskID primitive.ObjectID)(*mongo.DeleteResult, error) {
+
+
+	deleteResult, err := db.Subtasks.DeleteOne(context.TODO(), bson.D{
+		{"_id", subtaskID},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		// json.NewEncoder(w).Encode(err.Error())
+		return deleteResult, err
+	}
+
+	deleteResult, err = db.SubtaskUpdates.DeleteMany(context.TODO(), bson.D{
+		{"_subtask_id", subtaskID},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		// json.NewEncoder(w).Encode(err.Error())
+		return deleteResult, err
+	}
+	return deleteResult, err
+
+
+	
+
+	
+
+}
+
+func DeteleSubtask(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	// fmt.Printf("body %+v\n", r.Body)
+	// _ = json.NewDecoder(r.Body).Decode(&completion)
+	//insert newTask into db
+
+	// fmt.Printf("new task %+v\n", completion)
+
+	id := params["subTask-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	deleteResult, err := DeleteSubtaskHelper(objID)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+	json.NewEncoder(w).Encode(deleteResult)
+
+
+
+
+	// deleteResult, err := db.Subtasks.DeleteOne(context.TODO(), bson.D{
+	// 	{"_id", objID},
+	// })
+	// if err != nil {
+	// 	fmt.Printf("Error: %s", err.Error())
+	// 	json.NewEncoder(w).Encode(err.Error())
+	// 	return
+	// }
+
+	// deleteResult, err = db.SubtaskUpdates.DeleteMany(context.TODO(), bson.D{
+	// 	{"_subtask_id", objID},
+	// })
+	// if err != nil {
+	// 	fmt.Printf("Error: %s", err.Error())
+	// 	json.NewEncoder(w).Encode(err.Error())
+	// 	return
+	// }
+
+
+
+
+
+
+	// json.NewEncoder(w).Encode(deleteResult)
 
 }
