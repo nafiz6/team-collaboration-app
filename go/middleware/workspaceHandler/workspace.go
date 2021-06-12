@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"sort"
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
@@ -80,7 +81,19 @@ func GetWorkspaceUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	json.NewEncoder(w).Encode(workspace.Users)
+	var users = []struct {
+		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		Role int                //role is diff in each workspace
+		Name string             //name isnt changed much and is retrieved often here
+	}{}
+
+	users = workspace.Users
+
+	sort.SliceStable(users, func(i, j int) bool {
+		return users[i].Role < users[j].Role
+	})
+
+	json.NewEncoder(w).Encode(users)
 }
 
 func AssignUserToWorkspace(w http.ResponseWriter, r *http.Request) {
@@ -137,6 +150,59 @@ func AssignUserToWorkspace(w http.ResponseWriter, r *http.Request) {
 	}, options.Update().SetArrayFilters(options.ArrayFilters{
 		Filters: []interface{}{bson.D{{"workspace._id", objID}}},
 	}),
+	)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// fmt.Printf("Inserted: %+v\n", doc)
+
+	json.NewEncoder(w).Encode(insertResult)
+
+}
+
+func SetWorkspaceUserRole(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	var uid struct {
+		Uid  string
+		Role int
+	}
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&uid)
+	//insert newTask into db
+
+	fmt.Printf("received user id %+v\n", uid)
+
+	userID, err := primitive.ObjectIDFromHex(uid.Uid)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("userID: %+v", userID)
+
+	id := params["workspace-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	objID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", objID)
+
+	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
+		{"_id", objID},
+	}, bson.D{
+		{"$set", bson.D{{"users.$[user].role", uid.Role}}},
+	},
+		options.Update().SetArrayFilters(options.ArrayFilters{
+			Filters: []interface{}{bson.D{{"user._id", userID}}},
+		}),
 	)
 
 	if err != nil {
@@ -328,7 +394,7 @@ func DeleteWorkspace(w http.ResponseWriter, r *http.Request) {
 		{"_workspace_id", workspaceID},
 	})
 
-	var taskIDs []primitive.ObjectID
+	var taskIDs = []primitive.ObjectID{}
 
 	for cur.Next(context.Background()) {
 
@@ -349,7 +415,7 @@ func DeleteWorkspace(w http.ResponseWriter, r *http.Request) {
 		}},
 	})
 
-	var subtaskIDs []primitive.ObjectID
+	var subtaskIDs = []primitive.ObjectID{}
 
 	for cur.Next(context.Background()) {
 

@@ -371,117 +371,116 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	if cur != nil {
-		var workspaceIDs []primitive.ObjectID
+	var workspaceIDs = []primitive.ObjectID{}
 
-		for cur.Next(context.Background()) {
+	for cur.Next(context.Background()) {
 
-			// create a value into which the single document can be decoded
-			var elem NewWorkspace
-			err := cur.Decode(&elem)
-			if err != nil {
-				panic(err)
-			}
-
-			workspaceIDs = append(workspaceIDs, elem.ID)
-		}
-		fmt.Printf("workspace IDS %+v", workspaceIDs)
-
-		//find tasks
-		cur, err = db.Tasks.Find(context.Background(), bson.D{
-			{"_workspace_id", bson.D{
-				{"$in", workspaceIDs},
-			}},
-		})
+		// create a value into which the single document can be decoded
+		var elem NewWorkspace
+		err := cur.Decode(&elem)
 		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-			json.NewEncoder(w).Encode(err.Error())
-
+			panic(err)
 		}
 
-		var taskIDs []primitive.ObjectID
+		workspaceIDs = append(workspaceIDs, elem.ID)
+	}
+	fmt.Printf("workspace IDS %+v", workspaceIDs)
 
-		for cur.Next(context.Background()) {
-
-			// create a value into which the single document can be decoded
-			var elem NewTask
-			err := cur.Decode(&elem)
-			if err != nil {
-				panic(err)
-			}
-
-			taskIDs = append(taskIDs, elem.ID)
-		}
-
-		//find subtasks
-		cur, err = db.Subtasks.Find(context.Background(), bson.D{
-			{"_task_id", bson.D{
-				{"$in", taskIDs},
-			}},
-		})
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-			json.NewEncoder(w).Encode(err.Error())
-
-		}
-
-		var subtaskIDs []primitive.ObjectID
-
-		for cur.Next(context.Background()) {
-
-			// create a value into which the single document can be decoded
-			var elem NewSubtask
-			err := cur.Decode(&elem)
-			if err != nil {
-				panic(err)
-			}
-
-			subtaskIDs = append(subtaskIDs, elem.ID)
-		}
-
-		//delete sabtaskUpdates
-		deleteResult, err := db.SubtaskUpdates.DeleteMany(context.TODO(), bson.D{
-			{"_subtask_id", bson.D{
-				{"$in", subtaskIDs},
-			}},
-		})
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-			json.NewEncoder(w).Encode(err.Error())
-
-		}
-
-		//delete subtasks
-		deleteResult, err = db.Subtasks.DeleteMany(context.TODO(), bson.D{
-			{"_id", bson.D{
-				{"$in", subtaskIDs},
-			}},
-		})
-		if err != nil {
-			fmt.Printf("Error: %s", err.Error())
-			json.NewEncoder(w).Encode(err.Error())
-
-		}
-
-		//delete tasks
-		deleteResult, err = db.Tasks.DeleteMany(context.TODO(), bson.D{
-			{"_id", bson.D{
-				{"$in", taskIDs},
-			}},
-		})
-
-		//delete workspaces
-		deleteResult, err = db.Workspaces.DeleteMany(context.TODO(), bson.D{
-			{"_id", bson.D{
-				{"$in", workspaceIDs},
-			}},
-		})
-		json.NewEncoder(w).Encode(deleteResult)
+	//find tasks
+	cur, err = db.Tasks.Find(context.Background(), bson.D{
+		{"_workspace_id", bson.D{
+			{"$in", workspaceIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
 
 	}
 
+	print("WORKSSS")
+
+	var taskIDs  = []primitive.ObjectID{}
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewTask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		taskIDs = append(taskIDs, elem.ID)
+	}
+
+	//find subtasks
+	cur, err = db.Subtasks.Find(context.Background(), bson.D{
+		{"_task_id", bson.D{
+			{"$in", taskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	var subtaskIDs  = []primitive.ObjectID{}
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewSubtask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		subtaskIDs = append(subtaskIDs, elem.ID)
+	}
+
+	//delete sabtaskUpdates
+	deleteResult, err := db.SubtaskUpdates.DeleteMany(context.TODO(), bson.D{
+		{"_subtask_id", bson.D{
+			{"$in", subtaskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	//delete subtasks
+	deleteResult, err = db.Subtasks.DeleteMany(context.TODO(), bson.D{
+		{"_id", bson.D{
+			{"$in", subtaskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	//delete tasks
+	deleteResult, err = db.Tasks.DeleteMany(context.TODO(), bson.D{
+		{"_id", bson.D{
+			{"$in", taskIDs},
+		}},
+	})
+
+	//delete workspaces
+	deleteResult, err = db.Workspaces.DeleteMany(context.TODO(), bson.D{
+		{"_id", bson.D{
+			{"$in", workspaceIDs},
+		}},
+	})
+	json.NewEncoder(w).Encode(deleteResult)
+
 	//delete project
-	deleteResult, err := db.Projects.DeleteOne(context.TODO(), bson.D{
+	deleteResult, err = db.Projects.DeleteOne(context.TODO(), bson.D{
 		{"_id", projectID},
 	})
 

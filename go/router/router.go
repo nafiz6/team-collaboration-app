@@ -64,6 +64,8 @@ func Router() *mux.Router {
 	//GETS
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.GetProjectWorkspaces).Methods("GET", "OPTIONS")
 
+
+	//return workspace users sorted by role
 	router.HandleFunc("/api/workspace-users/{workspace-id}", workspaceHandler.GetWorkspaceUsers).Methods("GET", "OPTIONS")
 
 	//POSTS
@@ -71,6 +73,8 @@ func Router() *mux.Router {
 
 	// assign user to workspace
 	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspaceNew).Methods("POST", "OPTIONS") //DONE
+
+	router.HandleFunc("/api/set-workspace-user-role/{workspace-id}", workspaceHandler.SetWorkspaceUserRole).Methods("POST", "OPTIONS") //DONE
 
 	// delete workspace
 	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.DeleteWorkspace).Methods("POST", "OPTIONS")

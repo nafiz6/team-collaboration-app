@@ -483,7 +483,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		{"_id", taskID},
 	})
 
-	var subtaskIDs []primitive.ObjectID
+	var subtaskIDs = []primitive.ObjectID{}
 
 	for cur.Next(context.Background()) {
 
