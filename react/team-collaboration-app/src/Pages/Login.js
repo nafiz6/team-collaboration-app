@@ -9,7 +9,7 @@ const Login = () => {
             <input type = "text"/>
             <div>Password</div>
             <input type = "password" />
-            <Link to = "/home">
+            <Link to = "/tasks">
             <button>Login</button>
             </Link>
             <Link to = "/signup">
