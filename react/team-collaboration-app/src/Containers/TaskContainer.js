@@ -2,12 +2,12 @@ import React, { useContext, useState } from 'react'
 import Deadline from '../Components/Deadline'
 import SubtaskButton from '../Components/SubtaskButton'
 import '../MyStyles.css'
-import { stateContext, taskContext } from "../App"
+//import { stateContext, taskContext } from "../App"
 
 
 const TaskContainer = (props) => {
-    const [state, setState] = useContext(stateContext);
-    const [task,setTask] = useContext(taskContext)
+   // const [state, setState] = useContext(stateContext);
+  //  const [task,setTask] = useContext(taskContext)
 
     if (props.task) {
         const subtasks = props.task.Subtasks.map(
@@ -19,8 +19,8 @@ const TaskContainer = (props) => {
                 onClick=
                 {
                     () => {
-                        setState(1);
-                        setTask(props.task);
+                     //   setState(1);
+                     //   setTask(props.task);
                     }
                 }
             >

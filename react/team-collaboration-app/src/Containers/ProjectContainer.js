@@ -6,6 +6,7 @@ import '../MyStyles.css'
 
 const ProjectContainer = (props) => 
 {
+    if(props.projects){
     const projButtons = props.projects.map(
         project => <ProjectButton key={project.id} project={project} />
     )
@@ -16,6 +17,14 @@ const ProjectContainer = (props) =>
             <ProjectAddButton/>
         </div>
     );
+    }
+    else{
+        return(
+            <div className='project-Style'>
+                <ProjectAddButton/>
+            </div>
+        )
+    }
 
 }
 

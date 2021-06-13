@@ -1,10 +1,16 @@
 import React from 'react'
 import '../MyStyles.css'
+import { Link } from 'react-router-dom'
 
-const TaskButton = () => 
-{
+const TaskButton = () => {
     return (
-        <button className="navBarButton-Style">Tasks</button>
+        <Link to = "/tasks">
+        <button className="navBarButton-Style"
+            onClick={() => {
+                /* Set current Tab as Task */
+            }
+            }>Tasks</button>
+        </Link>    
     )
 }
 

@@ -1,17 +1,46 @@
-import React, { useContext, useState } from "react"
-import { currWSContext } from "../App";
-import CreateTaskButton from "../Components/CreateTask";
+import React from "react"
 import '../MyStyles.css'
-import TaskContainer from "./TaskContainer";
-import TaskPage from "./TaskPage";
-import {stateContext} from "../App"
-
-
+import TaskPage from "../Pages/TaskPage";
+import ChatPage from "../Pages/ChatPage";
+import FilePage from "../Pages/FilePage";
+import StatPage from "../Pages/StatPage";
 
 const WorkContainer = (props) => {
 
+    if(props.tab == "tasks")
+    {
+        return (
+            <TaskPage />
+        )
+    }
+
+    if(props.tab == "chats")
+    {
+        return (
+            <ChatPage />
+        )
+    }
+
+    if(props.tab == "files")
+    {
+        return (
+            <FilePage />
+        )
+    }
+
+    if(props.tab == "stats")
+    {
+        return (
+            <StatPage />
+        )
+    }
+
+}
+
+/* const WorkContainer = (props) => {
+
     const [state,setState] = useContext(stateContext)
-        
+       
     if (props.ws) {
         let tasks = props.ws.Tasks.map(
             tsk => <TaskContainer key={tsk.id} task={tsk} />
@@ -49,6 +78,8 @@ const WorkContainer = (props) => {
         )
     }
     
-}
+   return <div>Work Container</div>
+    
+} */
 
 export default WorkContainer;
