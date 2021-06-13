@@ -20,6 +20,16 @@ type User struct {
 	Name string
 }
 
+type UserDetailsNew struct {
+	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name string
+	Password string
+	Username string
+	Date_joined primitive.DateTime
+	Dp string
+	Bio string
+}
+
 type Task struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 	Name        string
@@ -83,6 +93,7 @@ type NewTask struct {
 	Deadline       primitive.DateTime
 	Budget         int
 	Description    string
+	Spent          int
 	Assigned_users []struct { //this represents superset of all subtask users
 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Name string             //maybe

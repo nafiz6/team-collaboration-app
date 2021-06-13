@@ -1,11 +1,18 @@
 package models
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
-	"log"
-
 	"github.com/gorilla/websocket"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	// "golang.org/x/tools/go/types/objectpath"
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
+	"log"
+	"net/http"
+	"teams/middleware/cors"
+	"teams/middleware/db"
 )
 
 var AllPools = make(map[string]*Pool)
@@ -70,6 +77,14 @@ type Message struct {
 	ClientId    string
 }
 
+type DbMessage struct {
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Type        string             `json:"type"`
+	Body        string             `json:"body"`
+	WorkspaceId primitive.ObjectID `json:"id" bson:"_workspace_id,omitempty"`
+	ClientId    primitive.ObjectID `json:"id" bson:"_user_id,omitempty"`
+}
+
 func (c *Client) Read() {
 	defer func() {
 		for pool, _ := range c.Pools {
@@ -120,4 +135,72 @@ func addClientToPool(client *Client, workspaceId string) {
 	client.Pools[workspaceId] = AllPools[workspaceId]
 	AllPools[workspaceId].Register <- client
 
+}
+
+func AddChatToDb(message Message) {
+
+	var newChat DbMessage
+
+	newChat.ID = primitive.NewObjectID()
+	newChat.Body = message.Body
+
+	newChat.Type = message.Type
+
+	clientID, err := primitive.ObjectIDFromHex(message.ClientId)
+	if err != nil {
+		panic(err)
+	}
+
+	workspaceID, err := primitive.ObjectIDFromHex(message.WorkspaceId)
+	if err != nil {
+		panic(err)
+	}
+
+	newChat.ClientId = clientID
+	newChat.WorkspaceId = workspaceID
+	insertResult, err := db.Chats.InsertOne(context.TODO(), newChat)
+
+	if err != nil {
+		panic(err)
+	}
+
+	print(insertResult)
+
+	// json.NewEncoder(w).Encode(insertResult.InsertedID)
+
+}
+
+
+//add limit to this later
+func GetChats(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	// _ = json.NewDecoder(r.Body).Decode(&p)
+
+	fmt.Printf("received taskID: %+v", params["workspace-id"])
+
+	var chats []DbMessage
+
+	workspaceID, err := primitive.ObjectIDFromHex(params["workspace-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	cur, err := db.Chats.Find(context.Background(), bson.D{
+		{"_workspace_id", workspaceID},
+	})
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem DbMessage
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		chats = append(chats, elem)
+	}
+
+	json.NewEncoder(w).Encode(chats)
 }

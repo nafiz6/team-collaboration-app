@@ -16,6 +16,7 @@ var Workspaces *mongo.Collection
 var Tasks *mongo.Collection
 var Subtasks *mongo.Collection
 var SubtaskUpdates *mongo.Collection
+var Chats *mongo.Collection
 
 
 
@@ -48,6 +49,7 @@ func init() {
 	Tasks = client.Database("collab").Collection("tasks")
 	Subtasks = client.Database("collab").Collection("subtasks")
 	SubtaskUpdates = client.Database("collab").Collection("subtask_updatess")
+	Chats = client.Database("collab").Collection("chats")
 }
 
 func DoNothing(){

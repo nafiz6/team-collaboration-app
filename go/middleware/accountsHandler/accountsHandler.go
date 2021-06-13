@@ -1,11 +1,18 @@
 package accountsHandler
 
 import (
+	"context"
+	"encoding/json"
 	"fmt"
+	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"net/http"
+	"teams/middleware/db"
+	. "teams/models"
 
 	"github.com/gorilla/sessions"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
 )
 
@@ -29,6 +36,19 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	fmt.Println(username)
 
 	// TODO : get this from db where the hashed version will be stored
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"username", userDetails.Username}}).Decode(&userDetails)
+
+	if err != nil {
+		panic(err)
+	}
+
+	storedPassword := userDetails.Password
+
+	print(storedPassword)
+
 	hash := getHashedPassword("password")
 
 	err = bcrypt.CompareHashAndPassword(hash, []byte(password))
@@ -61,10 +81,29 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	/*
-		TODO :
+		TODO :	TODONE
 		store hash and username to db
 		check unique username
-	*/
+	*/	
+
+	var userFound UserDetailsNew
+
+	err := db.Users.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&userFound)
+
+	if err != mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("username already exists")
+		return
+	}
+
+	var userDetails UserDetailsNew
+	userDetails.ID = primitive.NewObjectID()
+
+	insertResult, err := db.Users.InsertOne(context.Background(), userDetails)
+
+	if err != mongo.ErrNoDocuments {
+		panic(err)
+	}
+	insertedID := insertResult.InsertedID
 
 	// Get session cookies from client
 	session, err := store.Get(r, "session-key")
@@ -72,9 +111,10 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		log.Println(err.Error())
 	}
 
-	// TODO : get UID from db
+	// TODO : get UID from db	DONE
 	// store hash and user id in clients cookies
 	session.Values["id"] = "55269"
+	session.Values["id"] = insertedID
 
 	// Save.
 	session.Save(r, w)

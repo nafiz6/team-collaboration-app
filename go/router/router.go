@@ -64,7 +64,6 @@ func Router() *mux.Router {
 	//GETS
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.GetProjectWorkspaces).Methods("GET", "OPTIONS")
 
-
 	//return workspace users sorted by role
 	router.HandleFunc("/api/workspace-users/{workspace-id}", workspaceHandler.GetWorkspaceUsers).Methods("GET", "OPTIONS")
 
@@ -114,6 +113,14 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/secret-page", accountsHandler.SecretPage).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/register", accountsHandler.Register).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/logout", accountsHandler.Logout).Methods("GET", "OPTIONS")
+
+	/*
+		STATS
+	*/
+
+	router.HandleFunc("/api/workspace-budget/{workspace-id}", workspaceHandler.GetWorkspaceTotalBudget).Methods("GET", "OPTIONS") //DONE
+
+	router.HandleFunc("/api/workspace-user-tasks/{workspace-id}", workspaceHandler.GetWorkspaceUserTasks).Methods("GET", "OPTIONS") //DONE
 
 	return router
 }
