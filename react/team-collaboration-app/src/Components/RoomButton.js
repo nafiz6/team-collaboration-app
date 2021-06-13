@@ -1,19 +1,13 @@
-import React, { useContext } from 'react'
-import { currWSContext } from '../App'
+import React from 'react'
 import '../MyStyles.css'
-import {stateContext} from "../App"
 
 const RoomButton = (props) => 
 {
-    const [currWS, setCurrWS] = useContext(currWSContext)
-    const [state,setState] = useContext(stateContext)
-
     return (
         <button className='roomButton-Style'
         onClick = { () =>
             {
-                setCurrWS(props.workspace) 
-                setState(0)
+               /* Select the current workspace */
             }
         }
         >{props.workspace.Name}</button>

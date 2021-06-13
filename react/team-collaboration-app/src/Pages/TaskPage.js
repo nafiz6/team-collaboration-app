@@ -2,16 +2,16 @@ import React, { useContext, useEffect } from 'react'
 import CreateSubtaskButton from '../Components/CreateSubtask'
 import '../MyStyles.css'
 import SubtaskPage from './SubtaskPage'
-import { taskContext } from '../App'
+//import { taskContext } from '../App'
 
 
 
 const TaskPage = (props) => 
 {
-    const [task,setTask] = useContext(taskContext)
+  //  const [task,setTask] = useContext(taskContext)
 
-    console.log(task)
-
+  //  console.log(task)
+/*
     if(task){
 
     const subtasks = task.Subtasks.map(
@@ -36,6 +36,9 @@ const TaskPage = (props) =>
         )
 
     }
+
+    */
+   return <div>Task Page</div>
 }
 
 export default TaskPage;
