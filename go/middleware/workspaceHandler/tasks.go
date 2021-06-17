@@ -8,10 +8,12 @@ import (
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	// "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -41,7 +43,7 @@ func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	cur, err := db.Workspaces.Find(context.Background(), bson.D{
+	cur, err := db.Tasks.Find(context.Background(), bson.D{
 		{"_workspace_id", workspaceID},
 	})
 
@@ -404,6 +406,20 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("user deets %+v", user)
 
+	//check if user already assigned to task
+	var task NewTask
+
+	err = db.Tasks.FindOne(context.Background(), bson.D{
+		{"_id", objID},
+		{"assigned_users._id", userID},
+	}).Decode(&task)
+
+	if err != mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User already assigned to task")
+		return
+	}
+
+
 	insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
 		{"_id", objID},
 	}, bson.D{
@@ -434,6 +450,7 @@ func CreateTaskNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("new task %+v\n", newTask)
 
 	newTask.ID = primitive.NewObjectID()
+	newTask.Date_created = primitive.NewDateTimeFromTime(time.Now())
 	// newTask.Subtasks = []Subtask
 
 	id := params["workspace-id"]

@@ -48,7 +48,7 @@ func init() {
 	Workspaces = client.Database("collab").Collection("workspaces")
 	Tasks = client.Database("collab").Collection("tasks")
 	Subtasks = client.Database("collab").Collection("subtasks")
-	SubtaskUpdates = client.Database("collab").Collection("subtask_updatess")
+	SubtaskUpdates = client.Database("collab").Collection("subtask_updates")
 	Chats = client.Database("collab").Collection("chats")
 }
 
