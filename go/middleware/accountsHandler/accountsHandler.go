@@ -24,13 +24,16 @@ func init() {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 
 	decoder := json.NewDecoder(r.Body)
 	var t UserLogin
 	err := decoder.Decode(&t)
 	if err != nil {
-		fmt.Fprintln(w, err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Error Decording JSON: " + err.Error()))
+		log.Println("Error Decording JSON")
+		log.Println(err.Error())
 		return
 	}
 	username := t.Username
@@ -38,45 +41,41 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	session, err := store.Get(r, "session-key")
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Error Fetching Session: " + err.Error()))
+		log.Println("Error in session")
 		log.Println(err.Error())
-		fmt.Fprintln(w, err.Error())
 		return
 	}
 
-	fmt.Println(username)
+	log.Println("logging in username " + username)
 
 	// TODO : get this from db where the hashed version will be stored
 
-	//var userDetails UserDetailsNew
+	var userDetails UserDetailsNew
 
-	/*
-		err = db.Users.FindOne(context.TODO(), bson.D{{"username", userDetails.Username}}).Decode(&userDetails)
+	err = db.Users.FindOne(context.TODO(), bson.D{{"username", t.Username}}).Decode(&userDetails)
 
-		if err != nil {
-			fmt.Fprintln(w, "USER NOT FOUND")
-			log.Println("USER NOT FOUND")
-			return
-		}
-	*/
-
-	//storedPassword := userDetails.Password
-	storedPassword := "password"
-
-	print(storedPassword)
-	log.Println("from frontedn " + password + "\n")
-
-	hash := getHashedPassword(storedPassword)
-
-	err = bcrypt.CompareHashAndPassword(hash, []byte(password))
 	if err != nil {
-		fmt.Fprintln(w, err.Error())
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Username doesn't exit!"))
+		log.Println("USER NOT FOUND")
+		return
+	}
+
+	storedPassword := userDetails.Password
+
+	err = bcrypt.CompareHashAndPassword([]byte(storedPassword), []byte(password))
+	if err != nil {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Incorrect Password!"))
 		return
 	}
 
 	// get clients cookies
 	session, _ = store.Get(r, "session-key")
-	///session.Values["id"] = userDetails.ID // TODO : store an uid
-	session.Values["id"] = username
+	log.Println("logged in with id " + userDetails.ID.Hex())
+	session.Values["id"] = userDetails.ID.Hex() // TODO : store an uid
 	session.Save(r, w)
 
 	log.Println("logged in")
@@ -85,15 +84,25 @@ func Login(w http.ResponseWriter, r *http.Request) {
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	username := r.PostForm.Get("username")
-	password := r.PostForm.Get("password")
+	cors.EnableCorsCredentials(&w)
+	decoder := json.NewDecoder(r.Body)
+	var userDetails UserRegistration
+	err := decoder.Decode(&userDetails)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Error Decording JSON: " + err.Error()))
+		log.Println("Error Decording JSON")
+		log.Println(err.Error())
+		return
+	}
+	username := userDetails.Username
+	password := userDetails.Password
 	// TODO OTHER FORM FIELDS???
 
 	// hash the password
 	hash := getHashedPassword(password)
 
-	log.Println(username)
+	log.Println("registration username " + username)
 	if hash == nil {
 		return
 	}
@@ -105,22 +114,26 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	var userFound UserDetailsNew
 
-	err := db.Users.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&userFound)
+	findUserErr := db.Users.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&userFound)
 
-	if err != mongo.ErrNoDocuments {
-		json.NewEncoder(w).Encode("username already exists")
+	if findUserErr != mongo.ErrNoDocuments {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Username already exists!"))
+		log.Println("USER NOT FOUND")
 		return
 	}
 
-	var userDetails UserDetailsNew
 	userDetails.ID = primitive.NewObjectID()
+	userDetails.Password = string(hash[:])
 
-	insertResult, err := db.Users.InsertOne(context.Background(), userDetails)
+	_, insertErr := db.Users.InsertOne(context.Background(), userDetails)
 
-	if err != mongo.ErrNoDocuments {
-		panic(err)
+	if insertErr != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Error inserting into database"))
+		return
 	}
-	insertedID := insertResult.InsertedID
+	//insertedID := insertResult.InsertedID
 
 	// Get session cookies from client
 	session, err := store.Get(r, "session-key")
@@ -130,8 +143,8 @@ func Register(w http.ResponseWriter, r *http.Request) {
 
 	// TODO : get UID from db	DONE
 	// store hash and user id in clients cookies
-	session.Values["id"] = "55269"
-	session.Values["id"] = insertedID
+	//session.Values["id"] = "55269"
+	session.Values["id"] = userDetails.ID.Hex()
 
 	// Save.
 	session.Save(r, w)
@@ -142,7 +155,15 @@ func Register(w http.ResponseWriter, r *http.Request) {
 }
 
 func Logout(w http.ResponseWriter, r *http.Request) {
-	session, _ := store.Get(r, "session-key")
+	cors.EnableCorsCredentials(&w)
+	session, err := store.Get(r, "session-key")
+
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Error retrieving session"))
+		return
+	}
+
 	session.Values["id"] = ""
 	session.Options.MaxAge = -1
 	session.Save(r, w)
@@ -150,6 +171,7 @@ func Logout(w http.ResponseWriter, r *http.Request) {
 }
 
 func SecretPage(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCorsCredentials(&w)
 	username := GetUserId(r)
 	if username == "" {
 		fmt.Fprint(w, "Not logged in")

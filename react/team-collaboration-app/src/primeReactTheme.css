@@ -37,3 +37,32 @@ button {
     margin: 0;
 
 }
+
+.signup-card{
+    width: 100%;
+}
+
+
+.signup-card .p-inputtext, .signup-card .p-password, .signup-card Button{
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+.signup-card h5{
+    padding : 1px;
+    margin : 1px;
+}
+
+.signup-page{
+    height: 100vh;
+    width: 100vw;
+    margin: 0;
+    background: #495464;
+}
+
+.signup-card a{
+    color: #00AFF4;
+    text-decoration: none;
+    padding: 0;
+    font-size: small;
+}
