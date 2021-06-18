@@ -15,7 +15,7 @@ function App() {
     let res = await axios.get('http://localhost:8080/api/project')
     setProjects(res.data);
     console.log(projects);
-  })
+  }, [])
 
   useEffect(() => {
     dataFetch();

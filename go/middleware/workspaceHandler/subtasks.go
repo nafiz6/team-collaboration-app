@@ -312,6 +312,85 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func EditSubtask(w http.ResponseWriter, r *http.Request) {
+
+	//enable edits for name, description, spent
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	var newSubtask NewSubtask
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&newSubtask)
+	//insert newTask into db
+
+	fmt.Printf("new task %+v\n", newSubtask)
+
+	id := params["subTask-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	subtaskID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", subtaskID)
+
+	if newSubtask.Name != "" {
+		//name isnt empty
+		insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", subtaskID},
+		}, bson.D{
+			{"$set", bson.D{{"name", newSubtask.Name}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
+	if newSubtask.Description != "" {
+		//description isnt empty
+		insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", subtaskID},
+		}, bson.D{
+			{"$set", bson.D{{"description", newSubtask.Description}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
+	if newSubtask.Spent > 0 {
+		//budget isnt empty
+		insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", subtaskID},
+		}, bson.D{
+			{"$set", bson.D{{"spent", newSubtask.Spent}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+	}
+
+	json.NewEncoder(w).Encode("Successfully updated")
+}
+
 func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 	params := mux.Vars(r)
@@ -355,8 +434,6 @@ func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode("User isnt assigned to subtask")
 		return
 	}
-
-
 
 	insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
 		{"_id", objID},
