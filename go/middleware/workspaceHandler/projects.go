@@ -14,6 +14,7 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -45,6 +46,31 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("Found a single document: %+v\n", projects)
 	json.NewEncoder(w).Encode(projects)
+}
+
+func GetSingleProject(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+
+	projectID, err := primitive.ObjectIDFromHex(params["project-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	var project NewProject
+
+	err = db.Projects.FindOne(context.Background(), bson.D{{
+		"_id", projectID,
+	}}).Decode(&project)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+
+	fmt.Printf("Found projects: %+v\n", project)
+	json.NewEncoder(w).Encode(project)
 }
 
 func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
@@ -271,16 +297,31 @@ func AssignUserToProjectNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("id: %+v", id)
 
-	objID, err := primitive.ObjectIDFromHex(id)
+	projectID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("objID: %+v", objID)
+	fmt.Printf("objID: %+v", projectID)
+
+	//check if user exists in project first
+
+	var workspace NewWorkspace
+
+	err = db.Workspaces.FindOne(context.Background(), bson.D{
+		{"_project_id", projectID},
+		{"name", "General"},
+		{"users._id", userID},
+	}).Decode(&workspace)
+
+	if err != mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User already in project")
+		return
+	}
 
 	//find workspaces with name "general" and projectID = id
 	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
-		{"_project_id", id},
+		{"_project_id", projectID},
 		{"name", "General"},
 	}, bson.D{
 		{"$push", bson.D{{"users", user}}},
@@ -328,6 +369,35 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Println((users))
 	json.NewEncoder(w).Encode((users))
+
+}
+
+func GetUserDetails(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+
+	params := mux.Vars(r)
+
+	id := params["user-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	userID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.Background(), bson.D{
+		{"_id", userID},
+	}).Decode(&userDetails)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+		log.Fatal(err)
+	}
+
+	json.NewEncoder(w).Encode(userDetails)
 
 }
 
@@ -400,7 +470,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	print("WORKSSS")
 
-	var taskIDs  = []primitive.ObjectID{}
+	var taskIDs = []primitive.ObjectID{}
 
 	for cur.Next(context.Background()) {
 
@@ -426,7 +496,7 @@ func DeleteProject(w http.ResponseWriter, r *http.Request) {
 
 	}
 
-	var subtaskIDs  = []primitive.ObjectID{}
+	var subtaskIDs = []primitive.ObjectID{}
 
 	for cur.Next(context.Background()) {
 

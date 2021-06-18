@@ -13,6 +13,7 @@ import (
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
@@ -263,6 +264,19 @@ func AssignUserToWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Printf("objID: %+v", objID)
+
+	var workspace NewWorkspace
+
+	//check if user assigned to workspace previously
+	err = db.Workspaces.FindOne(context.Background(), bson.D{
+		{"_id", objID},
+		{"users._id", userID},
+	}).Decode(&workspace)
+
+	if err != mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User already in workspace")
+		return
+	}
 
 	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
 		{"_id", objID},

@@ -8,10 +8,12 @@ import (
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 
 	// "go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -41,7 +43,7 @@ func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	cur, err := db.Workspaces.Find(context.Background(), bson.D{
+	cur, err := db.Tasks.Find(context.Background(), bson.D{
 		{"_workspace_id", workspaceID},
 	})
 
@@ -57,6 +59,112 @@ func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 		tasks = append(tasks, elem)
 	}
 
+	json.NewEncoder(w).Encode(tasks)
+}
+
+func GetWorkspaceTaskBudgetBreakdown(w http.ResponseWriter, r *http.Request) {
+
+	//sum all subtask spendings to get task spending
+	//get budget directly from task
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+
+	fmt.Printf("received workspaceID: %+v", params["workspace-id"])
+	workspaceID, err := primitive.ObjectIDFromHex(params["workspace-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	// //need to get all task ids
+
+	// tasksCur, err := db.Tasks.Find(context.Background(), bson.D{
+	// 	{"_workspace_id", workspaceID},
+	// })
+
+	// var taskIDs = []primitive.ObjectID{}
+
+	// for tasksCur.Next(context.Background()) {
+
+	// 	// create a value into which the single document can be decoded
+	// 	var task NewTask
+	// 	// var elem = bson.M{}
+	// 	err := tasksCur.Decode(&task)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
+
+	// 	taskIDs = append(taskIDs, task.ID)
+	// }
+
+	//cur here returns only one value per task
+	subtasksCur, err := db.Tasks.Aggregate(context.Background(), mongo.Pipeline{
+		bson.D{
+			{"$match", bson.D{
+				{"_workspace_id", workspaceID},
+			}},
+		},
+		bson.D{
+			{"$lookup", bson.D{
+				{"from", "subtasks"},
+				{"localField", "_id"},
+				{"foreignField", "_task_id"},
+				{"as", "subtasks"},
+			}},
+		},
+		bson.D{
+			{"$unwind", bson.D{
+				{"path", "$subtasks"},
+				{"preserveNullAndEmptyArrays", true},
+			}},
+		},
+		bson.D{
+			{"$group", bson.D{
+				{"_id", "$_id"},
+				{"task_name", bson.D{
+					{"$first", "$name"},
+				}},
+				{"task_budget", bson.D{
+					{"$first", "$budget"},
+				}},
+				{"total_spent", bson.D{
+					{"$sum", "$subtasks.spent"},
+				}},
+			}},
+		},
+	})
+
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+		return
+		// panic(err)
+	}
+
+	var tasks = []struct {
+		ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		Task_name   string
+		Total_spent int
+		Task_budget int
+		// Subtasks    []NewSubtask
+	}{}
+
+	for subtasksCur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem struct {
+			ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+			Task_name   string
+			Total_spent int
+			Task_budget int
+			// Subtasks    []NewSubtask
+		}
+		// var elem = bson.M{}
+		err := subtasksCur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		tasks = append(tasks, elem)
+	}
 	json.NewEncoder(w).Encode(tasks)
 }
 
@@ -230,7 +338,7 @@ func EditTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("new task %+v\n", newTask)
 
-	newTask.ID = primitive.NewObjectID()
+	// newTask.ID = primitive.NewObjectID()
 	// newTask.Subtasks = []Subtask
 
 	id := params["task-id"]
@@ -282,7 +390,7 @@ func EditTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	if newTask.Budget > 0 {
 		//budget isnt empty
-		insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
+		insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
 			{"_id", objID},
 		}, bson.D{
 			{"$set", bson.D{{"budget", newTask.Budget}}},
@@ -404,6 +512,19 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("user deets %+v", user)
 
+	//check if user already assigned to task
+	var task NewTask
+
+	err = db.Tasks.FindOne(context.Background(), bson.D{
+		{"_id", objID},
+		{"assigned_users._id", userID},
+	}).Decode(&task)
+
+	if err != mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User already assigned to task")
+		return
+	}
+
 	insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
 		{"_id", objID},
 	}, bson.D{
@@ -434,6 +555,7 @@ func CreateTaskNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("new task %+v\n", newTask)
 
 	newTask.ID = primitive.NewObjectID()
+	newTask.Date_created = primitive.NewDateTimeFromTime(time.Now())
 	// newTask.Subtasks = []Subtask
 
 	id := params["workspace-id"]

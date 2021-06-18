@@ -27,7 +27,7 @@ func Router() *mux.Router {
 
 	router.HandleFunc("/api/subtask/{task-id}", workspaceHandler.GetSubtasks).Methods("GET", "OPTIONS")
 
-	router.HandleFunc("/api/updates/{subtask-id}", workspaceHandler.GetSubtaskUpdates).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/updates/{subTask-id}", workspaceHandler.GetSubtaskUpdates).Methods("GET", "OPTIONS")
 
 	//POSTS
 	// create task
@@ -44,6 +44,11 @@ func Router() *mux.Router {
 
 	// edits (renames/ change deadline/ budget)
 	router.HandleFunc("/api/update-task/{task-id}", workspaceHandler.EditTaskNew).Methods("POST", "OPTIONS") //DONE for name and budget only
+
+	//edit subtask
+	router.HandleFunc("/api/update-subTask/{subTask-id}", workspaceHandler.EditSubtask).Methods("POST", "OPTIONS") //DONE for name and budget only
+
+	//update subtasks TODO
 
 	// mark as completed
 	router.HandleFunc("/api/mark-subTask-complete/{subTask-id}", workspaceHandler.CompleteSubTaskNew).Methods("POST", "OPTIONS") //CODED, NOT CHECKED
@@ -67,7 +72,10 @@ func Router() *mux.Router {
 	//return workspace users sorted by role
 	router.HandleFunc("/api/workspace-users/{workspace-id}", workspaceHandler.GetWorkspaceUsers).Methods("GET", "OPTIONS")
 
-	//POSTS
+	//return workspace users sorted by role
+	router.HandleFunc("/api/workspace-tasks-budget-breakdown/{workspace-id}", workspaceHandler.GetWorkspaceTaskBudgetBreakdown).Methods("GET", "OPTIONS")
+
+	//POSTS	
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspaceNew).Methods("POST", "OPTIONS") // FIZZ -- DONE
 
 	// assign user to workspace
@@ -76,15 +84,17 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/set-workspace-user-role/{workspace-id}", workspaceHandler.SetWorkspaceUserRole).Methods("POST", "OPTIONS") //DONE
 
 	// delete workspace
-	router.HandleFunc("/api/delete-subTask/{subTask-id}", workspaceHandler.DeleteWorkspace).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/delete-workspace/{worspace-id}", workspaceHandler.DeleteWorkspace).Methods("POST", "OPTIONS")
 
 	/*
 		PROJECT
 	*/
 
 	//GETS
-	// router.HandleFunc("/api/project", workspaceHandler.GetAllProjectsNew).Methods("GET", "OPTIONS") //DONE
-	router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS") //DONE
+	router.HandleFunc("/api/project", workspaceHandler.GetAllProjectsNew).Methods("GET", "OPTIONS") //DONE
+
+	router.HandleFunc("/api/project/{project-id}", workspaceHandler.GetSingleProject).Methods("GET", "OPTIONS") //DONE
+	// router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS") //DONE
 
 	//POSTS
 	router.HandleFunc("/api/project", workspaceHandler.CreateProjectNew).Methods("POST", "OPTIONS") // FIZZ - DONE
@@ -95,8 +105,13 @@ func Router() *mux.Router {
 
 	router.HandleFunc("/api/delete-project/{project-id}", workspaceHandler.DeleteProject).Methods("POST", "OPTIONS") //DONE
 
-	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")   //DONE
-	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS") //DONE
+	/*
+		USERS
+	*/
+
+	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")                       //DONE
+	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")                     //DONE
+	router.HandleFunc("/api/user-details/{user-id}", workspaceHandler.GetUserDetails).Methods("GET", "OPTIONS") //DONE
 
 	/*
 		File server

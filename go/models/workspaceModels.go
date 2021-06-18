@@ -21,13 +21,13 @@ type User struct {
 }
 
 type UserDetailsNew struct {
-	ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Name string
-	Password string
-	Username string
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Name        string
+	Password    string
+	Username    string
 	Date_joined primitive.DateTime
-	Dp string
-	Bio string
+	Dp          string
+	Bio         string
 }
 
 type Task struct {
@@ -93,8 +93,9 @@ type NewTask struct {
 	Deadline       primitive.DateTime
 	Budget         int
 	Description    string
-	Spent          int
-	Assigned_users []struct { //this represents superset of all subtask users
+	Spent          int                //probably ignore for now
+	Date_created   primitive.DateTime //not assigned in backend yet
+	Assigned_users []struct {         //this represents superset of all subtask users
 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Name string             //maybe
 	}
@@ -105,7 +106,9 @@ type NewSubtask struct {
 	TaskID         primitive.ObjectID `json:"task_id" bson:"_task_id,omitempty"`
 	Name           string
 	Description    string
-	Budget         int
+	Budget         int //probably ignore for now
+	Spent          int //add to backend logic
+	Date_created   primitive.DateTime
 	Assigned_users []struct {
 		ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Name          string             //maybe

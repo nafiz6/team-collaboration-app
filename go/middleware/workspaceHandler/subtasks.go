@@ -33,7 +33,7 @@ func GetSubtasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	cur, err := db.Subtasks.Find(context.Background(), bson.D{
-		{"_taskID", TaskID},
+		{"_task_id", TaskID},
 	})
 
 	for cur.Next(context.Background()) {
@@ -227,6 +227,19 @@ func AssignUserToSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("user deets %+v", user)
 
+	//check if user is already assigned to subtask
+	var subtask NewSubtask
+
+	err = db.Subtasks.FindOne(context.Background(), bson.D{
+		{"_id", objID},
+		{"assigned_users._id", userID},
+	}).Decode(&subtask)
+
+	if err != mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User already assigned to subtask")
+		return
+	}
+
 	insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
 		{"_id", objID},
 	}, bson.D{
@@ -299,6 +312,85 @@ func CompleteSubTask(w http.ResponseWriter, r *http.Request) {
 
 }
 
+func EditSubtask(w http.ResponseWriter, r *http.Request) {
+
+	//enable edits for name, description, spent
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	var newSubtask NewSubtask
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&newSubtask)
+	//insert newTask into db
+
+	fmt.Printf("new task %+v\n", newSubtask)
+
+	id := params["subTask-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	subtaskID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("objID: %+v", subtaskID)
+
+	if newSubtask.Name != "" {
+		//name isnt empty
+		insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", subtaskID},
+		}, bson.D{
+			{"$set", bson.D{{"name", newSubtask.Name}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
+	if newSubtask.Description != "" {
+		//description isnt empty
+		insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", subtaskID},
+		}, bson.D{
+			{"$set", bson.D{{"description", newSubtask.Description}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
+	if newSubtask.Spent > 0 {
+		//budget isnt empty
+		insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", subtaskID},
+		}, bson.D{
+			{"$set", bson.D{{"spent", newSubtask.Spent}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+	}
+
+	json.NewEncoder(w).Encode("Successfully updated")
+}
+
 func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 	params := mux.Vars(r)
@@ -330,7 +422,20 @@ func CompleteSubTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("userID: %+v", userID)
 
-	insertResult, err := db.Projects.UpdateOne(context.TODO(), bson.D{
+	//check if user is assigned to subtask
+	var subtask NewSubtask
+
+	err = db.Subtasks.FindOne(context.Background(), bson.D{
+		{"_id", objID},
+		{"assigned_users._id", userID},
+	}).Decode(&subtask)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User isnt assigned to subtask")
+		return
+	}
+
+	insertResult, err := db.Subtasks.UpdateOne(context.TODO(), bson.D{
 		{"_id", objID},
 	}, bson.D{
 		{"$set", bson.D{{"assigned_users.$[user].has_completed", completion.Status}}},
@@ -437,6 +542,7 @@ func CreateSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("new sub task %+v\n", newSubTask)
 
 	newSubTask.ID = primitive.NewObjectID()
+	newSubTask.Date_created = primitive.NewDateTimeFromTime(time.Now())
 
 	id := params["task-id"]
 
@@ -520,17 +626,19 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	var newUpdate NewSubtaskUpdate
-	_ = json.NewDecoder(r.Body).Decode(&newUpdate)
-	//insert newTask into db
-	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 
-	if newUpdate.Text == "" {
+	var updateInfo struct {
+		UserID string
+		Text   string
+	}
+	_ = json.NewDecoder(r.Body).Decode(&updateInfo)
+	//insert newTask into db
+
+	if updateInfo.Text == "" {
 
 		json.NewEncoder(w).Encode("Text Cannot Be Empty")
 		return
 	}
-
-	fmt.Printf("new sub task %+v\n", newUpdate)
 
 	id := params["subTask-id"]
 
@@ -538,9 +646,33 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
+
+	userID, err := primitive.ObjectIDFromHex(updateInfo.UserID)
+	if err != nil {
+		panic(err)
+	}
+	newUpdate.Text = updateInfo.Text
+	newUpdate.UserID = userID
 	newUpdate.SubtaskID = objID
+	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
+	newUpdate.ID = primitive.NewObjectID()
+
+	fmt.Printf("new sub task update %+v\n", newUpdate)
 
 	fmt.Printf("objID: %+v\n", objID)
+
+	//check if user is assigned to subtask first
+	var task NewSubtask
+
+	err = db.Subtasks.FindOne(context.Background(), bson.D{
+		{"_id", objID},
+		{"assigned_users._id", userID},
+	}).Decode(&task)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User isn't assigned to subtask")
+		return
+	}
 
 	insertResult, insertErr := db.SubtaskUpdates.InsertOne(
 		context.TODO(), newUpdate)
@@ -558,8 +690,7 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func DeleteSubtaskHelper(subtaskID primitive.ObjectID)(*mongo.DeleteResult, error) {
-
+func DeleteSubtaskHelper(subtaskID primitive.ObjectID) (*mongo.DeleteResult, error) {
 
 	deleteResult, err := db.Subtasks.DeleteOne(context.TODO(), bson.D{
 		{"_id", subtaskID},
@@ -579,11 +710,6 @@ func DeleteSubtaskHelper(subtaskID primitive.ObjectID)(*mongo.DeleteResult, erro
 		return deleteResult, err
 	}
 	return deleteResult, err
-
-
-	
-
-	
 
 }
 
@@ -613,9 +739,6 @@ func DeteleSubtask(w http.ResponseWriter, r *http.Request) {
 	}
 	json.NewEncoder(w).Encode(deleteResult)
 
-
-
-
 	// deleteResult, err := db.Subtasks.DeleteOne(context.TODO(), bson.D{
 	// 	{"_id", objID},
 	// })
@@ -633,11 +756,6 @@ func DeteleSubtask(w http.ResponseWriter, r *http.Request) {
 	// 	json.NewEncoder(w).Encode(err.Error())
 	// 	return
 	// }
-
-
-
-
-
 
 	// json.NewEncoder(w).Encode(deleteResult)
 
