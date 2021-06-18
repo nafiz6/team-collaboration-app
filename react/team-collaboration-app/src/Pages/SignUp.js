@@ -35,6 +35,7 @@ const SignUp = ({history}) =>
             history.push('/project')
         }
         catch(err){
+            console.log(err)
             setErr(err);
         }
         //history.push('/tasks')

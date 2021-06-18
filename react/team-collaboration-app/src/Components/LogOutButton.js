@@ -1,10 +1,21 @@
 import React from "react"
 import '../MyStyles.css'
+import { Link } from "react-router-dom";
+import { logout } from '../api/Login.js';
 
 const LogOutButton = () => 
 {
+
+    const logoutButton = async () =>{
+        await logout();
+    }
+
+
     return (
-        <button className='button-Style'>Log Out</button>
+        <Link to="/">
+            <button onClick={logoutButton} className='button-Style'>Log Out</button>
+        </Link>
+        
     );
 }
 

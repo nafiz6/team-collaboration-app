@@ -112,6 +112,17 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		check unique username
 	*/
 
+	userDetails.ID = primitive.NewObjectID()
+
+	validationErr := validateRegistrationInput(userDetails)
+	if validationErr != "" {
+		w.WriteHeader(http.StatusNotAcceptable)
+		w.Write([]byte(validationErr))
+		return
+	}
+
+	userDetails.Password = string(hash[:])
+
 	var userFound UserDetailsNew
 
 	findUserErr := db.Users.FindOne(context.TODO(), bson.D{{"username", username}}).Decode(&userFound)
@@ -122,9 +133,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		log.Println("USER NOT FOUND")
 		return
 	}
-
-	userDetails.ID = primitive.NewObjectID()
-	userDetails.Password = string(hash[:])
 
 	_, insertErr := db.Users.InsertOne(context.Background(), userDetails)
 
@@ -209,4 +217,27 @@ func getHashedPassword(password string) []byte {
 	}
 
 	return hash
+}
+
+func validateRegistrationInput(userDetails UserRegistration) string {
+	if len(userDetails.Name) == 0 || !HasOnlyLetters(userDetails.Name) {
+		return "Invalid Name"
+	}
+	if len(userDetails.Username) < 6 {
+		return "Username must be atleast 6 characters"
+	}
+	if len(userDetails.Password) < 6 {
+		return "Password must be atleast 6 characters."
+	}
+
+	return ""
+}
+
+func HasOnlyLetters(s string) bool {
+	for _, r := range s {
+		if (r < 'a' || r > 'z') && (r < 'A' || r > 'Z') && r != ' ' {
+			return false
+		}
+	}
+	return true
 }
