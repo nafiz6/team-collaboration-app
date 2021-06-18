@@ -4,13 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"net/http"
 	"teams/middleware/db"
 	. "teams/models"
 
+	"teams/middleware/cors"
+
 	"github.com/gorilla/sessions"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"golang.org/x/crypto/bcrypt"
@@ -22,9 +24,17 @@ func init() {
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
-	r.ParseForm()
-	username := r.PostForm.Get("username")
-	password := r.PostForm.Get("password")
+	cors.EnableCors(&w)
+
+	decoder := json.NewDecoder(r.Body)
+	var t UserLogin
+	err := decoder.Decode(&t)
+	if err != nil {
+		fmt.Fprintln(w, err.Error())
+		return
+	}
+	username := t.Username
+	password := t.Password
 
 	session, err := store.Get(r, "session-key")
 	if err != nil {
@@ -37,19 +47,25 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// TODO : get this from db where the hashed version will be stored
 
-	var userDetails UserDetailsNew
+	//var userDetails UserDetailsNew
 
-	err = db.Users.FindOne(context.TODO(), bson.D{{"username", userDetails.Username}}).Decode(&userDetails)
+	/*
+		err = db.Users.FindOne(context.TODO(), bson.D{{"username", userDetails.Username}}).Decode(&userDetails)
 
-	if err != nil {
-		panic(err)
-	}
+		if err != nil {
+			fmt.Fprintln(w, "USER NOT FOUND")
+			log.Println("USER NOT FOUND")
+			return
+		}
+	*/
 
-	storedPassword := userDetails.Password
+	//storedPassword := userDetails.Password
+	storedPassword := "password"
 
 	print(storedPassword)
+	log.Println("from frontedn " + password + "\n")
 
-	hash := getHashedPassword("password")
+	hash := getHashedPassword(storedPassword)
 
 	err = bcrypt.CompareHashAndPassword(hash, []byte(password))
 	if err != nil {
@@ -59,7 +75,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 
 	// get clients cookies
 	session, _ = store.Get(r, "session-key")
-	session.Values["id"] = "1123" // TODO : store an uid
+	///session.Values["id"] = userDetails.ID // TODO : store an uid
+	session.Values["id"] = username
 	session.Save(r, w)
 
 	log.Println("logged in")
@@ -84,7 +101,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		TODO :	TODONE
 		store hash and username to db
 		check unique username
-	*/	
+	*/
 
 	var userFound UserDetailsNew
 
