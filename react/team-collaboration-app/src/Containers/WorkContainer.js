@@ -7,6 +7,13 @@ import StatPage from "../Pages/StatPage";
 
 const WorkContainer = (props) => {
 
+    if(!props.tab)
+    {
+        return(
+            <div>Hello</div>
+        )
+    }
+
     if(props.tab == "tasks")
     {
         return (

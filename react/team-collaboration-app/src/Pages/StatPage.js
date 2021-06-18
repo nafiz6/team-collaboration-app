@@ -2,22 +2,24 @@ import axios from 'axios';
 import React, { useCallback, useEffect, useState } from 'react'
 import '../MyStyles.css'
 import { Chart } from 'primereact/chart';
+import { DataTable } from 'primereact/datatable';
+import { Column } from 'primereact/column';
 
 const StatPage = (props) => {
 
     //get workspace id from url later
-
     const workspaceId = "60ca3b1640dfba660867877a";
-    const [workspaceBudget, setWorkspaceBudget] = useState({
-        Total_budget: 0,
-        Total_spent: 0
-    });
-    const [chartData, setChartData] = useState(null)
 
-    const dataFetch = useCallback(async () => {
-        let res = await axios.get(`http://localhost:8080/api/workspace-tasks-budget-breakdown/60ca3b1640dfba660867877a`)
+    const [workspaceBudget, setWorkspaceBudget] = useState([]);
+    const [chartData, setChartData] = useState(null)
+    const [tableData, setTableData] = useState(null)
+
+    const dataFetch = async () => {
+        let res = await axios.get(`http://localhost:8080/api/workspace-tasks-budget-breakdown/${workspaceId}`)
         setWorkspaceBudget(res.data);
         console.log(workspaceBudget);
+
+        setTableData(workspaceBudget)
         setChartData({
             labels: workspaceBudget.map(w => w.Task_name),
             datasets: [
@@ -26,7 +28,7 @@ const StatPage = (props) => {
                 }
             ]
         })
-    }, [])
+    }
 
     let lightOptions = {
         plugins: {
@@ -40,7 +42,7 @@ const StatPage = (props) => {
 
     useEffect(() => {
         dataFetch();
-    }, [dataFetch])
+    }, [])
 
 
 
@@ -50,10 +52,16 @@ const StatPage = (props) => {
         <div>
             <div>Stat Page</div>
 
-            <h2>Total spent: {workspaceBudget.Total_spent}</h2>
-            <h2>Total workspace budget: {workspaceBudget.Total_budget}</h2>
+            <h2>Total spent: {workspaceBudget[0]?.Total_spent}</h2>
+            <h2>Total workspace budget: {workspaceBudget[0]?.Task_budget}</h2>
 
-            <Chart type="pie" data={chartData} options={lightOptions} style={{ position: 'relative', width: '40%' }} />
+            <DataTable value={workspaceBudget}>
+                <Column field="Task_name" header="Task"></Column>
+                <Column field="Task_budget" header="Budget"></Column>
+                <Column field="Total_spent" header="Spent"></Column>
+            </DataTable>
+
+            {/* <Chart type="pie" data={chartData} options={lightOptions} style={{ position: 'relative', width: '40%' }} /> */}
 
         </div>
 

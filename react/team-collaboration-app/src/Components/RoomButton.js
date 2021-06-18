@@ -1,16 +1,13 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 import '../MyStyles.css'
 
 const RoomButton = (props) => 
 {
     return (
-        <button className='roomButton-Style'
-        onClick = { () =>
-            {
-               /* Select the current workspace */
-            }
-        }
-        >{props.workspace.Name}</button>
+        <Link to = {`/project/${props.projId}/ws/${props.workspace.id}`}>
+        <button className='roomButton-Style'>{props.workspace.Name}</button>
+        </Link>
     )
 }
 

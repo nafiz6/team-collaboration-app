@@ -11,7 +11,7 @@ const RoomsContainer = (props) => {
         if(props.project.Workspaces){
 
         const createRooms = props.project.Workspaces.map(
-            workspace => <RoomButton key={workspace.id} workspace={workspace} />
+            workspace => <RoomButton key={workspace.id} workspace={workspace} projId={props.project.id}/>
         )
 
         const rooms = [
@@ -27,7 +27,7 @@ const RoomsContainer = (props) => {
         }
         else{
             return(
-                <div>
+                <div className='rooms-Style'>
                     <div className='projName-Style'>{props.project.Name}</div>
                     <CreateWorkspaceButton projectId={props.project.id} />
                 </div>

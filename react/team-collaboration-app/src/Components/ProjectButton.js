@@ -1,18 +1,14 @@
-import React, {useContext, useState} from 'react'
+import React from 'react'
+import { Link } from 'react-router-dom'
 import '../MyStyles.css'
 
 
-const ProjectButton = (props) => 
-{
-   
+const ProjectButton = (props) => {
     return (
-        <button className='projectButton-Style'
-        onClick = { () =>
-            {
-              //Set current project
-            }
-        }
-        >{props.project.Name}</button>
+
+        <Link to={`/project/${props.id}`}>
+            <button className='projectButton-Style'>{props.name}</button>
+        </Link>
     )
 }
 
