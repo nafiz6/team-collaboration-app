@@ -92,6 +92,8 @@ func Router() *mux.Router {
 
 	//GETS
 	router.HandleFunc("/api/project", workspaceHandler.GetAllProjectsNew).Methods("GET", "OPTIONS") //DONE
+
+	router.HandleFunc("/api/project/{project-id}", workspaceHandler.GetSingleProject).Methods("GET", "OPTIONS") //DONE
 	// router.HandleFunc("/api/project", workspaceHandler.GetAllProjects).Methods("GET", "OPTIONS") //DONE
 
 	//POSTS

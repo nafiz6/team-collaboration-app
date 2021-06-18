@@ -75,58 +75,59 @@ func GetWorkspaceTaskBudgetBreakdown(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	//need to get all task ids
+	// //need to get all task ids
 
-	tasksCur, err := db.Tasks.Find(context.Background(), bson.D{
-		{"_workspace_id", workspaceID},
-	})
+	// tasksCur, err := db.Tasks.Find(context.Background(), bson.D{
+	// 	{"_workspace_id", workspaceID},
+	// })
 
-	var taskIDs = []primitive.ObjectID{}
+	// var taskIDs = []primitive.ObjectID{}
 
-	for tasksCur.Next(context.Background()) {
+	// for tasksCur.Next(context.Background()) {
 
-		// create a value into which the single document can be decoded
-		var task NewTask
-		// var elem = bson.M{}
-		err := tasksCur.Decode(&task)
-		if err != nil {
-			panic(err)
-		}
+	// 	// create a value into which the single document can be decoded
+	// 	var task NewTask
+	// 	// var elem = bson.M{}
+	// 	err := tasksCur.Decode(&task)
+	// 	if err != nil {
+	// 		panic(err)
+	// 	}
 
-		taskIDs = append(taskIDs, task.ID)
-	}
+	// 	taskIDs = append(taskIDs, task.ID)
+	// }
 
 	//cur here returns only one value per task
-	subtasksCur, err := db.Subtasks.Aggregate(context.Background(), mongo.Pipeline{
+	subtasksCur, err := db.Tasks.Aggregate(context.Background(), mongo.Pipeline{
 		bson.D{
 			{"$match", bson.D{
-				{"_task_id", bson.D{
-					{"$in", taskIDs},
-				}},
+				{"_workspace_id", workspaceID},
 			}},
 		},
 		bson.D{
 			{"$lookup", bson.D{
-				{"from", "tasks"},
-				{"localField", "_task_id"},
-				{"foreignField", "_id"},
-				{"as", "task"},
+				{"from", "subtasks"},
+				{"localField", "_id"},
+				{"foreignField", "_task_id"},
+				{"as", "subtasks"},
 			}},
 		},
 		bson.D{
-			{"$unwind", "$task"},
+			{"$unwind", bson.D{
+				{"path", "$subtasks"},
+				{"preserveNullAndEmptyArrays", true},
+			}},
 		},
 		bson.D{
 			{"$group", bson.D{
-				{"_id", "$_task_id"},
+				{"_id", "$_id"},
 				{"task_name", bson.D{
-					{"$first", "$task.name"},
+					{"$first", "$name"},
 				}},
 				{"task_budget", bson.D{
-					{"$first", "$task.budget"},
+					{"$first", "$budget"},
 				}},
 				{"total_spent", bson.D{
-					{"$sum", "$spent"},
+					{"$sum", "$subtasks.spent"},
 				}},
 			}},
 		},
@@ -143,6 +144,7 @@ func GetWorkspaceTaskBudgetBreakdown(w http.ResponseWriter, r *http.Request) {
 		Task_name   string
 		Total_spent int
 		Task_budget int
+		// Subtasks    []NewSubtask
 	}{}
 
 	for subtasksCur.Next(context.Background()) {
@@ -153,6 +155,7 @@ func GetWorkspaceTaskBudgetBreakdown(w http.ResponseWriter, r *http.Request) {
 			Task_name   string
 			Total_spent int
 			Task_budget int
+			// Subtasks    []NewSubtask
 		}
 		// var elem = bson.M{}
 		err := subtasksCur.Decode(&elem)

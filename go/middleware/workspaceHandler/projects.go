@@ -48,6 +48,31 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(projects)
 }
 
+func GetSingleProject(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+
+	projectID, err := primitive.ObjectIDFromHex(params["project-id"])
+	if err != nil {
+		panic(err)
+	}
+
+	var project NewProject
+
+	err = db.Projects.FindOne(context.Background(), bson.D{{
+		"_id", projectID,
+	}}).Decode(&project)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+	// Finding multiple documents returns a cursor
+	// Iterating through the cursor allows us to decode documents one at a time
+
+	fmt.Printf("Found projects: %+v\n", project)
+	json.NewEncoder(w).Encode(project)
+}
+
 func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 
