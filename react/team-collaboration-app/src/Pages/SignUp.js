@@ -8,7 +8,7 @@ import { register } from '../api/Login.js';
 import { Card } from 'primereact/card';
 import 'primeflex/primeflex.css';
  
-const SignUp = () => 
+const SignUp = ({history}) => 
 {
 
     const [user, setUser] = useState({
@@ -19,6 +19,8 @@ const SignUp = () =>
         password: '',
     });
     
+    const [err, setErr] = useState('');
+
     const handleChange = e => {
             const { name, value } = e.target;
             setUser(prevState => ({
@@ -28,8 +30,13 @@ const SignUp = () =>
         };
 
     const registerUser = async () => {
-        let res = await register(user)
-        console.log(res);
+        try{
+            let res = await register(user)
+            history.push('/project')
+        }
+        catch(err){
+            setErr(err);
+        }
         //history.push('/tasks')
     }
 
@@ -37,6 +44,7 @@ const SignUp = () =>
         <div className="signup-page p-grid p-justify-center p-align-center">
             <div className="p-col-4">
                 <Card className="signup-card">
+                    <h2> Register </h2>
                     <h5>NAME</h5>
                     <InputText name="name" value={user.name} onChange={handleChange}/>
                     <h5>ORGANIZATION</h5>
@@ -46,6 +54,7 @@ const SignUp = () =>
                     <h5>PASSWORD</h5>
                     <Password name="password" value={user.password} onChange={handleChange}/>
                     <br/>
+                    <div className="err">{err} </div>
                     <Button label="Sign Up" onClick={() => 
                         registerUser()
                     } />

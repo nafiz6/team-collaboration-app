@@ -48,10 +48,16 @@ button {
     margin-bottom: 10px;
 }
 
+.signup-card h2{
+    padding : 0 0 30px 0;
+    margin : 1px;
+}
+
 .signup-card h5{
     padding : 1px;
     margin : 1px;
 }
+
 
 .signup-page{
     height: 100vh;
@@ -65,4 +71,8 @@ button {
     text-decoration: none;
     padding: 0;
     font-size: small;
+}
+
+.err {
+    color: #ff3c3c;
 }
