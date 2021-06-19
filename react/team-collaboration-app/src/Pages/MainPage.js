@@ -18,11 +18,11 @@ const MainPage = (props) => {
 
     const getWs = async () => {
 
-        if (projects.length != 0) {
+        if (projects.length !== 0) {
 
             let res = null;
 
-            if (Object.keys(props.match.params).length != 0) {
+            if (Object.keys(props.match.params).length > 0) {
                  res = await axios.get(`http://localhost:8080/api/workspace/${props.match.params.id}`)
             }
             else {
@@ -110,7 +110,7 @@ const MainPage = (props) => {
                 <RoomsContainer project={selectedProject} /> {/* This gets current selected project */}
                 <div className='taskWork-Style'>
                     <NavBar id={projId} wsid={wsId} />
-                    <WorkContainer ws={selectedWS} tab={props.tab} />
+                    <WorkContainer ws={selectedWS} tab={props.tab} {...props} />
                 </div>
             </div>
         </div>

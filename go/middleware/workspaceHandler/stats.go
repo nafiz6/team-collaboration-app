@@ -29,21 +29,52 @@ func GetWorkspaceUserTasks(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	cur, err := db.Tasks.Aggregate(context.Background(), mongo.Pipeline{
+	cur, err := db.Workspaces.Aggregate(context.Background(), mongo.Pipeline{
 		bson.D{
 			{"$match", bson.D{
-				{"_workspace_id", workspaceID},
+				{"_id", workspaceID},
 			}},
 		},
 		bson.D{
-			{"$unwind", "$assigned_users"},
+			{"$unwind", "$users"},
+		},
+
+		bson.D{
+			{"$replaceWith", "$users"},
 		},
 		bson.D{
-			{"$group", bson.D{
-				{"_id", "$assigned_users"},
-				{"count_tasks_assigned", bson.D{
-					{"$sum", 1},
+			{"$lookup", bson.D{
+				{"from", "tasks"},
+				{"let", bson.D{
+					{"userID", "$_id"},
 				}},
+
+				{"pipeline", mongo.Pipeline{
+					bson.D{
+						{"$match", bson.D{
+							{"_workspace_id", workspaceID},
+						}},
+					},
+					bson.D{
+						{"$unwind", "$assigned_users"},
+					},
+					bson.D{
+						{"$match", bson.D{
+							{"$expr", bson.D{
+								{"$eq", bson.A{
+									"$assigned_users._id", "$$userID",
+								}},
+							}},
+						}},
+					},
+				},
+				},
+				{"as", "tasks"},
+			}},
+		},
+		bson.D{
+			{"$sort", bson.D{
+				{"role", 1},
 			}},
 		},
 	})
@@ -52,36 +83,36 @@ func GetWorkspaceUserTasks(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var userTasks = []struct {
-		// ID primitive.ObjectID
-		ID struct {
-			ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-			Name string             //maybe
-		} `json:"id" bson:"_id,omitempty"`
+	// var userTasks = []struct {
+	// 	// ID primitive.ObjectID
+	// 	ID struct {
+	// 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	// 		Name string             //maybe
+	// 	} `json:"id" bson:"_id,omitempty"`
 
-		// name  string
-		// tasks []NewTask
-		Count_tasks_assigned int
-	}{}
+	// 	// name  string
+	// 	// tasks []NewTask
+	// 	Count_tasks_assigned int
+	// }{}
 
-	// var userTasks = []bson.M{}
+	var userTasks = []bson.M{}
 
 	//cur here should return a single value
 
 	for cur.Next(context.Background()) {
 
 		// create a value into which the single document can be decoded
-		var elem struct {
-			// ID primitive.ObjectID
-			ID struct {
-				ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-				Name string             //maybe
-			} `json:"id" bson:"_id,omitempty"`
-			// name  string
-			// tasks []NewTask
-			Count_tasks_assigned int
-		}
-		// var elem = bson.M{}
+		// var elem struct {
+		// 	// ID primitive.ObjectID
+		// 	ID struct {
+		// 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		// 		Name string             //maybe
+		// 	} `json:"id" bson:"_id,omitempty"`
+		// 	// name  string
+		// 	// tasks []NewTask
+		// 	Count_tasks_assigned int
+		// }
+		var elem = bson.M{}
 		err := cur.Decode(&elem)
 		if err != nil {
 			panic(err)
@@ -129,7 +160,7 @@ func GetWorkspaceTotalBudget(w http.ResponseWriter, r *http.Request) {
 
 	var totalWorkspaceBudget struct {
 		Total_budget int
-		Total_spent int
+		Total_spent  int
 	}
 
 	//cur here should return a single value

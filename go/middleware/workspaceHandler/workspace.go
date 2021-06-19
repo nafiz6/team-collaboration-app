@@ -20,6 +20,14 @@ import (
 func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 	params := mux.Vars(r)
+
+	var self = "60af936f5211b79fc2b0bb0d"
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Print(selfID)
 	// _ = json.NewDecoder(r.Body).Decode(&p)
 
 	fmt.Printf("received projectID: %+v", params["project-id"])
@@ -33,6 +41,8 @@ func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
 
 	cur, err := db.Workspaces.Find(context.Background(), bson.D{
 		{"_project_id", projectID},
+		//ONLY GET MY WORKSPACES
+		// {"users._id", selfID},	
 	})
 
 	for cur.Next(context.Background()) {
@@ -189,21 +199,210 @@ func SetWorkspaceUserRole(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("id: %+v", id)
 
-	objID, err := primitive.ObjectIDFromHex(id)
+	workspaceID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("objID: %+v", objID)
+	//check if user exists in workspace
+
+	var workspace NewWorkspace
+
+	err = db.Workspaces.FindOne(context.Background(), bson.D{
+		{"_id", workspaceID},
+		{"users._id", userID},
+	}).Decode(&workspace)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User not in workspace")
+		return
+	}
+
+	fmt.Printf("objID: %+v", workspaceID)
 
 	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
-		{"_id", objID},
+		{"_id", workspaceID},
 	}, bson.D{
 		{"$set", bson.D{{"users.$[user].role", uid.Role}}},
 	},
 		options.Update().SetArrayFilters(options.ArrayFilters{
 			Filters: []interface{}{bson.D{{"user._id", userID}}},
 		}),
+	)
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	// fmt.Printf("Inserted: %+v\n", doc)
+
+	json.NewEncoder(w).Encode(insertResult)
+
+}
+
+func RemoveUserFromWorkspace(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCors(&w)
+	params := mux.Vars(r)
+	var uid struct {
+		Uid string
+	}
+	// fmt.Printf("body %+v\n", r.Body)
+	_ = json.NewDecoder(r.Body).Decode(&uid)
+	//insert newTask into db
+
+	fmt.Printf("received user id %+v\n", uid)
+
+	userID, err := primitive.ObjectIDFromHex(uid.Uid)
+	if err != nil {
+		panic(err)
+	}
+
+	fmt.Printf("userID: %+v", userID)
+
+	id := params["workspace-id"]
+
+	fmt.Printf("id: %+v", id)
+
+	workspaceID, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		panic(err)
+	}
+
+	//check if user exists in workspace
+	var workspace NewWorkspace
+
+	err = db.Workspaces.FindOne(context.Background(), bson.D{
+		{"_id", workspaceID},
+		{"users._id", userID},
+	}).Decode(&workspace)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User not in workspace")
+		return
+	}
+
+	//need to remove tasks and subtasks of this user in this workspace
+
+	//find tasks in workspace
+	cur, err := db.Tasks.Find(context.Background(), bson.D{
+		{"_workspace_id", workspaceID},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	var taskIDs = []primitive.ObjectID{}
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewTask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		taskIDs = append(taskIDs, elem.ID)
+	}
+
+	//find subtasks in workspace
+	cur, err = db.Subtasks.Find(context.Background(), bson.D{
+		{"_task_id", bson.D{
+			{"$in", taskIDs},
+		}},
+	})
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	var subtaskIDs = []primitive.ObjectID{}
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewSubtask
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		subtaskIDs = append(subtaskIDs, elem.ID)
+	}
+
+	// //remove user sabtaskUpdates
+	// deleteResult, err := db.SubtaskUpdates.DeleteMany(context.TODO(),
+	// 	bson.D{
+	// 		{"_subtask_id", bson.D{
+	// 			{"$in", subtaskIDs},
+	// 		}},
+	// 		{"_user_id", userID},
+	// 	},
+	// )
+	// if err != nil {
+	// 	fmt.Printf("Error: %s", err.Error())
+	// 	json.NewEncoder(w).Encode(err.Error())
+
+	// }
+	// json.NewEncoder(w).Encode(deleteResult)
+
+	//remove user from subtasks
+	deleteResult, err := db.Subtasks.UpdateMany(context.TODO(),
+		bson.D{
+			{"_id", bson.D{
+				{"$in", subtaskIDs},
+			}},
+		},
+		bson.D{
+			{"$pull", bson.D{
+				{"assigned_users", bson.D{
+					{"_id", userID},
+				}},
+			}},
+		},
+	)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	json.NewEncoder(w).Encode(deleteResult)
+
+	//remove user from tasks
+	deleteResult, err = db.Tasks.UpdateMany(context.TODO(),
+		bson.D{
+			{"_id", bson.D{
+				{"$in", taskIDs},
+			}},
+		},
+		bson.D{
+			{"$pull", bson.D{
+				{"assigned_users", bson.D{
+					{"_id", userID},
+				}},
+			}},
+		},
+	)
+
+	fmt.Printf("objID: %+v", workspaceID)
+
+	//remove user from workspace
+	insertResult, err := db.Workspaces.UpdateOne(context.TODO(), bson.D{
+		{"_id", workspaceID},
+	},
+		bson.D{
+			{"$pull", bson.D{
+				{"users", bson.D{
+					{"_id", userID},
+				}},
+			}},
+		},
 	)
 
 	if err != nil {

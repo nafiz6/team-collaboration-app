@@ -76,9 +76,42 @@ func GetSingleProject(w http.ResponseWriter, r *http.Request) {
 func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 
+	var self = "60af936f5211b79fc2b0bb0d"
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
+
 	var projects []NewProject
 
-	cur, err := db.Projects.Find(context.Background(), bson.D{{}})
+	var projectIDs []primitive.ObjectID = []primitive.ObjectID{}
+
+	cur, err := db.Workspaces.Find(context.Background(), bson.D{
+		{"name", "General"},
+		{"users._id", selfID},
+	})
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem primitive.ObjectID
+		err := cur.Decode(&elem)
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		projectIDs = append(projectIDs, elem)
+	}
+
+	cur, err = db.Projects.Find(context.Background(),
+		bson.D{},
+		//ONLY GET MY PROJECTS
+		// bson.D{
+		// 	{"_id", bson.D{
+		// 		{"$in", projectIDs},
+		// 	}},
+		// }
+	)
 
 	if err != nil {
 		log.Fatal(err)
@@ -141,13 +174,6 @@ func CreateProjectNew(w http.ResponseWriter, r *http.Request) {
 	_ = json.NewDecoder(r.Body).Decode(&newProject)
 
 	//CREATE NEW WORKSPACE GENERAL AND LINK TO THIS PROJECT
-
-	// newProject.Workspaces = append(newProject.Workspaces, Workspace{
-	// 	Name: "General",
-	// 	ID: primitive.NewObjectID(),
-	// 	Users: []User{},
-	// 	Tasks: []Task{},
-	// })
 	fmt.Printf("%+v", newProject)
 
 	newProject.ID = primitive.NewObjectID()
@@ -168,12 +194,37 @@ func CreateProjectNew(w http.ResponseWriter, r *http.Request) {
 	generalWorkspace.Name = "General"
 	generalWorkspace.Date_created = primitive.NewDateTimeFromTime(time.Now())
 	generalWorkspace.Description = "General workspace forms global scope for project"
+
+	var self = "60af936f5211b79fc2b0bb0d"
+
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
+
+	//get self details
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"_id", selfID}}).Decode(&userDetails)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
 	generalWorkspace.Users = []struct {
 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Role int
 		Name string
-	}{}
-	//add this user to general workspace
+	}{
+		{
+			ID:   userDetails.ID,
+			Role: 0,
+			Name: userDetails.Name,
+		},
+	}
+	//add this user to general workspace, CHECK
 
 	insertWorkspaceResult, err := db.Workspaces.InsertOne(context.TODO(), generalWorkspace)
 
@@ -304,9 +355,33 @@ func AssignUserToProjectNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("objID: %+v", projectID)
 
-	//check if user exists in project first
+	//only allow assigning if self user role is 0
+
+	var self = "60af936f5211b79fc2b0bb0d"
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
 
 	var workspace NewWorkspace
+
+	err = db.Workspaces.FindOne(context.Background(),
+		bson.D{
+			{"_project_id", projectID},
+			{"name", "General"},
+			{"users._id", selfID},
+			{"users.role", 0},
+		},
+	).Decode(&workspace)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User role too low to assign users to project")
+		return
+	}
+
+	//check if user exists in project first
+
+	// var workspace NewWorkspace
 
 	err = db.Workspaces.FindOne(context.Background(), bson.D{
 		{"_project_id", projectID},
