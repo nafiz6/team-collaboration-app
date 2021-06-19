@@ -55,7 +55,7 @@ const MainPage = (props) => {
 
     useEffect(() => {
         getWs();
-    }, [projects])
+    }, [projects,props.match.params])
 
     const [selectedProject, setSelectedProject] = useState(initialProject)
 
