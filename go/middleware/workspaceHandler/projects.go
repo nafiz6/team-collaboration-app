@@ -94,13 +94,13 @@ func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 	for cur.Next(context.Background()) {
 
 		// create a value into which the single document can be decoded
-		var elem primitive.ObjectID
+		var elem NewWorkspace
 		err := cur.Decode(&elem)
 		if err != nil {
 			log.Fatal(err)
 		}
 
-		projectIDs = append(projectIDs, elem)
+		projectIDs = append(projectIDs, elem.ID)
 	}
 
 	cur, err = db.Projects.Find(context.Background(),
