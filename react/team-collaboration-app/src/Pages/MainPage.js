@@ -19,7 +19,16 @@ const MainPage = (props) => {
     const getWs = async () => {
 
         if (projects.length != 0) {
-            let res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`)
+
+            let res = null;
+
+            if (Object.keys(props.match.params).length != 0) {
+                 res = await axios.get(`http://localhost:8080/api/workspace/${props.match.params.id}`)
+            }
+            else {
+                 res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`)
+            }
+
             setWs(res.data);
 
             if (res.data.length > 0) {
@@ -63,9 +72,8 @@ const MainPage = (props) => {
                 });
             }
         }
-        else{
-            if(projects.length > 0)
-            {
+        else {
+            if (projects.length > 0) {
                 setSelectedProject(projects[0]);
                 setProjId(projects[0].id);
             }
@@ -86,9 +94,8 @@ const MainPage = (props) => {
                 });
             }
         }
-        else{
-            if( ws.length >0)
-            {
+        else {
+            if (ws.length > 0) {
                 setSelectedWS(ws[0]);
                 setWsId(ws[0].id);
             }
