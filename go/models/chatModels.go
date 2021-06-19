@@ -4,19 +4,23 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+
 	// "golang.org/x/tools/go/types/objectpath"
-	"github.com/gorilla/mux"
-	"go.mongodb.org/mongo-driver/bson"
 	"log"
 	"net/http"
 	"teams/middleware/cors"
 	"teams/middleware/db"
+
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 var AllPools = make(map[string]*Pool)
 
+// Each workspace has a pool
 type Pool struct {
 	Register    chan *Client
 	Unregister  chan *Client
@@ -37,6 +41,7 @@ func NewPool() *Pool {
 func (pool *Pool) Start() {
 	for {
 		select {
+		// Connect client to the pool
 		case client := <-pool.Register:
 			pool.Clients[client] = true
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
@@ -45,6 +50,7 @@ func (pool *Pool) Start() {
 				client.Conn.WriteJSON(Message{Type: "Connection", Body: "New User Connected..."})
 			}
 			break
+		// Disconnect client
 		case client := <-pool.Unregister:
 			delete(pool.Clients, client)
 			fmt.Println("Size of Connection Pool: ", len(pool.Clients))
@@ -52,6 +58,7 @@ func (pool *Pool) Start() {
 				client.Conn.WriteJSON(Message{Type: "Connection", Body: "User Disconnected..."})
 			}
 			break
+		// Send message to all clients in the pool
 		case message := <-pool.Broadcast:
 			fmt.Println("Sending message to all clients in Pool")
 			for client, _ := range pool.Clients {
@@ -116,6 +123,7 @@ func (c *Client) Read() {
 }
 
 func createPool(workspaceId string) *Pool {
+	// If pool exists, return
 	if val, ok := AllPools[workspaceId]; ok {
 		return val
 	}
@@ -169,7 +177,6 @@ func AddChatToDb(message Message) {
 	// json.NewEncoder(w).Encode(insertResult.InsertedID)
 
 }
-
 
 //add limit to this later
 func GetChats(w http.ResponseWriter, r *http.Request) {

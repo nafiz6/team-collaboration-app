@@ -75,7 +75,7 @@ func Router() *mux.Router {
 	//return workspace users sorted by role
 	router.HandleFunc("/api/workspace-tasks-budget-breakdown/{workspace-id}", workspaceHandler.GetWorkspaceTaskBudgetBreakdown).Methods("GET", "OPTIONS")
 
-	//POSTS	
+	//POSTS
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspaceNew).Methods("POST", "OPTIONS") // FIZZ -- DONE
 
 	// assign user to workspace

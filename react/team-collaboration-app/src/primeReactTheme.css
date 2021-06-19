@@ -76,3 +76,73 @@ button {
 .err {
     color: #ff3c3c;
 }
+
+.chat-page {
+    height: 100%;
+}
+
+.chat-message-area {
+    height: 80vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    position: relative;
+}
+
+.chat-message-groups {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+}
+
+.chat-input-area {
+    height: 8%;
+    width: 90%;
+    margin: 0 5% 0 5%;
+}
+
+.chat-message-box {
+    width: 40%;
+    min-height: 50px;
+    background-color: #2b323c;
+    color: rgba(255, 255, 255, 1);
+    padding: 15px;
+    border-radius: 5px;
+    overflow-wrap: break-word;
+}
+
+.chat-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 100%;
+    margin: 20px;
+}
+
+.chat-username {
+    color: rgb(230, 230, 230);
+    font-weight: bold;
+    margin-left: 15px;
+    margin-bottom: 4px;
+}
+
+.chat-message-container {
+    margin-top: 5px;
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #888; 
+}
+ 
+/* Handle */
+::-webkit-scrollbar-thumb {
+  background: #2b323c; 
+}
+
+/* Handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; 
+}
