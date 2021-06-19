@@ -32,6 +32,12 @@ func GetAllTask(w http.ResponseWriter, r *http.Request) {
 func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
 	params := mux.Vars(r)
+
+	// var self = "60af936f5211b79fc2b0bb0d"
+	// selfID, err := primitive.ObjectIDFromHex(self)
+	// if err != nil {
+	// 	panic(err)
+	// }
 	// _ = json.NewDecoder(r.Body).Decode(&p)
 
 	fmt.Printf("received workspaceID: %+v", params["workspace-id"])
@@ -45,6 +51,8 @@ func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 
 	cur, err := db.Tasks.Find(context.Background(), bson.D{
 		{"_workspace_id", workspaceID},
+		//ONLY GET MY TASKS, maybe no need 
+		// {"assigned_users._id", selfID},
 	})
 
 	for cur.Next(context.Background()) {
@@ -480,12 +488,12 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("id: %+v", id)
 
-	objID, err := primitive.ObjectIDFromHex(id)
+	taskID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Printf("objID: %+v", objID)
+	fmt.Printf("objID: %+v", taskID)
 
 	//find user's name and role from db from uid
 
@@ -516,7 +524,7 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 	var task NewTask
 
 	err = db.Tasks.FindOne(context.Background(), bson.D{
-		{"_id", objID},
+		{"_id", taskID},
 		{"assigned_users._id", userID},
 	}).Decode(&task)
 
@@ -525,8 +533,33 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	//need to retrieve task to check workspace id
+
+	err = db.Tasks.FindOne(context.Background(), bson.D{
+		{"_id", taskID},
+	}).Decode(&task)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("No task with task id exists")
+		return
+	}
+
+	//check if user exists in workspace
+
+	var workspace NewWorkspace
+
+	err = db.Workspaces.FindOne(context.Background(), bson.D{
+		{"users._id", userID},
+		{"_id", task.Workspace_ID},
+	}).Decode(&workspace)
+
+	if err == mongo.ErrNoDocuments {
+		json.NewEncoder(w).Encode("User not in workspace")
+		return
+	}
+
 	insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
-		{"_id", objID},
+		{"_id", taskID},
 	}, bson.D{
 		{"$push", bson.D{{"assigned_users", user}}},
 	},
@@ -562,14 +595,14 @@ func CreateTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("id: %+v", id)
 
-	objID, err := primitive.ObjectIDFromHex(id)
+	worspaceID, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		panic(err)
 	}
 
-	newTask.Workspace_ID = objID
+	newTask.Workspace_ID = worspaceID
 
-	fmt.Printf("objID: %+v", objID)
+	fmt.Printf("objID: %+v", worspaceID)
 
 	insertResult, err := db.Tasks.InsertOne(context.TODO(), newTask)
 

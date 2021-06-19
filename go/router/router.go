@@ -80,6 +80,7 @@ func Router() *mux.Router {
 
 	// assign user to workspace
 	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspaceNew).Methods("POST", "OPTIONS") //DONE
+	router.HandleFunc("/api/remove-workspace-user/{workspace-id}", workspaceHandler.RemoveUserFromWorkspace).Methods("POST", "OPTIONS") //DONE
 
 	router.HandleFunc("/api/set-workspace-user-role/{workspace-id}", workspaceHandler.SetWorkspaceUserRole).Methods("POST", "OPTIONS") //DONE
 
