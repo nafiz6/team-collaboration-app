@@ -26,7 +26,9 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 	cur, err := db.Projects.Find(context.Background(), bson.D{{}})
 
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(err)
+		log.Println(err)
+		return
 	}
 	// Finding multiple documents returns a cursor
 	// Iterating through the cursor allows us to decode documents one at a time
@@ -36,7 +38,9 @@ func GetAllProjects(w http.ResponseWriter, r *http.Request) {
 		var elem Project
 		err := cur.Decode(&elem)
 		if err != nil {
-			log.Fatal(err)
+			json.NewEncoder(w).Encode(err)
+			log.Println(err)
+			return
 		}
 
 		projects = append(projects, elem)
@@ -64,7 +68,9 @@ func GetSingleProject(w http.ResponseWriter, r *http.Request) {
 	}}).Decode(&project)
 
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(err)
+		log.Println(err)
+		return
 	}
 	// Finding multiple documents returns a cursor
 	// Iterating through the cursor allows us to decode documents one at a time
@@ -75,23 +81,24 @@ func GetSingleProject(w http.ResponseWriter, r *http.Request) {
 
 func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
-
-	var self = "60af936f5211b79fc2b0bb0d"
-	selfID, err := primitive.ObjectIDFromHex(self)
-	if err != nil {
-		panic(err)
-	}
-
 	var projects []NewProject
 
-	var projectIDs []primitive.ObjectID = []primitive.ObjectID{}
+	/*
+		var self = "60af936f5211b79fc2b0bb0d"
+		selfID, err := primitive.ObjectIDFromHex(self)
+		if err != nil {
+			panic(err)
+		}
 
-	cur, err := db.Workspaces.Find(context.Background(), bson.D{
-		{"name", "General"},
-		{"users._id", selfID},
-	})
 
-	for cur.Next(context.Background()) {
+		var projectIDs []primitive.ObjectID = []primitive.ObjectID{}
+
+		cur, err := db.Workspaces.Find(context.Background(), bson.D{
+			{"name", "General"},
+			{"users._id", selfID},
+		})
+
+		log.Print(cur)
 
 		// create a value into which the single document can be decoded
 		var elem NewWorkspace
@@ -99,6 +106,7 @@ func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Fatal(err)
 		}
+	*/
 
 		projectIDs = append(projectIDs, elem.ID)
 	}
@@ -114,7 +122,9 @@ func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 	)
 
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(err)
+		log.Println(err)
+		return
 	}
 	// Finding multiple documents returns a cursor
 	// Iterating through the cursor allows us to decode documents one at a time
@@ -124,7 +134,9 @@ func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 		var elem NewProject
 		err := cur.Decode(&elem)
 		if err != nil {
-			log.Fatal(err)
+			json.NewEncoder(w).Encode(err)
+			log.Println(err)
+			return
 		}
 
 		projects = append(projects, elem)
@@ -417,14 +429,14 @@ func AssignUserToProjectNew(w http.ResponseWriter, r *http.Request) {
 
 func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	cors.EnableCors(&w)
-
 	var users []User
 
 	cur, err := db.Users.Find(context.Background(), bson.D{{}})
 
 	if err != nil {
 		json.NewEncoder(w).Encode(err)
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 	// Finding multiple documents returns a cursor
 	// Iterating through the cursor allows us to decode documents one at a time
@@ -434,7 +446,9 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		var elem User
 		err := cur.Decode(&elem)
 		if err != nil {
-			log.Fatal(err)
+			json.NewEncoder(w).Encode(err)
+			log.Println(err)
+			return
 		}
 
 		users = append(users, elem)
@@ -469,7 +483,8 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 
 	if err != nil {
 		json.NewEncoder(w).Encode(err)
-		log.Fatal(err)
+		log.Println(err)
+		return
 	}
 
 	json.NewEncoder(w).Encode(userDetails)
@@ -486,7 +501,9 @@ func GetOneUser(w http.ResponseWriter, r *http.Request) {
 	err := db.Users.FindOne(context.Background(), bson.D{{}}).Decode(&user)
 
 	if err != nil {
-		log.Fatal(err)
+		json.NewEncoder(w).Encode(err)
+		log.Println(err)
+		return
 	}
 
 	fmt.Printf("Found a single document: %+v\n", user)
