@@ -100,18 +100,22 @@ func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
 
 		log.Print(cur)
 
-		// create a value into which the single document can be decoded
-		var elem NewWorkspace
-		err := cur.Decode(&elem)
-		if err != nil {
-			log.Fatal(err)
+		for cur.Next(context.Background()) {
+
+			// create a value into which the single document can be decoded
+			var elem primitive.ObjectID
+			err := cur.Decode(&elem)
+			if err != nil {
+				json.NewEncoder(w).Encode(err)
+				log.Println(err)
+				return
+			}
+
+			projectIDs = append(projectIDs, elem)
 		}
 	*/
 
-		projectIDs = append(projectIDs, elem.ID)
-	}
-
-	cur, err = db.Projects.Find(context.Background(),
+	cur, err := db.Projects.Find(context.Background(),
 		bson.D{},
 		//ONLY GET MY PROJECTS
 		// bson.D{
