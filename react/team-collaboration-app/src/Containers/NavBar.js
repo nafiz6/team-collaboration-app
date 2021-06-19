@@ -5,13 +5,13 @@ import StatButton from "../Components/StatButton";
 import TaskButton from "../Components/TaskButton";
 import '../MyStyles.css'
 
-const NavBar = () => 
+const NavBar = (props) => 
 {
     const navButtons = [
-        <TaskButton/>,
-        <ChatButton/>,
-        <FileButton/>,
-        <StatButton/>
+        <TaskButton id={props.id} wsid={props.wsid}/>,
+        <ChatButton id={props.id} wsid={props.wsid}/>,
+        <FileButton id={props.id} wsid={props.wsid}/>,
+        <StatButton id={props.id} wsid={props.wsid}/>
     ]
 
     return(

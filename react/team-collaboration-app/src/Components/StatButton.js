@@ -2,14 +2,10 @@ import React from 'react'
 import '../MyStyles.css'
 import { Link } from 'react-router-dom'
 
-const StatButton = () => {
+const StatButton = (props) => {
     return (
-        <Link to="/stats">
-            <button className="navBarButton-Style"
-                onClick={() => {
-                    /* Set current Tab as Stat */
-                }
-                }>Stats</button>
+        <Link to= {`/project/${props.id}/ws/${props.wsid}/stats`}>
+            <button className="navBarButton-Style">Stats</button>
         </Link>
     )
 }

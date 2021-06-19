@@ -7,35 +7,28 @@ import StatPage from "../Pages/StatPage";
 
 const WorkContainer = (props) => {
 
-    if(!props.tab)
-    {
-        return(
-            <div>Hello</div>
-        )
-    }
-
-    if(props.tab == "tasks")
+    if(props.tab === "tasks")
     {
         return (
             <TaskPage />
         )
     }
 
-    if(props.tab == "chats")
+    if(props.tab === "chats")
     {
         return (
             <ChatPage />
         )
     }
 
-    if(props.tab == "files")
+    if(props.tab === "files")
     {
         return (
             <FilePage />
         )
     }
 
-    if(props.tab == "stats")
+    if(props.tab === "stats")
     {
         return (
             <StatPage />

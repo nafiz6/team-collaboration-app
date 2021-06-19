@@ -2,15 +2,11 @@ import React from 'react'
 import '../MyStyles.css'
 import { Link } from 'react-router-dom'
 
-const ChatButton = () => 
+const ChatButton = (props) => 
 {
     return (
-        <Link to="/chats">
-        <button className="navBarButton-Style"
-        onClick={() => {
-            /* Set current Tab as Chat */
-        }
-        }>Chats</button>
+        <Link to = {`/project/${props.id}/ws/${props.wsid}/chats`}>
+        <button className="navBarButton-Style">Chats</button>
         </Link>
     )
 }

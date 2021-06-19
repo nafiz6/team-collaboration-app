@@ -2,14 +2,10 @@ import React from 'react'
 import '../MyStyles.css'
 import { Link } from 'react-router-dom'
 
-const FileButton = () => {
+const FileButton = (props) => {
     return (
-        <Link to="/files">
-            <button className="navBarButton-Style"
-                onClick={() => {
-                    /* Set current Tab as File */
-                }
-                }>Files</button>
+        <Link to = {`/project/${props.id}/ws/${props.wsid}/files`}>
+            <button className="navBarButton-Style">Files</button>
         </Link>
     )
 }
