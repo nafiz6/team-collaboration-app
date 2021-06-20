@@ -9,6 +9,7 @@ import (
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
+	"time"
 
 	"github.com/gorilla/mux"
 	"go.mongodb.org/mongo-driver/bson"
@@ -572,8 +573,9 @@ func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("objID: %+v", objID)
 	newWorkspace.Project_ID = objID
+	newWorkspace.Date_created = primitive.NewDateTimeFromTime(time.Now())
 
-	insertResult, insertErr := db.Projects.InsertOne(
+	insertResult, insertErr := db.Workspaces.InsertOne(
 		context.TODO(),
 		newWorkspace,
 	)
