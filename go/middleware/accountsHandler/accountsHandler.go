@@ -122,6 +122,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 
 	userDetails.Password = string(hash[:])
+	userDetails.Dp = "http://localhost:8080/static/default.jpg"
 
 	var userFound UserDetailsNew
 

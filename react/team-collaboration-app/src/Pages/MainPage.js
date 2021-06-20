@@ -18,11 +18,11 @@ const MainPage = (props) => {
 
     const getWs = async () => {
 
-        if (projects.length != 0) {
+        if (projects.length !== 0) {
 
             let res = null;
 
-            if (Object.keys(props.match.params).length != 0) {
+            if (Object.keys(props.match.params).length > 0) {
                  res = await axios.get(`http://localhost:8080/api/workspace/${props.match.params.id}`)
             }
             else {

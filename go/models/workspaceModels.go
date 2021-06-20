@@ -98,6 +98,7 @@ type NewTask struct {
 	Assigned_users []struct {         //this represents superset of all subtask users
 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Name string             //maybe
+		Role int                //implement later
 	}
 }
 
