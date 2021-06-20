@@ -79,7 +79,7 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/workspace/{project-id}", workspaceHandler.CreateWorkspaceNew).Methods("POST", "OPTIONS") // FIZZ -- DONE
 
 	// assign user to workspace
-	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspaceNew).Methods("POST", "OPTIONS") //DONE
+	router.HandleFunc("/api/assign-workspace/{workspace-id}", workspaceHandler.AssignUserToWorkspaceNew).Methods("POST", "OPTIONS")     //DONE
 	router.HandleFunc("/api/remove-workspace-user/{workspace-id}", workspaceHandler.RemoveUserFromWorkspace).Methods("POST", "OPTIONS") //DONE
 
 	router.HandleFunc("/api/set-workspace-user-role/{workspace-id}", workspaceHandler.SetWorkspaceUserRole).Methods("POST", "OPTIONS") //DONE
@@ -121,7 +121,7 @@ func Router() *mux.Router {
 	// serve static files
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 	// upload files
-	router.HandleFunc("/api/upload-file/{workspace-id}", chatHandler.UploadFile).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/upload-file/", chatHandler.UploadFile).Methods("POST", "OPTIONS")
 
 	/*
 		Authentication

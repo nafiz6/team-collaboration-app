@@ -10,8 +10,10 @@ import (
 	"strings"
 
 	"teams/middleware/accountsHandler"
+	"teams/middleware/cors"
 	. "teams/models"
 
+	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
 
@@ -53,10 +55,11 @@ func getFileType(filename string) string {
 }
 
 func UploadFile(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCorsCredentials(&w)
 	fmt.Println("File Upload Endpoint Hit")
 
-	// 10MB max
-	r.ParseMultipartForm(10 << 20)
+	// 99MB max
+	r.ParseMultipartForm(99 << 20)
 
 	file, handler, err := r.FormFile("file")
 	if err != nil {
@@ -71,7 +74,7 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 
 	// generate this id
 
-	id := "12345." + getFileType(handler.Filename)
+	id := uuid.NewString() + "." + getFileType(handler.Filename)
 	tempFile, err := os.Create(filepath.Join("static", id))
 	if err != nil {
 		fmt.Println(err)
@@ -86,6 +89,6 @@ func UploadFile(w http.ResponseWriter, r *http.Request) {
 	// write byte array
 	tempFile.Write(fileBytes)
 
-	fmt.Fprintf(w, "Successfully Uploaded File\n")
+	fmt.Fprintf(w, "http://localhost:8080/static/"+id)
 
 }

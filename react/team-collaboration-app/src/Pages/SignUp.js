@@ -5,7 +5,9 @@ import {Password} from 'primereact/password';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { register } from '../api/Login.js';
+import { fileUpload } from '../api/file.js';
 import { Card } from 'primereact/card';
+import { FileUpload } from 'primereact/fileupload';
 import 'primeflex/primeflex.css';
  
 const SignUp = ({history}) => 
@@ -18,6 +20,8 @@ const SignUp = ({history}) =>
         bio: '',
         password: '',
     });
+
+    const [image, setImage] = useState(null);
     
     const [err, setErr] = useState('');
 
@@ -29,9 +33,26 @@ const SignUp = ({history}) =>
             }));
         };
 
+    const onImageUpload = e =>{
+        console.log("CALLEd");
+        console.log(e)
+        setImage(e.files[0])
+    }
+
     const registerUser = async () => {
         try{
-            let res = await register(user)
+            let fileId = await fileUpload(image)
+            setUser(prevState =>({
+                ...prevState,
+                dp: fileId
+            }));
+            console.log("File uploaded id: " + fileId);
+            console.log("User: " + user.dp);
+
+            let res = await register({
+                ...user,
+                dp: fileId
+            })
             history.push('/project')
         }
         catch(err){
@@ -54,6 +75,9 @@ const SignUp = ({history}) =>
                     <InputText name="username" value={user.username} onChange={handleChange}/>
                     <h5>PASSWORD</h5>
                     <Password name="password" value={user.password} onChange={handleChange}/>
+                    <h5>Avatar</h5>
+                    <FileUpload mode="basic" name="image" url='http://localhost:8080/api/upload-file/' accept="image/*" maxFileSize={5000000} onSelect={onImageUpload} />
+
                     <br/>
                     <div className="err">{err} </div>
                     <Button label="Sign Up" onClick={() => 
