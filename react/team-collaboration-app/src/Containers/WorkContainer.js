@@ -10,7 +10,7 @@ const WorkContainer = (props) => {
     if(props.tab === "tasks")
     {
         return (
-            <TaskPage />
+            <TaskPage ws = {props.ws}/>
         )
     }
 
@@ -36,50 +36,5 @@ const WorkContainer = (props) => {
     }
 
 }
-
-/* const WorkContainer = (props) => {
-
-    const [state,setState] = useContext(stateContext)
-       
-    if (props.ws) {
-        let tasks = props.ws.Tasks.map(
-            tsk => <TaskContainer key={tsk.id} task={tsk} />
-        )
-
-        tasks = [
-                ...tasks
-        ]
-        if(state == 0){
-        return (
-            <div className="createTask">
-                <CreateTaskButton key={props.ws.id} workspaceId={props.ws.id} />
-                <div className='work-Style'>
-                    {tasks}
-                    
-                </div>
-            </div>
-        )
-        }
-        else{
-            const taskPage = 
-            <TaskPage task = {props.ws.Tasks} />
-
-            return(
-                <div className='work-Style'>
-                    {taskPage} 
-                </div>
-            ) 
-        }
-    }
-    else {
-        return (
-            <div className='work-Style'>
-            </div>
-        )
-    }
-    
-   return <div>Work Container</div>
-    
-} */
 
 export default WorkContainer;

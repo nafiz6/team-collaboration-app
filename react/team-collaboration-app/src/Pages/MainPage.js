@@ -110,7 +110,7 @@ const MainPage = (props) => {
                 <RoomsContainer project={selectedProject} /> {/* This gets current selected project */}
                 <div className='taskWork-Style'>
                     <NavBar id={projId} wsid={wsId} />
-                    <WorkContainer ws={selectedWS} tab={props.tab} />
+                    <WorkContainer ws={wsId} tab={props.tab} />
                 </div>
             </div>
         </div>
