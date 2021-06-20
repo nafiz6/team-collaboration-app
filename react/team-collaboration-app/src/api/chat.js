@@ -1,8 +1,10 @@
 // api/index.js
-var socket = new WebSocket("ws://localhost:8080/api/chat");
+var socket;
 
 let connect = (WorkspaceId) => {
   console.log("Attempting Connection...");
+
+  socket = new WebSocket("ws://localhost:8080/api/chat");
 
   socket.onopen = () => {
     console.log("Successfully Connected");
@@ -12,7 +14,7 @@ let connect = (WorkspaceId) => {
       "WorkspaceId" : WorkspaceId
     })
   };
-
+  
   socket.onclose = event => {
     console.log("Socket Closed Connection: ", event);
   };
@@ -20,6 +22,8 @@ let connect = (WorkspaceId) => {
   socket.onerror = error => {
     console.log("Socket Error: ", error);
   };
+
+
 };
 
 let sendMsg = msg => {

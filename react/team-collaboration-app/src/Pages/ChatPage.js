@@ -14,7 +14,38 @@ const ChatPage = (props) =>
     const [chatMessages, setChatMessages] = useState([])
 
     useEffect(() => {
-        connect("60ca3b1640dfba660867877a");
+        connect("60ca3b1640dfba660867877a"); // workspace id
+
+        socket.onmessage = async (msg) => {
+            let parsedMessage = JSON.parse(msg.data);
+            chatList.push(parsedMessage);
+            if (parsedMessage.ClientId) {
+                let user = await getUserDetails(parsedMessage.ClientId)
+                console.log(user);
+                setChatMessages(chatList.filter(c => c.type === "Text").map(c => {
+                    return <div className="p-mb-2 chat-message-container">
+                        <div className="p-grid" >
+                            <div className="p-col-1">
+                                <img className="chat-img" src={user.Dp} />
+                            </div>
+
+                            <div className="p-col-10">
+                                <div className="chat-username">
+                                    {user.Username}
+                                </div>
+                                <div className="chat-message-box">
+                                    {c.body}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }))
+            }
+        };
+
+        return function cleanup() {
+            socket.close();
+        }
     }, [])
 
     const sendMessage = e => {
@@ -29,33 +60,6 @@ const ChatPage = (props) =>
         );
         setMessageText('')
     }
-
-    socket.onmessage = async (msg) => {
-        let parsedMessage = JSON.parse(msg.data);
-        chatList.push(parsedMessage);
-        if (parsedMessage.ClientId) {
-            let user = await getUserDetails(parsedMessage.ClientId)
-            console.log(user);
-            setChatMessages(chatList.filter(c => c.type === "Text").map(c => {
-                return <div className="p-mb-2 chat-message-container">
-                    <div className="p-grid" >
-                        <div className="p-col-1">
-                            <img className="chat-img" src={user.Dp} />
-                        </div>
-
-                        <div className="p-col-10">
-                            <div className="chat-username">
-                                {user.Username}
-                            </div>
-                            <div className="chat-message-box">
-                                {c.body}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            }))
-        }
-    };
 
 
     return (
