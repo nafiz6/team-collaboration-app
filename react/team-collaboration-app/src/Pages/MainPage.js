@@ -6,6 +6,7 @@ import RoomsContainer from '../Containers/RoomsContainer'
 import NavBar from '../Containers/NavBar'
 import WorkContainer from '../Containers/WorkContainer'
 import ProjectContainer from '../Containers/ProjectContainer'
+import { useLocation } from 'react-router-dom'
 
 const MainPage = (props) => {
 
@@ -23,10 +24,10 @@ const MainPage = (props) => {
             let res = null;
 
             if (Object.keys(props.match.params).length > 0) {
-                 res = await axios.get(`http://localhost:8080/api/workspace/${props.match.params.id}`)
+                res = await axios.get(`http://localhost:8080/api/workspace/${props.match.params.id}`)
             }
             else {
-                 res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`)
+                res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`)
             }
 
             setWs(res.data);
@@ -55,7 +56,7 @@ const MainPage = (props) => {
 
     useEffect(() => {
         getWs();
-    }, [projects,props.match.params])
+    }, [projects, props.match.params])
 
     const [selectedProject, setSelectedProject] = useState(initialProject)
 
@@ -102,6 +103,14 @@ const MainPage = (props) => {
         }
     }, [ws, props.match.params.wsid])
 
+    const location = useLocation()
+    let taskname, deadline, description
+    if (location.state) {
+        taskname = location.state.taskname;
+        deadline = location.state.deadline;
+        description = location.state.description;
+    }
+
     return (
         <div className='page-Style'>
             <HeaderContainer />
@@ -110,7 +119,8 @@ const MainPage = (props) => {
                 <RoomsContainer project={selectedProject} /> {/* This gets current selected project */}
                 <div className='taskWork-Style'>
                     <NavBar id={projId} wsid={wsId} />
-                    <WorkContainer ws={wsId} tab={props.tab} />
+                    <WorkContainer ws={wsId} tab={props.tab} tid={props.match.params.tid} taskname={taskname} deadline={deadline}
+                        description={description} />
                 </div>
             </div>
         </div>
