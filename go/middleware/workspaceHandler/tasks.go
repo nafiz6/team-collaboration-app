@@ -51,7 +51,7 @@ func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 
 	cur, err := db.Tasks.Find(context.Background(), bson.D{
 		{"_workspace_id", workspaceID},
-		//ONLY GET MY TASKS, maybe no need 
+		//ONLY GET MY TASKS, maybe no need
 		// {"assigned_users._id", selfID},
 	})
 
@@ -137,6 +137,11 @@ func GetWorkspaceTaskBudgetBreakdown(w http.ResponseWriter, r *http.Request) {
 				{"total_spent", bson.D{
 					{"$sum", "$subtasks.spent"},
 				}},
+			}},
+		},
+		bson.D{
+			{"$sort", bson.D{
+				{"total_spent", -1},
 			}},
 		},
 	})
