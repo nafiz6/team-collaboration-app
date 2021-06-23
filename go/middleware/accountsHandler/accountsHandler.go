@@ -208,6 +208,8 @@ func GetUserId(r *http.Request) string {
 		return ""
 	}
 
+	log.Println(username)
+
 	return username
 }
 

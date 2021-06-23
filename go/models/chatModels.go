@@ -4,9 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo/options"
 
 	// "golang.org/x/tools/go/types/objectpath"
 	"log"
@@ -78,18 +80,19 @@ type Client struct {
 }
 
 type Message struct {
-	Type        string `json:"type"`
-	Body        string `json:"body"`
-	WorkspaceId string `json:"workspaceId"`
+	Type        string `json:"Type"`
+	Body        string `json:"Body"`
+	WorkspaceId string `json:"WorkspaceId"`
 	ClientId    string
 }
 
 type DbMessage struct {
 	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Type        string             `json:"type"`
-	Body        string             `json:"body"`
-	WorkspaceId primitive.ObjectID `json:"id" bson:"_workspace_id,omitempty"`
-	ClientId    primitive.ObjectID `json:"id" bson:"_user_id,omitempty"`
+	Type        string             `json:"Type"`
+	Body        string             `json:"Body"`
+	WorkspaceId primitive.ObjectID `json:"WorkspaceId" bson:"_workspace_id,omitempty"`
+	ClientId    primitive.ObjectID `json:"ClientId" bson:"_user_id,omitempty"`
+	Timestamp   primitive.DateTime `json:"Timestamp" bson:"timestamp,omitempty"`
 }
 
 func (c *Client) Read() {
@@ -116,6 +119,10 @@ func (c *Client) Read() {
 
 		var pool = createPool(message.WorkspaceId)
 		addClientToPool(c, message.WorkspaceId)
+
+		if message.Type != "Connection" {
+			AddChatToDb(message)
+		}
 
 		pool.Broadcast <- message
 		fmt.Printf("Message Received: %+v\n", message)
@@ -153,6 +160,8 @@ func AddChatToDb(message Message) {
 	newChat.Body = message.Body
 
 	newChat.Type = message.Type
+
+	newChat.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 
 	clientID, err := primitive.ObjectIDFromHex(message.ClientId)
 	if err != nil {
@@ -195,7 +204,11 @@ func GetChats(w http.ResponseWriter, r *http.Request) {
 
 	cur, err := db.Chats.Find(context.Background(), bson.D{
 		{"_workspace_id", workspaceID},
-	})
+	}, options.Find().SetSort(
+		bson.D{
+			{"timetamp", -1},
+		},
+	))
 
 	for cur.Next(context.Background()) {
 

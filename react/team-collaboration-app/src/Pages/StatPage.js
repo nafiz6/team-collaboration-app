@@ -24,6 +24,10 @@ const StatPage = (props) => {
 
     const [changes, setChanges] = useState(0)   //use to refetch data after changes without refreshing page
     const [workspaceBudget, setWorkspaceBudget] = useState([]);
+    const [myUserDetails, setMyUserDetails] = useState({
+
+        role: 100   //placeholder for when userDetails arent loaded
+    });
     const [chartData, setChartData] = useState(null)
     const [tasksSpendingTable, setTasksSpendingTable] = useState(null)
     const [showAddUsers, setShowAddUsers] = useState(false)
@@ -74,6 +78,33 @@ const StatPage = (props) => {
                 }
             ]
         })
+    }
+
+    const fetchMyDetails = async () => {
+
+        //call this func after workspace details
+
+        if (usersTable) {
+            let res = await axios.get(`http://localhost:8080/api/my-details`, { withCredentials: true });
+            console.log(res.data);
+
+
+            let workspaceUser = usersTable.find(u => u._id === res.data.id)
+
+            setMyUserDetails({
+                ...res.data,
+                role: workspaceUser?.role ?? 100    //temp fix, later ill only get workspaces that this user is in
+            })
+
+
+        }
+
+
+
+
+        //add workspace role to userDetails object
+
+
     }
 
     const fetchWorkspaceUserTasks = async () => {
@@ -188,6 +219,7 @@ const StatPage = (props) => {
 
     useEffect(() => {
         if (props.ws) {
+            fetchMyDetails();
 
             fetchWorkspaceTasksSpending();
             fetchWorkspaceUserTasks();
@@ -198,6 +230,10 @@ const StatPage = (props) => {
     }, [props.ws, changes])
     useEffect(() => {
         fetchAllUsers();    //maybe call this on add users button click only LATER
+
+        if (usersTable) {
+            fetchMyDetails();
+        }
     }, [usersTable, props.ws])
 
     useEffect(() => {
@@ -298,38 +334,50 @@ const StatPage = (props) => {
 
 
             </DataTable>
-            <Button label="Add Users" icon="pi pi-external-link" onClick={() => onClick("addUsers")} />
+            {myUserDetails.role < 2 ? <>
+                <Button label="Add Users" icon="pi pi-external-link" onClick={() => onClick("addUsers")} />  <Dialog header="Add users to workspace" visible={showAddUsers} style={{ width: '50vw' }} footer={renderFooter('addUsers')} onHide={() => onHide('addUsers')}>
+                    {addUsersForm}
+                </Dialog>
+            </> : null}
 
-            <Dialog header="Add users to workspace" visible={showAddUsers} style={{ width: '50vw' }} footer={renderFooter('addUsers')} onHide={() => onHide('addUsers')}>
-                {addUsersForm}
-            </Dialog>
+
+
 
 
 
             <DataTable value={usersTable} emptyMessage="No users yet" header={<h2>Workspace Users</h2>}>
                 <Column field="name" header="User"></Column>
-                <Column header={<span>Role <Button label={editRoles ? "Save" : "Edit"} onClick={handleEditRoles} /></span>} body={(rowData) => (
-                    editRoles ?
-                        <Dropdown value={editRolesData?.find(e => e.uid === rowData._id)?.role} options={roles} onChange={(e) => {
-                            console.log(e.value);
-                            setEditRolesData(r => {
-                                r.find(e => e.uid === rowData._id).role = e.value;
-                                return [...r];
+                <Column
+                    header={
+                        <span>
+                            Role {myUserDetails.role < 2 ? <Button label={(editRoles ? "Save" : "Edit")} onClick={handleEditRoles} /> : null}
+                        </span>
+                    }
 
-                            })
-                            // console.log(e);
+                    body={(rowData) => (
+                        editRoles ?
+                            <Dropdown value={editRolesData?.find(e => e.uid === rowData._id)?.role} options={roles} onChange={(e) => {
+                                console.log(e.value);
+                                setEditRolesData(r => {
+                                    r.find(e => e.uid === rowData._id).role = e.value;
+                                    return [...r];
 
-                        }} optionLabel="label" optionValue="id" />
+                                })
+                                // console.log(e);
 
-                        :
-                        roles.find(r => r.id === rowData.role)?.label ?? "Team Member"
+                            }} optionLabel="label" optionValue="id" />
+
+                            :
+                            roles.find(r => r.id === rowData.role)?.label ?? "Team Member"
 
 
 
 
-                )}></Column>
+                    )}></Column>
                 <Column field="countTasks" header="Tasks"></Column>
-                <Column header="" body={(rowData) => <Button label="Remove" onClick={() => handleRemoveUser(rowData._id)} />}></Column>
+
+
+                {myUserDetails.role < 2 ? <Column header="" body={(rowData) => <Button label="Remove" onClick={() => handleRemoveUser(rowData._id)} />}></Column> : null}
 
 
             </DataTable>

@@ -26,7 +26,7 @@ const WorkContainer = (props) => {
     if(props.tab === "chats")
     {
         return (
-            <ChatPage />
+            <ChatPage {...props} ws={props.ws} />
         )
     }
 
