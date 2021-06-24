@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"teams/middleware/accountsHandler"
 	"teams/middleware/chatHandler"
+	"teams/middleware/fileHandler"
 	"teams/middleware/workspaceHandler"
 
 	"github.com/gorilla/mux"
@@ -121,7 +122,11 @@ func Router() *mux.Router {
 	// serve static files
 	router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 	// upload files
-	router.HandleFunc("/api/upload-file/", chatHandler.UploadFile).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/workspace-file/", fileHandler.WorkspaceUploadFile).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/workspace-file/{workspace-id}", fileHandler.WorkspaceGetFiles).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/task-file/", fileHandler.TaskUploadFile).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/task-file/{task-id}", fileHandler.TaskGetFile).Methods("GET", "OPTIONS")
+	router.HandleFunc("/api/upload-file/", fileHandler.BasicUploadFile).Methods("POST", "OPTIONS")
 
 	/*
 		Authentication

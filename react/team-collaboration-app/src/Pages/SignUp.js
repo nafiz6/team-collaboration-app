@@ -34,8 +34,6 @@ const SignUp = ({history}) =>
         };
 
     const onImageUpload = e =>{
-        console.log("CALLEd");
-        console.log(e)
         setImage(e.files[0])
     }
 

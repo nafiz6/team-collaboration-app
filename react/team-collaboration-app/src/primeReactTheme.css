@@ -79,6 +79,7 @@ button {
 
 .chat-page {
     height: 100%;
+    overflow: hidden;
 }
 
 .chat-message-area {
@@ -128,6 +129,30 @@ button {
     margin-top: 5px;
 }
 
+.files-page {
+    height: 100%;
+    overflow: hidden;
+}
+
+.files-groups-list{
+    height: 80%;
+    overflow-y: scroll;
+}
+
+.files-upload-area{
+    height: 20%;
+    background-color:#2a323d;
+}
+
+.files-file {
+    float: left;
+    padding-right: 20px;
+}
+
+.files-files-list{
+    overflow: overlay;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }
@@ -146,3 +171,4 @@ button {
 ::-webkit-scrollbar-thumb:hover {
   background: #555; 
 }
+
