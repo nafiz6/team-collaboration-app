@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import Deadline from '../Components/Deadline'
 import SubtaskButton from '../Components/SubtaskButton'
 import '../MyStyles.css'
+import { Link } from 'react-router-dom'
 
 const TaskContainer = (props) => {
 
@@ -21,39 +22,59 @@ const TaskContainer = (props) => {
         getSubtasks();
     }, [props.task.id])
 
+    const [retAddr, setRetAddr] = useState(window.location.href);
+    useEffect(() => {
+        let addrArr = (window.location.href).split("http://localhost:3000");
+        setRetAddr(addrArr[1]);
+
+    }, [window.location.href])
+
+
+
     if (subtasks) {
         const subtasksArr = subtasks.map(
             stask => <SubtaskButton key={stask.id} name={stask.Name} />
         )
 
         return (
-            <button className='taskContainer-Style'
-                onClick=
+            <Link to={
                 {
-                    () => {
+                    pathname: `${retAddr}/taskpage/${props.task.id}`,
+                    state:
+                    {
+                        taskname: props.task.Name,
+                        deadline: props.task.Deadline,
+                        description: props.task.Description
                     }
-                }
-            >
-                <h3 className='taskName-Style'>{props.task.Name}</h3>
-                <Deadline time={props.task.Deadline.split("T")[0]} />
-                {subtasksArr}
-            </button>
+                }}  >
+                <button className='taskContainer-Style'>
+                    <h3 className='taskName-Style'>{props.task.Name}</h3>
+                    <Deadline time={props.task.Deadline.split("T")[0]} />
+                    {subtasksArr}
+                </button>
+            </Link>
         )
 
     }
     else {
 
         return (
-            <button className='taskContainer-Style'
-            onClick=
-            {
-                () => {
-                }
-            }
-        >
-            <h3 className='taskName-Style'>{props.task.Name}</h3>
-            <Deadline time={props.task.Deadline.split("T")[0]} />
-        </button>  
+
+            <Link to={
+                {
+                    pathname: `${retAddr}/taskpage/${props.task.id}`,
+                    state:
+                    {
+                        taskname: props.task.Name,
+                        deadline: props.task.Deadline,
+                        description: props.task.Description
+                    }
+                }}  >
+                <button className='taskContainer-Style'>
+                    <h3 className='taskName-Style'>{props.task.Name}</h3>
+                    <Deadline time={props.task.Deadline.split("T")[0]} />
+                </button>
+            </Link>
         )
 
     }

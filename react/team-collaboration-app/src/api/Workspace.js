@@ -1,5 +1,5 @@
 
-let createWorkspace = ( name, projectId ) => {
+let createWorkspace = (name, projectId) => {
     const reqOpts = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -10,11 +10,26 @@ let createWorkspace = ( name, projectId ) => {
         })
     };
 
-    console.log("Name " , name);
+    console.log("Name ", name);
     fetch(`http://localhost:8080/api/workspace/${projectId}`, reqOpts)
         .then(response => response.json())
         .then(data => console.log(data));
 
 }
 
+
+export const roles = [
+    {
+        label: "Project Leader",
+        id: 0
+    },
+    {
+        label: "Workspace Leader",
+        id: 1
+    },
+    {
+        label: "Team Member",
+        id: 2
+    },
+]
 export { createWorkspace };

@@ -23,6 +23,10 @@ function App() {
         <Route path="/project/:id/ws/:wsid/chats" exact render={(props) => (<MainPage {...props} tab = "chats"/>)} />
         <Route path="/project/:id/ws/:wsid/files" exact render={(props) => (<MainPage {...props} tab = "files"/>)} />
         <Route path="/project/:id/ws/:wsid/stats" exact render={(props) => (<MainPage {...props} tab = "stats"/>)} />
+        <Route path="/project/taskpage/:tid" exact render={(props) => (<MainPage {...props} tab = "taskDetail"/>)} />
+        <Route path="/project/:id/taskpage/:tid" exact render={(props) => (<MainPage {...props} tab = "taskDetail"/>)} />
+        <Route path="/project/:id/ws/:wsid/taskpage/:tid" exact render={(props) => (<MainPage {...props} tab = "taskDetail"/>)} />
+        <Route path="/project/:id/ws/:wsid/tasks/taskpage/:tid" exact render={(props) => (<MainPage {...props} tab = "taskDetail"/>)} />
         <Route path="/signup" exact render={(props) => (<SignUp {...props} />)} />
       </Switch>
     </Router>

@@ -4,6 +4,7 @@ import TaskPage from "../Pages/TaskPage";
 import ChatPage from "../Pages/ChatPage";
 import FilePage from "../Pages/FilePage";
 import StatPage from "../Pages/StatPage";
+import TaskDetailPage from "../Pages/TaskDetailPage";
 
 const WorkContainer = (props) => {
 
@@ -14,10 +15,18 @@ const WorkContainer = (props) => {
         )
     }
 
+    if(props.tab === "taskDetail")
+    {
+        return (
+            <TaskDetailPage tid = {props.tid} taskname={props.taskname} deadline={props.deadline}
+             description={props.description}/>
+        )
+    }
+
     if(props.tab === "chats")
     {
         return (
-            <ChatPage />
+            <ChatPage {...props} ws={props.ws} />
         )
     }
 

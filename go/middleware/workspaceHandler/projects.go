@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"teams/middleware/accountsHandler"
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
@@ -490,6 +491,33 @@ func GetUserDetails(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
+
+	json.NewEncoder(w).Encode(userDetails)
+
+}
+
+func GetMyUserDetails(w http.ResponseWriter, r *http.Request) {
+	cors.EnableCorsCredentials(&w)
+
+	uid := accountsHandler.GetUserId(r)
+
+	userID, err := primitive.ObjectIDFromHex(uid)
+	if err != nil {
+		panic(err)
+	}
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.Background(), bson.D{
+		{"_id", userID},
+	}).Decode(&userDetails)
+
+	if err != nil {
+		json.NewEncoder(w).Encode(err)
+		log.Println(err)
+		return
+	}
+
+
 
 	json.NewEncoder(w).Encode(userDetails)
 

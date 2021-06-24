@@ -7,6 +7,7 @@ import (
 	"teams/middleware/chatHandler"
 	"teams/middleware/fileHandler"
 	"teams/middleware/workspaceHandler"
+	"teams/models"
 
 	"github.com/gorilla/mux"
 )
@@ -114,6 +115,7 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/user", workspaceHandler.GetOneUser).Methods("GET", "OPTIONS")                       //DONE
 	router.HandleFunc("/api/users", workspaceHandler.GetAllUsers).Methods("GET", "OPTIONS")                     //DONE
 	router.HandleFunc("/api/user-details/{user-id}", workspaceHandler.GetUserDetails).Methods("GET", "OPTIONS") //DONE
+	router.HandleFunc("/api/my-details", workspaceHandler.GetMyUserDetails).Methods("GET", "OPTIONS") //DONE
 
 	/*
 		File server
@@ -127,6 +129,13 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/task-file/", fileHandler.TaskUploadFile).Methods("POST", "OPTIONS")
 	router.HandleFunc("/api/task-file/{task-id}", fileHandler.TaskGetFile).Methods("GET", "OPTIONS")
 	router.HandleFunc("/api/upload-file/", fileHandler.BasicUploadFile).Methods("POST", "OPTIONS")
+
+	/*
+		CHATS
+	*/
+	router.HandleFunc("/api/workspace-chats/{workspace-id}", models.GetChats).Methods("GET", "OPTIONS") //DONE
+
+
 
 	/*
 		Authentication

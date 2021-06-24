@@ -11,9 +11,9 @@
     color: white;
 }
 
-.p-multiselect-label {
+/* .p-multiselect-label {
     color: black
-}
+} */
 
 .workspace-form .p-button {
     font-size: 10px;
@@ -84,13 +84,15 @@ button {
 
 .chat-message-area {
     height: 80vh;
+    display: flex;
+    flex-direction: column-reverse;
     overflow-y: scroll;
     overflow-x: hidden;
     position: relative;
 }
 
 .chat-message-groups {
-    position: absolute;
+    /* position: absolute; */
     bottom: 0;
     width: 100%;
 }
@@ -152,6 +154,11 @@ button {
 .files-files-list{
     overflow: overlay;
 }
+/* .chat-container {
+    overflow-y: scroll;
+    overflow-x: hidden;
+
+} */
 
 ::-webkit-scrollbar {
   width: 10px;
