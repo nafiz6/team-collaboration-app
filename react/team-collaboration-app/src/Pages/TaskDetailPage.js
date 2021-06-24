@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import '../MyStyles.css'
 import SubtaskContainer from '../Containers/SubtaskContainer'
+import TaskFiles from '../Containers/TaskFiles'
 import axios from 'axios'
 import CreateSubtaskButton from '../Components/SubtaskButton'
 
@@ -24,12 +25,15 @@ const TaskDetailPage = (props) => {
             subtask => <SubtaskContainer key={subtask.id} subtask={subtask} />)
 
         return (
-            <div className="taskPage-Style">
-                {/*<CreateSubtaskButton taskId={props.tid} />*/}
-                <h3>{props.taskname}</h3>
-                <h4>Deadline: {props.deadline.split("T")[0]}</h4>
-                <a>{props.description}</a>
-                {staskArr}
+            <div>
+                <TaskFiles taskId={props.tid} />
+                <div className="taskPage-Style">
+                    {/*<CreateSubtaskButton taskId={props.tid} />*/}
+                    <h3>{props.taskname}</h3>
+                    <h4>Deadline: {props.deadline.split("T")[0]}</h4>
+                    <a>{props.description}</a>
+                    {staskArr}
+                </div>
             </div>
         )
     }

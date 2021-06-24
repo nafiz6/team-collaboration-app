@@ -124,6 +124,7 @@ func TaskUploadFile(w http.ResponseWriter, r *http.Request) {
 	fileDetails.FileName = r.FormValue("filename")
 	fileDetails.Url = fileUrl
 	fileDetails.Date_created = primitive.NewDateTimeFromTime(time.Now())
+	log.Println("RECEIVED TASK " + r.FormValue("taskId"))
 	var err error
 	fileDetails.TaskId, err = primitive.ObjectIDFromHex(r.FormValue("taskId"))
 
@@ -150,12 +151,15 @@ func TaskUploadFile(w http.ResponseWriter, r *http.Request) {
 		fileDetails)
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("Error: %s", err.Error())
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
 	fmt.Printf("Inserted: %+v\n", insertResult.InsertedID)
+
+	fmt.Fprintf(w, fileUrl)
 
 }
 
@@ -195,17 +199,21 @@ func WorkspaceUploadFile(w http.ResponseWriter, r *http.Request) {
 		fileDetails)
 
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 		fmt.Printf("Error: %s", err.Error())
 		json.NewEncoder(w).Encode(err.Error())
 		return
 	}
 
 	fmt.Printf("Inserted: %+v\n", insertResult.InsertedID)
+	fmt.Fprintf(w, fileUrl)
 
 }
 
 func BasicUploadFile(w http.ResponseWriter, r *http.Request) {
-	UploadFile(w, r)
+	url := UploadFile(w, r)
+
+	fmt.Fprintf(w, url)
 }
 
 func UploadFile(w http.ResponseWriter, r *http.Request) string {
@@ -244,7 +252,6 @@ func UploadFile(w http.ResponseWriter, r *http.Request) string {
 	tempFile.Write(fileBytes)
 
 	url := "http://localhost:8080/static/" + id
-	fmt.Fprintf(w, url)
 	return url
 
 }

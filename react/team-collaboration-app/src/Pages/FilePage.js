@@ -20,11 +20,13 @@ const FilePage = (props) =>
         setTaskView(
             tasks.map(task=>{
                 let filesView = task.files.map(file=>{
-                    return <div className="files-file">
-                        <i className="pi pi-file-o" style={{'fontSize': '4em'}}></i>
-                        <br/>
-                        {file.FileName}
-                    </div>
+                    return <a href={file.Url} class="files-anchor">
+                                <div className="files-file">
+                                    <i className="pi pi-file-o" style={{'fontSize': '4em'}}></i>
+                                    <br/>
+                                    {file.FileName}
+                                </div>
+                            </a>
                 })
                 return <AccordionTab header={task.taskname}>
                     <div className="files-files-list">

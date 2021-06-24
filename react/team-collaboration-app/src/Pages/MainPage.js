@@ -113,7 +113,7 @@ const MainPage = (props) => {
 
     return (
         <div className='page-Style'>
-            <HeaderContainer />
+            <HeaderContainer {...props}/>
             <div className='bottom-Style'>
                 <ProjectContainer projects={projects} />
                 <RoomsContainer project={selectedProject} /> {/* This gets current selected project */}

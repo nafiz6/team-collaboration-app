@@ -160,6 +160,11 @@ button {
 
 } */
 
+.files-anchor {
+    text-decoration: inherit;
+    color: inherit;
+}
+
 ::-webkit-scrollbar {
   width: 10px;
 }

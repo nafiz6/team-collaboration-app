@@ -51,6 +51,21 @@ let getWorkspaceFiles = async(workspaceId) =>{
 	return res.data;
 }
 
+let taskFileUpload = async (file, details) => {
+	let form = new FormData();
+	form.append('file', file);
+	form.append('filename', details.filename);
+	form.append('taskId', details.taskId);
+
+	let res = await axios.post(`http://localhost:8080/api/task-file/`, 
+		form, {withCredentials: true})
+			.catch(err=>{
+				throw err.response.data
+			})
+
+	return res.data;
+}
+
 let workspaceFileUpload = async (file, details) => {
 	let form = new FormData();
 	form.append('file', file);
@@ -80,4 +95,6 @@ let fileUpload = async (file) => {
 	return res.data;
 }
 
-export { fileUpload, workspaceFileUpload, getWorkspaceFiles, getTaskFilesOfWorkspace };
+export { fileUpload, workspaceFileUpload, 
+	getWorkspaceFiles, getTaskFilesOfWorkspace, taskFileUpload,
+	getTaskFiles};

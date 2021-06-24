@@ -2,6 +2,7 @@ import './MyStyles.css'
 import React from 'react'
 import MainPage from './Pages/MainPage';
 import Login from './Pages/Login';
+import Logout from './Pages/Logout';
 import SignUp from './Pages/SignUp';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/project/:id/ws/:wsid/taskpage/:tid" exact render={(props) => (<MainPage {...props} tab = "taskDetail"/>)} />
         <Route path="/project/:id/ws/:wsid/tasks/taskpage/:tid" exact render={(props) => (<MainPage {...props} tab = "taskDetail"/>)} />
         <Route path="/signup" exact render={(props) => (<SignUp {...props} />)} />
+        <Route path="/logout" render={(props) => (<Logout {...props} />)} />
       </Switch>
     </Router>
 

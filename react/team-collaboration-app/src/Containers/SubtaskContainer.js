@@ -47,7 +47,7 @@ const SubtaskContainer = (props) => {
             <text>  Budget: {props.subtask.Budget}</text>
             <text> Designated Users: {assUserArr} </text> 
             {updateArr} 
-            <AddUpdate user={userObj} subtaskId={props.subtask.id} />
+            <AddUpdate user={userObj} subtaskId={props.subtask.id} taskId={props.subtask.task_id}/>
         </div>
     )
 }

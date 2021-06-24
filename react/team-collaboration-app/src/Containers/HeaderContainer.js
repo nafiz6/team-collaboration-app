@@ -5,13 +5,13 @@ import LogOutButton from "../Components/LogOutButton"
 import '../MyStyles.css'
 
 
-const HeaderContainer = () => 
+const HeaderContainer = (props) => 
 {
     return (
         <div className='header-Style'>
             <NotifyButton/>
             <ManageButton/>
-            <LogOutButton/>
+            <LogOutButton {...props}/>
         </div>
     )
 
