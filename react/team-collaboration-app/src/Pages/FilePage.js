@@ -14,18 +14,20 @@ const FilePage = (props) => {
         ]
     )
 
+    
+
 
     useEffect(() => {
         setTaskView(
-            tasks.map(task=>{
-                let filesView = task.files.map(file=>{
+            tasks.map(task => {
+                let filesView = task.files.map(file => {
                     return <a href={file.Url} className="files-anchor">
-                                <div className="files-file">
-                                    <i className="pi pi-file-o" style={{'fontSize': '4em'}}></i>
-                                    <br/>
-                                    {file.FileName}
-                                </div>
-                            </a>
+                        <div className="files-file">
+                            <i className="pi pi-file-o" style={{ 'fontSize': '4em' }}></i>
+                            <br />
+                            {file.FileName}
+                        </div>
+                    </a>
                 })
                 return <AccordionTab header={task.taskname}>
                     <div className="files-files-list">
@@ -37,16 +39,16 @@ const FilePage = (props) => {
 
     }, [tasks])
 
-    useEffect(async () =>{
+    const getFiles = async () => {
         if (!props.ws) return;
         try {
             let workspaceFiles = await getWorkspaceFiles(props.ws); // workspace id
-            if (workspaceFiles == null)workspaceFiles = [];
+            if (workspaceFiles == null) workspaceFiles = [];
             let workspaceTaskFiles = {
-                taskname: "General",
+                taskname: "Workspace Files",
                 files: workspaceFiles
             }
-            console.log(workspaceTaskFiles);
+            // console.log(workspaceTaskFiles);
 
             let taskFiles = await getTaskFilesOfWorkspace(props.ws)
             setTasks(prevTasks => [
@@ -59,6 +61,12 @@ const FilePage = (props) => {
         catch (err) {
             console.log(err)
         }
+
+
+    }
+
+    useEffect(() => {
+        getFiles();
 
 
     }, [props.ws])

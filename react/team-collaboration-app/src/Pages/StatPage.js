@@ -317,6 +317,8 @@ const StatPage = (props) => {
         );
     }
 
+    console.log(tasksSpendingTable)
+
 
 
 
@@ -336,7 +338,7 @@ const StatPage = (props) => {
 
             <DataTable value={tasksSpendingTable} emptyMessage="No tasks yet" header={<h2>Task Spending</h2>}>
                 <Column field="Task_name" header="Task"></Column>
-                <Column header="Spending" body={(rowData) => <ProgressBar value={rowData.progress} />}></Column>
+                <Column header="Spending" body={(rowData) => <ProgressBar value={isNaN(rowData?.progress) ? 0 : rowData?.progress} />}></Column>
                 {/* <Column field="Task_budget" header="Budget"></Column>
                 <Column field="Total_spent" header="Spent"></Column> */}
                 <Column field="spentString" header=""></Column>

@@ -30,8 +30,8 @@ const MainPage = (props) => {
 
             let res = null;
 
-            if (Object.keys(props.match.params).length > 0) {
-                res = await axios.get(`http://localhost:8080/api/workspace/${props.match.params.id}`)
+            if (Object.keys(props.match.params).length > 0 && projId) {
+                res = await axios.get(`http://localhost:8080/api/workspace/${projId}`)
             }
             else {
                 res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`)
@@ -64,19 +64,23 @@ const MainPage = (props) => {
     useEffect(() => {
 
         getWs();
-    }, [projects])
+    }, [projects, projId])
 
     const [selectedProject, setSelectedProject] = useState(initialProject)
 
 
     // If a project is selected, that project workspaces are viewed
     useEffect(() => {
-        if (Object.keys(props.match.params).length != 0) {
+        if (Object.keys(props.match.params).length > 0) {
             if (projects.length > 0) {
                 projects.forEach(element => {
                     if (element.id === props.match.params.id) {
                         setSelectedProject(element);
                         setProjId(element.id);
+
+                        
+
+                        //set workspace to first one in proj
                     }
                 });
             }
@@ -113,6 +117,8 @@ const MainPage = (props) => {
             }
         }
     }, [ws, props.match.params.wsid])
+
+    // console.log(selectedProject);
 
 
 

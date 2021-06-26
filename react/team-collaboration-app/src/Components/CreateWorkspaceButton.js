@@ -27,10 +27,11 @@ const CreateWorkspaceButton = (props) => {
         dialogFuncMap[`${name}`](false);
     }
 
-    const creatingWorkspace = (name) => {
+    const creatingWorkspace = async (name) => {
         dialogFuncMap[`${name}`](false);
-        createWorkspace(workspaceName, props.projectId, description)
-
+        await createWorkspace(workspaceName, props.projectId, description)
+        window.location.reload();
+        
     }
 
     const renderFooter = (name) => {

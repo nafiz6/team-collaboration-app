@@ -7,7 +7,7 @@ const ProjectButton = (props) => {
 
     let url = window.location.href.split("/")
 
-    console.log(url)
+    // console.log(url)
 
     // let id = url[url.length - 1];
     return (

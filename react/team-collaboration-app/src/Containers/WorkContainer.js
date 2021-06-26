@@ -9,6 +9,8 @@ import TaskDetailPage from "../Pages/TaskDetailPage";
 const WorkContainer = (props) => {
 
 
+    console.log(props.ws)
+
     if(props.tab === "tasks")
     {
         return (

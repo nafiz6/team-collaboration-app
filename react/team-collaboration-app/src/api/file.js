@@ -11,7 +11,7 @@ let getTaskFilesOfWorkspace = async (workspaceId) => {
 	if (tasks.data == null)return [];
 	
 	files = await Promise.all(tasks.data.map( async(task) =>{
-		console.log(task)
+		// console.log(task)
 			let file =  await getTaskFiles(task.id)
 				.catch(err=>{
 					throw err
@@ -21,7 +21,7 @@ let getTaskFilesOfWorkspace = async (workspaceId) => {
 				files: file ? file : []
 			}
 		}))
-	console.log(files)
+	// console.log(files)
 
 	files = files.filter(file => file.files != null && file.files.length > 0)
 
