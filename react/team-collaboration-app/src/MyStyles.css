@@ -108,6 +108,20 @@
     height: 60px;
     width: 60px;
     text-align: center;
+    cursor: pointer;
+}
+
+.projectButton-Style-select
+{
+    background-color: lightblue;
+    border-radius: 10px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    height: 60px;
+    width: 60px;
+    text-align: center;
+    cursor: pointer;
 }
 
 .projectAddButton-Style
@@ -136,6 +150,38 @@
     
 }
 
+.roomButton-Style
+{
+    background-color: #313642;
+    height: 75px;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    color: white;
+    border-width: 0.1px;
+    border-style: solid;
+    border-color:darkcyan;
+    border-radius: 5px;
+    cursor: pointer;
+    
+}
+
+.roomButton-Style-select
+{
+    background-color: lightblue;
+    height: 75px;
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    color: black;
+    border-width: 0.1px;
+    border-style: solid;
+    border-color:darkcyan;
+    border-radius: 5px;
+    cursor: pointer;
+    
+}
+
 .projName-Style
 {
     background-color: #313642;
@@ -156,6 +202,21 @@
     text-align: center;
     color: white;
     margin-top: 10px;
+    cursor: pointer;
+    
+}
+
+.navBarButton-Style-select
+{
+    background-color: lightblue;
+    width:100px;
+    height: 30px;
+    border-radius: 10px;
+    text-align: center;
+    color: black;
+    margin-top: 10px;
+    cursor: pointer;
+    
 }
 
 .subtaskButton-Style

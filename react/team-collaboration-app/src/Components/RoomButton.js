@@ -2,11 +2,14 @@ import React from 'react'
 import { Link } from 'react-router-dom'
 import '../MyStyles.css'
 
-const RoomButton = (props) => 
-{
+const RoomButton = (props) => {
+
+    let url = window.location.href.split("/")
+
+    let id = url[url.length - 1];
     return (
-        <Link to = {`/project/${props.projId}/ws/${props.workspace.id}`}>
-        <button className='roomButton-Style'>{props.workspace.Name}</button>
+        <Link to={`/project/${props.projId}/ws/${props.workspace.id}`}>
+            <button className={id === props.workspace.id ? 'roomButton-Style-select' : 'roomButton-Style'}>{props.workspace.Name}</button>
         </Link>
     )
 }

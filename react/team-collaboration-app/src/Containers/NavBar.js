@@ -8,10 +8,10 @@ import '../MyStyles.css'
 const NavBar = (props) => 
 {
     const navButtons = [
-        <TaskButton id={props.id} wsid={props.wsid}/>,
-        <ChatButton id={props.id} wsid={props.wsid}/>,
-        <FileButton id={props.id} wsid={props.wsid}/>,
-        <StatButton id={props.id} wsid={props.wsid}/>
+        <TaskButton id={props.id} wsid={props.wsid} {...props}/>,
+        <ChatButton id={props.id} wsid={props.wsid} {...props}/>,
+        <FileButton id={props.id} wsid={props.wsid} {...props}/>,
+        <StatButton id={props.id} wsid={props.wsid} {...props}/>
     ]
 
     return(
