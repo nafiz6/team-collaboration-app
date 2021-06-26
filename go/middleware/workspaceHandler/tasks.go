@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"teams/middleware/accountsHandler"
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
@@ -42,7 +43,7 @@ func GetWorkspaceTasks(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("received workspaceID: %+v", params["workspace-id"])
 
-	var tasks []NewTask
+	var tasks []NewTask = []NewTask{}
 
 	workspaceID, err := primitive.ObjectIDFromHex(params["workspace-id"])
 	if err != nil {
@@ -583,17 +584,47 @@ func AssignUserToTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateTaskNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	params := mux.Vars(r)
 	var newTask NewTask
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newTask)
+
 	//insert newTask into db
 
 	fmt.Printf("new task %+v\n", newTask)
 
+	var self = accountsHandler.GetUserId(r)
+
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
+
+	//get self details
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"_id", selfID}}).Decode(&userDetails)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
 	newTask.ID = primitive.NewObjectID()
 	newTask.Date_created = primitive.NewDateTimeFromTime(time.Now())
+	newTask.Assigned_users = []struct {
+		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		Name string
+		Role int
+	}{
+		{
+			ID:   userDetails.ID,
+			Role: 0,
+			Name: userDetails.Name,
+		},
+	}
 	// newTask.Subtasks = []Subtask
 
 	id := params["workspace-id"]

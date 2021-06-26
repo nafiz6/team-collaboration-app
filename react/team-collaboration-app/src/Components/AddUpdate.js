@@ -8,8 +8,7 @@ import { addUpdate } from '../api/Subtask.js';
 import { FileUpload } from 'primereact/fileupload';
 import { taskFileUpload } from '../api/file.js';
 
-const AddUpdate = (props) => 
-{
+const AddUpdate = (props) => {
     const [displayBasic, setDisplayBasic] = useState(false);
     const [position, setPosition] = useState('center');
     const [filenames, setFilenames] = useState('');
@@ -19,12 +18,12 @@ const AddUpdate = (props) =>
     });
 
     useEffect(() => {
-        let fileNameList = files.map(file=> file.name)
+        let fileNameList = files.map(file => file.name)
         console.log("FILELIST")
-        if (fileNameList.length > 0){
+        if (fileNameList.length > 0) {
             setFilenames("Files added: " + fileNameList)
         }
-        else{
+        else {
             setFilenames("")
         }
     }, [files])
@@ -46,13 +45,18 @@ const AddUpdate = (props) =>
         dialogFuncMap[`${name}`](false);
     }
 
-    const creatingUpdate = (name) => {
+    const creatingUpdate = async (name) => {
         dialogFuncMap[`${name}`](false);
         //addUpdate(subtask.Text, props.user, props.subtaskId)
         uploadFiles();
+
+        await addUpdate(subtask.Text, props.subtaskId)
+        window.location.reload();
+
+
     }
 
-    const uploadFiles = () =>{
+    const uploadFiles = () => {
         files.map(file => {
             let fileDetails = {
                 filename: file.name,
@@ -74,12 +78,12 @@ const AddUpdate = (props) =>
     }
 
     const handleChange = e => {
-            const { name, value } = e.target;
-            setTask(prevState => ({
-                ...prevState,
-                [name]: value
-            }));
-        };
+        const { name, value } = e.target;
+        setTask(prevState => ({
+            ...prevState,
+            [name]: value
+        }));
+    };
 
     const onFileSelect = (e) => {
         console.log(e)
@@ -91,14 +95,14 @@ const AddUpdate = (props) =>
 
 
     const CreateUpdateForm =
-            <div>
-                <h5>Update </h5>
-                <InputText value={subtask.Text} onChange={handleChange} name="Text" />
-                <h5>File</h5>
-                {filenames}
-                <FileUpload auto mode="basic" name="files[]" multiple customUpload maxFileSize={99000000} uploadHandler={onFileSelect} />
+        <div>
+            <h5>Update </h5>
+            <InputText value={subtask.Text} onChange={handleChange} name="Text" />
+            <h5>File</h5>
+            {filenames}
+            <FileUpload auto mode="basic" name="files[]" multiple customUpload maxFileSize={99000000} uploadHandler={onFileSelect} />
 
-            </div>
+        </div>
 
 
     return (

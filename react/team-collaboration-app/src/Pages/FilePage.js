@@ -4,13 +4,12 @@ import '../MyStyles.css'
 import { FileUpload } from 'primereact/fileupload';
 import { workspaceFileUpload, getWorkspaceFiles, getTaskFilesOfWorkspace } from '../api/file.js';
 
-const FilePage = (props) => 
-{
+const FilePage = (props) => {
     const [taskView, setTaskView] = useState(<div></div>)
 
-    const[tasks, setTasks] = useState(
+    const [tasks, setTasks] = useState(
         //tasks: []
-         [
+        [
 
         ]
     )
@@ -32,7 +31,7 @@ const FilePage = (props) =>
                     <div className="files-files-list">
                         {filesView}
                     </div>
-                        </AccordionTab>
+                </AccordionTab>
             })
         );
 
@@ -45,7 +44,7 @@ const FilePage = (props) =>
             if (workspaceFiles == null)workspaceFiles = [];
             let workspaceTaskFiles = {
                 taskname: "General",
-                files : workspaceFiles
+                files: workspaceFiles
             }
             console.log(workspaceTaskFiles);
 
@@ -57,7 +56,7 @@ const FilePage = (props) =>
             ])
 
         }
-        catch(err){
+        catch (err) {
             console.log(err)
         }
 
@@ -65,8 +64,10 @@ const FilePage = (props) =>
     }, [props.ws])
 
 
-    const onUpload = (e) => {
-        e.files.map(file => {
+    const onUpload = async (e) => {
+
+
+        await e.files.map(file => {
             let fileDetails = {
                 filename: file.name,
                 workspaceId: props.ws// workspace id
@@ -75,6 +76,8 @@ const FilePage = (props) =>
             workspaceFileUpload(file, fileDetails);
 
         })
+
+        window.location.reload();
 
     }
 
@@ -85,19 +88,19 @@ const FilePage = (props) =>
             <div className="files-groups-list">
                 <div className="files-groups">
                     <div className="p-d-flex p-flex-column">
-                <Accordion multiple activeIndex={[0]}>
-                        {taskView}
-                </Accordion>
+                        <Accordion multiple activeIndex={[0]}>
+                            {taskView}
+                        </Accordion>
                     </div>
                 </div>
 
             </div>
 
             <div className="files-upload-area">
-                <FileUpload  name="files[]" url="http://localhost:8080/api/upload-file/" 
-                onUpload={onUpload} multiple 
-                maxFileSize={99000000}
-                emptyTemplate={<p className="p-m-0">Drag and drop files to here to upload.</p>} />
+                <FileUpload name="files[]" url="http://localhost:8080/api/upload-file/"
+                    onUpload={onUpload} multiple
+                    maxFileSize={99000000}
+                    emptyTemplate={<p className="p-m-0">Drag and drop files to here to upload.</p>} />
             </div>
 
         </div>

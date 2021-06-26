@@ -5,10 +5,13 @@ import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { InputNumber } from 'primereact/inputnumber';
 import { createTask } from '../api/Task.js';
+import { useHistory } from "react-router-dom";
 
 const CreateTaskButton = (props) => 
 {
     const [displayBasic, setDisplayBasic] = useState(false);
+
+    const history = useHistory();
     const [position, setPosition] = useState('center');
     const [task, setTask] = useState({
         Name: '',
@@ -33,9 +36,13 @@ const CreateTaskButton = (props) =>
         dialogFuncMap[`${name}`](false);
     }
 
-    const creatingTask = (name) => {
+    const creatingTask = async (name) => {
         dialogFuncMap[`${name}`](false);
-        createTask(task, props.workspaceId)
+
+        
+        await createTask(task, props.workspaceId)
+        window.location.reload();
+
 
     }
 

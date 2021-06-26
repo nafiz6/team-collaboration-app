@@ -10,6 +10,7 @@ import { useLocation } from 'react-router-dom'
 
 const MainPage = (props) => {
 
+
     const [projects, setProjects] = useState([]);
     const [ws, setWs] = useState([]);
     const [initialProject, setInitialProject] = useState(null);
@@ -17,7 +18,13 @@ const MainPage = (props) => {
     const [projId, setProjId] = useState(null);
     const [wsId, setWsId] = useState(null);
 
+
+
     const getWs = async () => {
+
+        // console.log(props.match.params);
+
+
 
         if (projects.length !== 0) {
 
@@ -40,7 +47,7 @@ const MainPage = (props) => {
     }
 
     const getProjects = async () => {
-        let res = await axios.get('http://localhost:8080/api/project')
+        let res = await axios.get('http://localhost:8080/api/project', { withCredentials: true })
         setProjects(res.data);
 
 
@@ -55,8 +62,9 @@ const MainPage = (props) => {
     }, [])
 
     useEffect(() => {
+
         getWs();
-    }, [projects, props.match.params])
+    }, [projects])
 
     const [selectedProject, setSelectedProject] = useState(initialProject)
 
@@ -85,12 +93,15 @@ const MainPage = (props) => {
 
     // If a ws is selected, that workspaces tasks are viewed
     useEffect(() => {
-        if (Object.keys(props.match.params).length != 0) {
+        if (Object.keys(props.match.params).length > 0) {
             if (ws.length > 0) {
+
+                
                 ws.forEach(element => {
                     if (element.id === props.match.params.wsid) {
                         setSelectedWS(element);
                         setWsId(element.id)
+
                     }
                 });
             }
@@ -103,6 +114,10 @@ const MainPage = (props) => {
         }
     }, [ws, props.match.params.wsid])
 
+
+
+
+
     const location = useLocation()
     let taskname, deadline, description
     if (location.state) {
@@ -113,7 +128,7 @@ const MainPage = (props) => {
 
     return (
         <div className='page-Style'>
-            <HeaderContainer {...props}/>
+            <HeaderContainer {...props} />
             <div className='bottom-Style'>
                 <ProjectContainer projects={projects} />
                 <RoomsContainer project={selectedProject} /> {/* This gets current selected project */}

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"teams/middleware/accountsHandler"
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
@@ -52,27 +53,58 @@ func GetSubtasks(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetSubtaskUpdates(w http.ResponseWriter, r *http.Request) {
+
+	type Update struct {
+		ID        primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		UserID    primitive.ObjectID `json:"user_id" bson:"_user_id,omitempty"`
+		SubtaskID primitive.ObjectID `json:"subtask_id" bson:"_subtask_id,omitempty"`
+		Text      string
+		Timestamp primitive.DateTime
+		User      UserDetailsNew
+	}
+
 	cors.EnableCors(&w)
 	params := mux.Vars(r)
 	// _ = json.NewDecoder(r.Body).Decode(&p)
 
 	fmt.Printf("received subtaskID: %+v", params["subTask-id"])
 
-	var updates []NewSubtaskUpdate
+	var updates []Update
 
 	subtaskID, err := primitive.ObjectIDFromHex(params["subTask-id"])
 	if err != nil {
 		panic(err)
 	}
 
-	cur, err := db.SubtaskUpdates.Find(context.Background(), bson.D{
-		{"_subtask_id", subtaskID},
-	})
+	// cur, err := db.SubtaskUpdates.Find(context.Background(), bson.D{
+	// 	{"_subtask_id", subtaskID},
+	// })
+
+	cur, err := db.SubtaskUpdates.Aggregate(context.Background(),
+		mongo.Pipeline{
+			bson.D{
+				{"$match", bson.D{
+					{"_subtask_id", subtaskID},
+				}},
+			},
+			bson.D{
+				{"$lookup", bson.D{
+					{"from", "users"},
+					{"localField", "_user_id"},
+					{"foreignField", "_id"},
+					{"as", "user"},
+				}},
+			},
+			bson.D{
+				{"$unwind", "$user"},
+			},
+		},
+	)
 
 	for cur.Next(context.Background()) {
 
 		// create a value into which the single document can be decoded
-		var elem NewSubtaskUpdate
+		var elem Update
 		err := cur.Decode(&elem)
 		if err != nil {
 			panic(err)
@@ -526,12 +558,30 @@ func CreateSubTask(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateSubTaskNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	params := mux.Vars(r)
 	var newSubTask NewSubtask
 	// fmt.Printf("body %+v\n", r.Body)
 	_ = json.NewDecoder(r.Body).Decode(&newSubTask)
 	//insert newTask into db
+
+	var self = accountsHandler.GetUserId(r)
+
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
+
+	//get self details
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"_id", selfID}}).Decode(&userDetails)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
 
 	if newSubTask.Name == "" {
 
@@ -554,6 +604,18 @@ func CreateSubTaskNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("objID: %+v\n", objID)
 
 	newSubTask.TaskID = objID
+
+	newSubTask.Assigned_users = []struct {
+		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		Name string
+		Has_Completed int
+	}{
+		{
+			ID:   userDetails.ID,
+			Name: userDetails.Name,
+			Has_Completed: 0,
+		},
+	}
 
 	insertResult, err := db.Subtasks.InsertOne(context.TODO(), newSubTask)
 
@@ -623,12 +685,11 @@ func SubtaskUpdates(w http.ResponseWriter, r *http.Request) {
 }
 
 func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	params := mux.Vars(r)
 	var newUpdate NewSubtaskUpdate
 
 	var updateInfo struct {
-		UserID string
 		Text   string
 	}
 	_ = json.NewDecoder(r.Body).Decode(&updateInfo)
@@ -647,12 +708,19 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	userID, err := primitive.ObjectIDFromHex(updateInfo.UserID)
+	// userID, err := primitive.ObjectIDFromHex(updateInfo.UserID)
+	// if err != nil {
+	// 	panic(err)
+	// }
+
+	var self = accountsHandler.GetUserId(r);
+
+	selfID, err := primitive.ObjectIDFromHex(self)
 	if err != nil {
 		panic(err)
 	}
 	newUpdate.Text = updateInfo.Text
-	newUpdate.UserID = userID
+	newUpdate.UserID = selfID
 	newUpdate.SubtaskID = objID
 	newUpdate.Timestamp = primitive.NewDateTimeFromTime(time.Now())
 	newUpdate.ID = primitive.NewObjectID()
@@ -666,7 +734,7 @@ func SubtaskUpdatesNew(w http.ResponseWriter, r *http.Request) {
 
 	err = db.Subtasks.FindOne(context.Background(), bson.D{
 		{"_id", objID},
-		{"assigned_users._id", userID},
+		{"assigned_users._id", selfID},
 	}).Decode(&task)
 
 	if err == mongo.ErrNoDocuments {

@@ -6,6 +6,8 @@ import axios from 'axios'
 
 const TaskPage = (props) => {
 
+    // console.log(props);
+
     const [tasks,setTasks] = useState([]);
 
     const getTasks = async () => {
@@ -24,7 +26,7 @@ const TaskPage = (props) => {
     if(tasks) //Tasks Present
     {
         let taskArr = tasks.map(
-            tsk => <TaskContainer key={tsk.id} task={tsk} />
+            tsk => <TaskContainer key={tsk.id} task={tsk} ws={props.ws} />
         )
         
 

@@ -86,7 +86,7 @@ func WorkspaceGetFiles(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var filesDetails []WorkspaceFile
+	var filesDetails []WorkspaceFile = []WorkspaceFile{}
 
 	cur, err := db.SubtaskFiles.Find(context.Background(), bson.D{
 		{"workspaceid", workspaceId},

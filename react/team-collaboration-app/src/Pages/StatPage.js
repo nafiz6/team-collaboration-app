@@ -11,6 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { RadioButton } from 'primereact/radiobutton';
 import { Dropdown } from 'primereact/dropdown';
 import { roles } from '../api/Workspace';
+import { Avatar } from 'primereact/avatar';
 
 const StatPage = (props) => {
 
@@ -110,6 +111,14 @@ const StatPage = (props) => {
     const fetchWorkspaceUserTasks = async () => {
         const workspaceId = props.ws;
         let res = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${workspaceId}`)
+
+        // let users = res.data.map(async u => {
+        //     let details = await axios.get(`http://localhost:8080//api/user-details/${u._id}`)
+        //     return {
+        //         ...u,
+        //         ...details
+        //     }
+        // })
 
         setUsersTable(res.data.map(w => ({
             ...w,
@@ -346,6 +355,7 @@ const StatPage = (props) => {
 
 
             <DataTable value={usersTable} emptyMessage="No users yet" header={<h2>Workspace Users</h2>}>
+                <Column body={(rowData) => <Avatar label={rowData.name[0]} size="large" image={rowData.dp} />}></Column>
                 <Column field="name" header="User"></Column>
                 <Column
                     header={

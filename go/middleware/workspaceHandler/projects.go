@@ -81,49 +81,50 @@ func GetSingleProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetAllProjectsNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
-	var projects []NewProject
+	cors.EnableCorsCredentials(&w)
+	var projects []NewProject = []NewProject{}
 
-	/*
-		var self = "60af936f5211b79fc2b0bb0d"
-		selfID, err := primitive.ObjectIDFromHex(self)
+	var self = accountsHandler.GetUserId(r)
+	log.Print(self)
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		json.NewEncoder(w).Encode("Invalid User")
+		return
+	}
+
+	var projectIDs []primitive.ObjectID = []primitive.ObjectID{}
+
+	cur, err := db.Workspaces.Find(context.Background(), bson.D{
+		{"name", "General"},
+		{"users._id", selfID},
+	})
+
+	log.Print(cur)
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem NewWorkspace
+		err := cur.Decode(&elem)
 		if err != nil {
-			panic(err)
+			json.NewEncoder(w).Encode(err)
+			log.Println(err)
+			return
 		}
 
+		projectIDs = append(projectIDs, elem.Project_ID)
+	}
 
-		var projectIDs []primitive.ObjectID = []primitive.ObjectID{}
+	//end here
 
-		cur, err := db.Workspaces.Find(context.Background(), bson.D{
-			{"name", "General"},
-			{"users._id", selfID},
-		})
-
-		log.Print(cur)
-
-		for cur.Next(context.Background()) {
-
-			// create a value into which the single document can be decoded
-			var elem primitive.ObjectID
-			err := cur.Decode(&elem)
-			if err != nil {
-				json.NewEncoder(w).Encode(err)
-				log.Println(err)
-				return
-			}
-
-			projectIDs = append(projectIDs, elem)
-		}
-	*/
-
-	cur, err := db.Projects.Find(context.Background(),
-		bson.D{},
+	cur, err = db.Projects.Find(context.Background(),
+		// bson.D{},
 		//ONLY GET MY PROJECTS
-		// bson.D{
-		// 	{"_id", bson.D{
-		// 		{"$in", projectIDs},
-		// 	}},
-		// }
+		bson.D{
+			{"_id", bson.D{
+				{"$in", projectIDs},
+			}},
+		},
 	)
 
 	if err != nil {
@@ -186,7 +187,7 @@ func CreateProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateProjectNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	var newProject NewProject
 	_ = json.NewDecoder(r.Body).Decode(&newProject)
 
@@ -212,7 +213,7 @@ func CreateProjectNew(w http.ResponseWriter, r *http.Request) {
 	generalWorkspace.Date_created = primitive.NewDateTimeFromTime(time.Now())
 	generalWorkspace.Description = "General workspace forms global scope for project"
 
-	var self = "60af936f5211b79fc2b0bb0d"
+	var self = accountsHandler.GetUserId(r);
 
 	selfID, err := primitive.ObjectIDFromHex(self)
 	if err != nil {
@@ -516,8 +517,6 @@ func GetMyUserDetails(w http.ResponseWriter, r *http.Request) {
 		log.Println(err)
 		return
 	}
-
-
 
 	json.NewEncoder(w).Encode(userDetails)
 

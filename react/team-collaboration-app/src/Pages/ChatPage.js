@@ -45,7 +45,7 @@ const ChatPage = (props) => {
                     user?.id === myUserDetails?.id ?
                         <div className="p-grid ">
                             <div className="p-col-1">
-                                <img className="chat-img" src={user?.Dp} />
+                                <img className="chat-img" src={user?.Dp}  />
                             </div>
 
 

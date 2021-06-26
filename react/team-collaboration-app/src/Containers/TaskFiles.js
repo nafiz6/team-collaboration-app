@@ -29,7 +29,7 @@ const TaskFiles = (props) => {
 					</a>
 		})
 
-		let currentTaskView  = <AccordionTab header="Files Int this task">
+		let currentTaskView  = <AccordionTab header="Files in this task">
                     <div className="files-files-list">
                         {filesView}
                     </div>

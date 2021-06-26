@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"sort"
+	"teams/middleware/accountsHandler"
 	"teams/middleware/cors"
 	"teams/middleware/db"
 	. "teams/models"
@@ -43,7 +44,7 @@ func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
 	cur, err := db.Workspaces.Find(context.Background(), bson.D{
 		{"_project_id", projectID},
 		//ONLY GET MY WORKSPACES
-		// {"users._id", selfID},	
+		// {"users._id", selfID},
 	})
 
 	for cur.Next(context.Background()) {
@@ -550,7 +551,7 @@ func CreateWorkspace(w http.ResponseWriter, r *http.Request) {
 
 func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	params := mux.Vars(r)
 	var newWorkspace NewWorkspace
 	// fmt.Printf("body %+v\n", r.Body)
@@ -574,6 +575,36 @@ func CreateWorkspaceNew(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("objID: %+v", objID)
 	newWorkspace.Project_ID = objID
 	newWorkspace.Date_created = primitive.NewDateTimeFromTime(time.Now())
+
+	var self = accountsHandler.GetUserId(r)
+
+	selfID, err := primitive.ObjectIDFromHex(self)
+	if err != nil {
+		panic(err)
+	}
+
+	//get self details
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"_id", selfID}}).Decode(&userDetails)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
+	}
+
+	newWorkspace.Users = []struct {
+		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+		Role int                //role is diff in each workspace
+		Name string             //name isnt changed much and is retrieved often here
+	}{
+		{
+			ID:   userDetails.ID,
+			Role: 1,
+			Name: userDetails.Name,
+		},
+	}
 
 	insertResult, insertErr := db.Workspaces.InsertOne(
 		context.TODO(),
