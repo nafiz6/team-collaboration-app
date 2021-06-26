@@ -313,3 +313,8 @@
     padding-right: 20px;
     padding-bottom: 30px;
 }
+
+.addUserToTaskButton
+{
+    width: 10%;
+}

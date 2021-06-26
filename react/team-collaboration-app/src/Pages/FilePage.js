@@ -21,7 +21,7 @@ const FilePage = (props) => {
         setTaskView(
             tasks.map(task => {
                 let filesView = task.files.map(file => {
-                    return <a href={file.Url} className="files-anchor">
+                    return <a href={file.Url} className="files-anchor" download={file.FileName} target="_blank">
                         <div className="files-file">
                             <i className="pi pi-file-o" style={{ 'fontSize': '4em' }}></i>
                             <br />

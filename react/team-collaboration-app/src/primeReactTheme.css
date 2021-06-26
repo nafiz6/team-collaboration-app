@@ -133,11 +133,11 @@ button {
 
 .files-page {
     height: 100%;
-    overflow: hidden;
+    overflow: hidden; 
 }
 
 .files-groups-list{
-    height: 80%;
+    height: 60%;
     overflow-y: scroll;
 }
 

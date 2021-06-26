@@ -5,6 +5,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { MultiSelect } from 'primereact/multiselect';
 
+
 const SubtaskContainer = (props) => {
 
     const [updates, setUpdates] = useState([]);
@@ -126,7 +127,7 @@ const SubtaskContainer = (props) => {
             <text> Designated Users: {assUserArr} </text>
             {updateArr}
             <AddUpdate user={userObj} subtaskId={props.subtask.id} taskId={props.subtask.task_id} />
-            <Button label="Add User" onClick={() => onClick('displayBasic')} />
+            <Button className="addUserToTaskButton" label="Add User" onClick={() => onClick('displayBasic')} />
             <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateProjectFrom}
             </Dialog>
