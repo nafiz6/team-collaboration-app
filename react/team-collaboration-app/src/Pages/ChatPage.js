@@ -101,7 +101,7 @@ const ChatPage = (props) => {
 
 
     useEffect(() => {
-        connect("60ca3b1640dfba660867877a"); // workspace id
+        connect(props.ws); // workspace id
 
 
         socket.onmessage = async (msg) => {
@@ -199,7 +199,7 @@ const ChatPage = (props) => {
             {
                 "Type": "Text",
                 "Body": messageText,
-                "WorkspaceId": "60ca3b1640dfba660867877a"
+                "WorkspaceId": props.ws
             }
         );
         setMessageText('')

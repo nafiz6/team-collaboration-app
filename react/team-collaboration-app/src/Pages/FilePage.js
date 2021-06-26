@@ -20,7 +20,7 @@ const FilePage = (props) =>
         setTaskView(
             tasks.map(task=>{
                 let filesView = task.files.map(file=>{
-                    return <a href={file.Url} class="files-anchor">
+                    return <a href={file.Url} className="files-anchor">
                                 <div className="files-file">
                                     <i className="pi pi-file-o" style={{'fontSize': '4em'}}></i>
                                     <br/>
@@ -39,15 +39,17 @@ const FilePage = (props) =>
     }, [tasks])
 
     useEffect(async () =>{
+        if (!props.ws) return;
         try {
-            let workspaceFiles = await getWorkspaceFiles("60ca3b1640dfba660867877a") // workspace id
+            let workspaceFiles = await getWorkspaceFiles(props.ws); // workspace id
+            if (workspaceFiles == null)workspaceFiles = [];
             let workspaceTaskFiles = {
                 taskname: "General",
                 files : workspaceFiles
             }
             console.log(workspaceTaskFiles);
 
-            let taskFiles = await getTaskFilesOfWorkspace("60ca3b1640dfba660867877a")
+            let taskFiles = await getTaskFilesOfWorkspace(props.ws)
             setTasks(prevTasks => [
                 workspaceTaskFiles,
                 ...taskFiles,
@@ -60,14 +62,14 @@ const FilePage = (props) =>
         }
 
 
-    }, [])
+    }, [props.ws])
 
 
     const onUpload = (e) => {
         e.files.map(file => {
             let fileDetails = {
                 filename: file.name,
-                workspaceId: "60ca3b1640dfba660867877a" // workspace id
+                workspaceId: props.ws// workspace id
             }
             console.log(file)
             workspaceFileUpload(file, fileDetails);

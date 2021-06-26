@@ -8,6 +8,7 @@ let getTaskFilesOfWorkspace = async (workspaceId) => {
 				throw err.response.data
 			});
 	
+	if (tasks.data == null)return [];
 	
 	files = await Promise.all(tasks.data.map( async(task) =>{
 		console.log(task)

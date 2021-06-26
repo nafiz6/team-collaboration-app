@@ -33,7 +33,7 @@ const WorkContainer = (props) => {
     if(props.tab === "files")
     {
         return (
-            <FilePage />
+            <FilePage {...props} ws={props.ws}/>
         )
     }
 
