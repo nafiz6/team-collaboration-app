@@ -54,7 +54,6 @@ const FilePage = (props) => {
             setTasks(prevTasks => [
                 workspaceTaskFiles,
                 ...taskFiles,
-                ...prevTasks
             ])
 
         }
