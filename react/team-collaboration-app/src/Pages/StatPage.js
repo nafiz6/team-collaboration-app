@@ -87,7 +87,7 @@ const StatPage = (props) => {
 
         if (usersTable) {
             let res = await axios.get(`http://localhost:8080/api/my-details`, { withCredentials: true });
-            console.log(res.data);
+            // console.log(res.data);
 
 
             let workspaceUser = usersTable.find(u => u._id === res.data.id)
@@ -195,8 +195,8 @@ const StatPage = (props) => {
 
 
     }
-    console.log(editRolesData);
-    console.log(usersTable);
+    // console.log(editRolesData);
+    // console.log(usersTable);
 
     const handleEditRoles = async () => {
         if (!editRoles) {
@@ -232,7 +232,7 @@ const StatPage = (props) => {
 
             fetchWorkspaceTasksSpending();
             fetchWorkspaceUserTasks();
-            console.log("called")
+            // console.log("called")
         }
 
 
@@ -317,7 +317,7 @@ const StatPage = (props) => {
         );
     }
 
-    console.log(tasksSpendingTable)
+    // console.log(tasksSpendingTable)
 
 
 

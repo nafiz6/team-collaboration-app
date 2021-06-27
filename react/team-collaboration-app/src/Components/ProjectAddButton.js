@@ -6,11 +6,13 @@ import { MultiSelect } from 'primereact/multiselect';
 import { InputText } from 'primereact/inputtext';
 import { createProject } from '../api/Project.js';
 import axios from 'axios';
+import { InputTextarea } from 'primereact/inputtextarea';
 
 const ProjectAddButton = () => {
     const [displayBasic, setDisplayBasic] = useState(false);
     const [position, setPosition] = useState('center');
     const [projectName, setProjectName] = useState('');
+    const [description, setDescription] = useState('');
     const [users, setUsers] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
 
@@ -42,9 +44,10 @@ const ProjectAddButton = () => {
         dialogFuncMap[`${name}`](false);
     }
 
-    const creatingProject = (name) => {
+    const creatingProject = async (name) => {
         dialogFuncMap[`${name}`](false);
-        createProject(projectName, users)
+        await createProject(projectName, description,  users)
+        window.location.reload();
 
     }
 
@@ -60,6 +63,8 @@ const ProjectAddButton = () => {
         <div>
             <h5>Project Name</h5>
             <InputText value={projectName} onChange={(e) => setProjectName(e.target.value)} />
+            <h5>Project Description</h5>
+            <InputTextarea value={description} onChange={(e) => setDescription(e.target.value)} />
 
             <h5>Select Users to add to Project</h5>
             <MultiSelect optionLabel="name" value={users} options={allUsers} onChange={(e) => {

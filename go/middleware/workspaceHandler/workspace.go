@@ -20,13 +20,25 @@ import (
 )
 
 func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	params := mux.Vars(r)
 
-	var self = "60af936f5211b79fc2b0bb0d"
+	var self = accountsHandler.GetUserId(r);
+
 	selfID, err := primitive.ObjectIDFromHex(self)
 	if err != nil {
 		panic(err)
+	}
+
+	//get self details
+
+	var userDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"_id", selfID}}).Decode(&userDetails)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
 	}
 
 	fmt.Print(selfID)
@@ -44,7 +56,7 @@ func GetProjectWorkspaces(w http.ResponseWriter, r *http.Request) {
 	cur, err := db.Workspaces.Find(context.Background(), bson.D{
 		{"_project_id", projectID},
 		//ONLY GET MY WORKSPACES
-		// {"users._id", selfID},
+		{"users._id", selfID},
 	})
 
 	for cur.Next(context.Background()) {

@@ -327,7 +327,7 @@ func AssignUserToProject(w http.ResponseWriter, r *http.Request) {
 }
 
 func AssignUserToProjectNew(w http.ResponseWriter, r *http.Request) {
-	cors.EnableCors(&w)
+	cors.EnableCorsCredentials(&w)
 	params := mux.Vars(r)
 	var uid struct {
 		Uid  string
@@ -375,10 +375,22 @@ func AssignUserToProjectNew(w http.ResponseWriter, r *http.Request) {
 
 	//only allow assigning if self user role is 0
 
-	var self = "60af936f5211b79fc2b0bb0d"
+	var self = accountsHandler.GetUserId(r);
+
 	selfID, err := primitive.ObjectIDFromHex(self)
 	if err != nil {
 		panic(err)
+	}
+
+	//get self details
+
+	var myUserDetails UserDetailsNew
+
+	err = db.Users.FindOne(context.TODO(), bson.D{{"_id", selfID}}).Decode(&myUserDetails)
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+		return
 	}
 
 	var workspace NewWorkspace

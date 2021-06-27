@@ -1,12 +1,12 @@
 import axios from "axios";
 
 
-let createProject = async (name, users) => {
+let createProject = async (name, description, users) => {
     const reqOpts = {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ "Name": name })
-        
+        body: JSON.stringify({ "Name": name, "Description": description })
+
     };
 
 
@@ -20,25 +20,25 @@ let createProject = async (name, users) => {
             // response.json();
             response.json()
         )
-        // .then(data => {  //ALREADY DOING THIS IN BACKEND
-        //     console.log(data)
-        //     users.forEach(async uid => {
+        .then(data => {
+            console.log(data)
+            users.forEach(async uid => {
 
 
-        //         let res = await axios.post(`http://localhost:8080/api/assign-projects/${data}`, JSON.stringify({
-        //             Uid: uid,
-        //             Role: 100
-        //         }))
+                let res = await axios.post(`http://localhost:8080/api/assign-projects/${data}`, JSON.stringify({
+                    uid: uid,
+                    role: 2
+                }), { withCredentials: true })
 
-        //         console.log(res)
-
-
-
-        //     })
+                console.log(res)
 
 
 
-        // });
+            })
+
+
+
+        });
 
 
 

@@ -31,10 +31,10 @@ const MainPage = (props) => {
             let res = null;
 
             if (Object.keys(props.match.params).length > 0 && projId) {
-                res = await axios.get(`http://localhost:8080/api/workspace/${projId}`)
+                res = await axios.get(`http://localhost:8080/api/workspace/${projId}`, { withCredentials: true })
             }
             else {
-                res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`)
+                res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`, { withCredentials: true })
             }
 
             setWs(res.data);
@@ -78,7 +78,7 @@ const MainPage = (props) => {
                         setSelectedProject(element);
                         setProjId(element.id);
 
-                        
+
 
                         //set workspace to first one in proj
                     }
@@ -100,7 +100,7 @@ const MainPage = (props) => {
         if (Object.keys(props.match.params).length > 0) {
             if (ws.length > 0) {
 
-                
+
                 ws.forEach(element => {
                     if (element.id === props.match.params.wsid) {
                         setSelectedWS(element);

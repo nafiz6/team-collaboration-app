@@ -135,6 +135,7 @@ const TaskContainer = (props) => {
                     <button className='taskContainer-Style'>
 
                         <h3 className='taskName-Style'>{props.task.Name}</h3>
+                        <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5>
 
 
                         <Deadline time={props.task.Deadline.split("T")[0]} />
@@ -180,6 +181,7 @@ const TaskContainer = (props) => {
                     }}  >
                     <button className='taskContainer-Style'>
                         <h3 className='taskName-Style'>{props.task.Name}</h3>
+                        <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5>
 
                         <Deadline time={props.task.Deadline.split("T")[0]} />
                         {

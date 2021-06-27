@@ -14,7 +14,7 @@ let createTask = async (task, workspaceId) => {
     let res = await axios.post(`http://localhost:8080/api/task/${workspaceId}`, JSON.stringify({
         ...task,
         Subtasks: [],
-        Deadline: "2022-01-01T06:00:00+06:00"
+        // Deadline: "2022-01-01T06:00:00+06:00"
     }), { withCredentials: true })
 
     // console.log("adding task ", reqOpts.body);

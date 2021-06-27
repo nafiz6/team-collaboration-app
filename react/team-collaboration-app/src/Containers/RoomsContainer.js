@@ -10,7 +10,7 @@ const RoomsContainer = (props) => {
     const [workspace, setWorkspace] = useState(null);
 
     const getWorkspace = async () => {
-        let res = await axios.get(`http://localhost:8080/api/workspace/${props.project.id}`)
+        let res = await axios.get(`http://localhost:8080/api/workspace/${props.project.id}`, { withCredentials: true })
         setWorkspace(res.data);
     }
 
