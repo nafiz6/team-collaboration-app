@@ -167,7 +167,7 @@ const TaskContainer = (props) => {
 
 
                 <div className="addMemberToTaskButton">
-                    <Button label="Assign Team member" onClick={(e) => {
+                    <Button label="+ Assign Member" onClick={(e) => {
                         e.preventDefault();
                         onClick('displayBasic');
                 }} />

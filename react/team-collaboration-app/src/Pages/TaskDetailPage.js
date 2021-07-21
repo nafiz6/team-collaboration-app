@@ -8,6 +8,7 @@ import { InputText } from 'primereact/inputtext';
 import { Button } from 'primereact/button';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
+import Deadline from '../Components/Deadline'
 
 
 
@@ -92,43 +93,33 @@ const TaskDetailPage = (props) => {
         window.location.reload();
     }
 
+
+    let staskArr;
     if (subtasks) {
-        const staskArr = subtasks.map(
-            subtask => <SubtaskContainer key={subtask.id} subtask={subtask} taskId={props.tid} />)
+        staskArr = subtasks.map(
+            subtask => <SubtaskContainer  key={subtask.id} subtask={subtask} taskId={props.tid} />)
 
-        return (
-            <div>
-                <TaskFiles taskId={props.tid} />
-                <div className="taskPage-Style">
-                    {/*<CreateSubtaskButton taskId={props.tid} />*/}
-                    <h3>{props.taskname}</h3>
-                    <h4>Deadline: {props.deadline.split("T")[0]}</h4>
-                    <a>{props.description}</a>
-                    {staskArr}
-                </div>
-                <Button label="Add Subtask" onClick={() => onClick('displayBasic')} />
-                <Dialog header="Create Subtask" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                    {CreateSubtaskForm}
-                </Dialog>
-            </div>
-        )
     }
-    else {
 
-        return (
+    return (
+        <div class="taskPageContainer">
+
+<Button label="Add Subtask" onClick={() => onClick('displayBasic')} />
             <div className="taskPage-Style">
+                <TaskFiles taskId={props.tid} />
                 {/*<CreateSubtaskButton taskId={props.tid} />*/}
-                <h3>{props.taskname}</h3>
-                <a>{props.deadline.split("T")[0]}</a>
-                <h5>{props.description}</h5>
-                <Button label="Add Subtask" onClick={() => onClick('displayBasic')} />
-                <Dialog header="Create Subtask" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                    {CreateSubtaskForm}
-                </Dialog>
+                <h1>{props.taskname}</h1>
+                <p className="task-page-description">{props.description}</p>
+                <Deadline time={props.deadline}></Deadline>
+                
+                {subtasks ? staskArr : null}
             </div>
-        )
-
-    }
+            
+            <Dialog header="Create Subtask" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+                {CreateSubtaskForm}
+            </Dialog>
+        </div>
+    )
 }
 
 export default TaskDetailPage;

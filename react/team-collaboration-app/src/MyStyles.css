@@ -263,9 +263,9 @@ h1 {
     background-color:#f61302;
     text-align: center;
     color: floralwhite;
-    width: 25%;
+    width: 80px;
     /* width: 100px; */
-    height: 25px;
+    height: 30px;
     border-radius: 7px;
     font-size: small;
     margin-top: 10px; 
@@ -274,6 +274,7 @@ h1 {
     margin-right: 20px;
     padding-top: 5px;
     padding-bottom: 2px;
+    font-weight: 400;
     /* align-self: flex-start; */
 }
 
@@ -346,6 +347,7 @@ a {
     display: flex;
     background-color: #3b3e4a;
     flex-direction: column;
+    align-self: center;
     width: 980px;
     text-align: left;
     color: white;
@@ -354,6 +356,40 @@ a {
     padding-left: 20px;
     padding-right: 20px;
     padding-bottom: 20px;
+}
+
+.subtask-user {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.subtask-update {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+
+}
+.subtask-update-user {
+    display: flex;
+    flex-direction: column;
+}
+.subtask-update-content {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
+
+.subtask-update-time {
+    /* background-color: purple; */
+    text-align: right;
+}
+
+.taskPageContainer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .taskPage-Style
@@ -371,6 +407,17 @@ a {
     padding-top: 20px;
     padding-right: 20px;
     padding-bottom: 30px;
+}
+
+.subtask-task-page {
+    align-self: center;
+    background-color: purple;
+}
+
+.task-page-description {
+    font-size: 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    font-weight: 300;
 }
 
 .addUserToTaskButton
