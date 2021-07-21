@@ -8,6 +8,10 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { MultiSelect } from 'primereact/multiselect';
 
+import { Avatar } from 'primereact/avatar';
+import { AvatarGroup } from 'primereact/avatargroup';
+import { ProgressBar } from 'primereact/progressbar';
+
 const TaskContainer = (props) => {
 
     const [subtasks, setSubtasks] = useState([])
@@ -60,7 +64,7 @@ const TaskContainer = (props) => {
         let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${props.ws}`)
 
         // console.log(users.data);
-// 
+        // 
         let wsUsersNotInTask = users.data.filter(u => !props.task.Assigned_users.some(a => a.id === u._id));
 
         setWorkspaceUsersNotInTask(wsUsersNotInTask);
@@ -83,6 +87,7 @@ const TaskContainer = (props) => {
     }, [window.location.href])
 
     const onClick = (name, position) => {
+
         dialogFuncMap[`${name}`](true);
     }
     const onHide = (name) => {
@@ -114,15 +119,20 @@ const TaskContainer = (props) => {
         </div>
 
 
-
+    let subtasksArr;
     if (subtasks) {
-        const subtasksArr = subtasks.map(
+        subtasksArr = subtasks.map(
             stask => <SubtaskButton key={stask.id} name={stask.Name} />
         )
+    }
 
-        return (
-            <div>
-                <Link to={
+    return (
+        <div>
+            <Link
+                
+                className='taskContainer-Style'
+
+                to={
                     {
                         pathname: `${retAddr}/taskpage/${props.task.id}`,
                         state:
@@ -131,83 +141,54 @@ const TaskContainer = (props) => {
                             deadline: props.task.Deadline,
                             description: props.task.Description
                         }
-                    }}  >
-                    <button className='taskContainer-Style'>
-
-                        <h3 className='taskName-Style'>{props.task.Name}</h3>
-                        <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5>
-
-
-                        <Deadline time={props.task.Deadline.split("T")[0]} />
-                        {
-                            props.task.Assigned_users.map(u => (
-                                <div>
-                                    <p>{u.Name}</p>
-                                </div>
-                            ))
-                        }
+                    }}
+            >
 
 
 
-                        {subtasksArr}
+                <h3 className='taskName-Style'>{props.task.Name}</h3>
+                {/* <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5> */}
+
+
+                {/* <ProgressBar value={isNaN((props.task.Spent / props.task.Budget )* 100) ? 0 : (props.task.Spent / props.task.Budget )* 100} /> */}
+
+                <Deadline time={props.task.Deadline.split("T")[0]} />
+                <AvatarGroup>
+                    {props.task.Assigned_users.map(u => (
+                        <Avatar label={u.Name[0]} image={u.Dp} shape="circle" size="large" />
+
+                    ))}
+                </AvatarGroup>
+
+
+                <div className="subtasks">
+                    {subtasks ? subtasksArr : null}
+                </div>
+
+
+                <div className="addMemberToTaskButton">
+                    <Button label="Assign Team member" onClick={(e) => {
+                        e.preventDefault();
+                        onClick('displayBasic');
+                }} />
+                </div>
 
 
 
-                    </button>
-
-                </Link>
-                <Button label="Add User" onClick={() => onClick('displayBasic')} />
-                <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                    {CreateProjectFrom}
-                </Dialog>
-            </div>
-        )
-
-    }
-    else {
-
-        return (
-
-            <div>
-                <Link to={
-                    {
-                        pathname: `${retAddr}/taskpage/${props.task.id}`,
-                        state:
-                        {
-                            taskname: props.task.Name,
-                            deadline: props.task.Deadline,
-                            description: props.task.Description
-                        }
-                    }}  >
-                    <button className='taskContainer-Style'>
-                        <h3 className='taskName-Style'>{props.task.Name}</h3>
-                        <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5>
-
-                        <Deadline time={props.task.Deadline.split("T")[0]} />
-                        {
-                            props.task.Assigned_users.map(u => (
-                                <div>
-                                    <p>{u.Name}</p>
-                                </div>
-                            ))
-                        }
-                    </button>
-                </Link>
-                <Button label="Add User" onClick={() => onClick('displayBasic')} />
-                <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                    {CreateProjectFrom}
-                </Dialog>
-
-
-            </div>
 
 
 
-        )
+            </Link>
 
-
-    }
+            <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+                {CreateProjectFrom}
+            </Dialog>
+        </div>
+    )
 
 }
+
+
+
 
 export default TaskContainer;

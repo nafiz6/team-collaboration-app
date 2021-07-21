@@ -229,11 +229,48 @@ func GetTaskUsers(w http.ResponseWriter, r *http.Request) {
 	// }
 
 	users := decodedTask.Assigned_users
+	var userIds = []primitive.ObjectID{}
+
+	for _,user := range users {
+
+		userIds = append(userIds, user.ID)
+
+	}
+
+	cur, err := db.Users.Find(context.Background(), bson.D{
+		{ "_id", bson.D{
+			{"$in", userIds},
+		} },
+
+	})
+
+	if err != nil {
+		fmt.Printf("Error: %s", err.Error())
+		json.NewEncoder(w).Encode(err.Error())
+
+	}
+
+	var newUsers = []UserDetailsNew{}
+
+	for cur.Next(context.Background()) {
+
+		// create a value into which the single document can be decoded
+		var elem UserDetailsNew
+		err := cur.Decode(&elem)
+		if err != nil {
+			panic(err)
+		}
+
+		newUsers = append(newUsers, elem)
+	}
+
+
+	
 
 	// if err = cur.All(context.Background(), &users); err != nil {
 	// 	panic(err)
 	// }
-	fmt.Println(users)
+	// fmt.Println(users)
 
 	// for cur.Next(context.Background()) {
 
@@ -247,7 +284,7 @@ func GetTaskUsers(w http.ResponseWriter, r *http.Request) {
 	// 	tasks = append(tasks, elem)
 	// }
 
-	json.NewEncoder(w).Encode(users)
+	json.NewEncoder(w).Encode(newUsers)
 }
 
 func EditTask(w http.ResponseWriter, r *http.Request) {
