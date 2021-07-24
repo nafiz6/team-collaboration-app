@@ -60,135 +60,169 @@ const TaskContainer = (props) => {
 
     }
 
+    const deleteTask = async () => {
+
+
+
+        // console.log(usersToAddToTask);
+
+
+
+
+        await axios.post(`http://localhost:8080/api/delete-task/${props.task.id}`);
+
+        window.location.reload();
+
+
+
+
+
+
+        }
+
     const getWorkspaceUsers = async () => {
-        let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${props.ws}`)
+            let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${props.ws}`)
 
-        // console.log(users.data);
-        // 
-        let wsUsersNotInTask = users.data.filter(u => !props.task.Assigned_users.some(a => a.id === u._id));
+            // console.log(users.data);
+            // 
+            let wsUsersNotInTask = users.data.filter(u => !props.task.Assigned_users.some(a => a.id === u._id));
 
-        setWorkspaceUsersNotInTask(wsUsersNotInTask);
+            setWorkspaceUsersNotInTask(wsUsersNotInTask);
 
-        // console.log(wsUsersNotInTask);
-
-
-    }
-
-    useEffect(() => {
-        getWorkspaceUsers();
-        getSubtasks();
-    }, [props.task.id, changes])
+            // console.log(wsUsersNotInTask);
 
 
-    useEffect(() => {
-        let addrArr = (window.location.href).split("http://localhost:3000");
-        setRetAddr(addrArr[1]);
+        }
 
-    }, [window.location.href])
+        useEffect(() => {
+            getWorkspaceUsers();
+            getSubtasks();
+        }, [props.task.id, changes])
 
-    const onClick = (name, position) => {
 
-        dialogFuncMap[`${name}`](true);
-    }
-    const onHide = (name) => {
-        dialogFuncMap[`${name}`](false);
-    }
+        useEffect(() => {
+            let addrArr = (window.location.href).split("http://localhost:3000");
+            setRetAddr(addrArr[1]);
 
-    const addingUsersToTask = (name) => {
-        dialogFuncMap[`${name}`](false);
-        addUsersToTask()
+        }, [window.location.href])
 
-    }
-    const renderFooter = (name) => {
+        const onClick = (name, position) => {
+
+            dialogFuncMap[`${name}`](true);
+        }
+        const onHide = (name) => {
+            dialogFuncMap[`${name}`](false);
+        }
+
+        const addingUsersToTask = (name) => {
+            dialogFuncMap[`${name}`](false);
+            addUsersToTask()
+
+        }
+        const renderFooter = (name) => {
+            return (
+                <div>
+                    <Button label="Add" icon="pi pi-check" onClick={() => addingUsersToTask(name)} autoFocus />
+                </div>
+            );
+        }
+        const CreateProjectFrom =
+            <div>
+                <h5>Add Users To Task</h5>
+
+                <h5>Select Users to add to Project</h5>
+                <MultiSelect optionLabel="name" value={usersToAddToTask} options={workspaceUsersNotInTask} onChange={(e) => {
+                    setUsersToAddtoTask(e.value)
+                    console.log(e.value);
+
+                }} optionLabel="name" />
+            </div>
+
+
+        let subtasksArr;
+        if (subtasks) {
+            subtasksArr = subtasks.map(
+                stask => <SubtaskButton key={stask.id} name={stask.Name} />
+            )
+        }
+
+        props.task.Assigned_users.map(u => (
+            // <Avatar label={u.Name[0]} image={u.Dp} shape="circle" size="large" />
+            console.log(u)
+        ));
+
+
+
         return (
             <div>
-                <Button label="Add" icon="pi pi-check" onClick={() => addingUsersToTask(name)} autoFocus />
-            </div>
-        );
-    }
-    const CreateProjectFrom =
-        <div>
-            <h5>Add Users To Task</h5>
+                <Link
 
-            <h5>Select Users to add to Project</h5>
-            <MultiSelect optionLabel="name" value={usersToAddToTask} options={workspaceUsersNotInTask} onChange={(e) => {
-                setUsersToAddtoTask(e.value)
-                console.log(e.value);
+                    className='taskContainer-Style'
 
-            }} optionLabel="name" />
-        </div>
-
-
-    let subtasksArr;
-    if (subtasks) {
-        subtasksArr = subtasks.map(
-            stask => <SubtaskButton key={stask.id} name={stask.Name} />
-        )
-    }
-
-    return (
-        <div>
-            <Link
-                
-                className='taskContainer-Style'
-
-                to={
-                    {
-                        pathname: `${retAddr}/taskpage/${props.task.id}`,
-                        state:
+                    to={
                         {
-                            taskname: props.task.Name,
-                            deadline: props.task.Deadline,
-                            description: props.task.Description
-                        }
-                    }}
-            >
+                            pathname: `${retAddr}/taskpage/${props.task.id}`,
+                            state:
+                            {
+                                taskname: props.task.Name,
+                                deadline: props.task.Deadline,
+                                description: props.task.Description
+                            }
+                        }}
+                >
 
 
 
-                <h3 className='taskName-Style'>{props.task.Name}</h3>
-                {/* <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5> */}
+                    <h3 className='taskName-Style'>{props.task.Name}</h3>
+                    {/* <h5 className='taskName-Style'> Budget: {props.task.Budget}</h5> */}
 
 
-                {/* <ProgressBar value={isNaN((props.task.Spent / props.task.Budget )* 100) ? 0 : (props.task.Spent / props.task.Budget )* 100} /> */}
+                    {/* <ProgressBar value={isNaN((props.task.Spent / props.task.Budget )* 100) ? 0 : (props.task.Spent / props.task.Budget )* 100} /> */}
 
-                <Deadline time={props.task.Deadline.split("T")[0]} />
-                <AvatarGroup>
-                    {props.task.Assigned_users.map(u => (
-                        <Avatar label={u.Name[0]} image={u.Dp} shape="circle" size="large" />
+                    <Deadline time={props.task.Deadline.split("T")[0]} />
+                    <AvatarGroup>
+                        {props.task.Assigned_users.map(u => (
+                            <Avatar label={u.Name[0]} image={u.Dp} shape="circle" size="large" />
 
-                    ))}
-                </AvatarGroup>
-
-
-                <div className="subtasks">
-                    {subtasks ? subtasksArr : null}
-                </div>
+                        ))}
+                    </AvatarGroup>
 
 
-                <div className="addMemberToTaskButton">
-                    <Button label="+ Assign Member" onClick={(e) => {
-                        e.preventDefault();
-                        onClick('displayBasic');
-                }} />
-                </div>
+                    <div className="subtasks">
+                        {subtasks ? subtasksArr : null}
+                    </div>
 
 
-
-
-
-
-            </Link>
-
-            <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
-                {CreateProjectFrom}
-            </Dialog>
-        </div>
-    )
-
-}
+                    <div className="addMemberToTaskButton">
+                        <Button label="+ Assign Member" onClick={(e) => {
+                            e.preventDefault();
+                            onClick('displayBasic');
+                        }} />
+                    </div>
+                    <div className="addMemberToTaskButton">
+                        <Button label="- Delete Task" onClick={(e) => {
+                            e.preventDefault();
+                            deleteTask();
+                        }} />
+                    </div>
 
 
 
 
-export default TaskContainer;
+
+
+
+                </Link>
+
+                <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+                    {CreateProjectFrom}
+                </Dialog>
+            </div>
+        )
+
+    }
+
+
+
+
+    export default TaskContainer;
