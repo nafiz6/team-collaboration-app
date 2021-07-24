@@ -137,8 +137,8 @@ const CreateTaskButton = (props) => {
 
     return (
         <div className="workspace-form">
-
-            <Button className=" newTaskButton" label="Add Task" icon="pi pi-plus" onClick={() => onClick('displayBasic')} />
+            
+            <Button className="p-button-raised p-button-rounded" label="Add Task" icon="pi pi-plus" onClick={() => onClick('displayBasic')} />
             <Dialog header="Create Task" visible={displayBasic} style={
                 {
                     width: '500px',

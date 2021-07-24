@@ -4,6 +4,7 @@ import '../MyStyles.css'
 import CreateWorkspaceButton from "../Components/CreateWorkspaceButton";
 import axios from 'axios'
 import { Button } from 'primereact/button';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 
 const RoomsContainer = (props) => {
@@ -54,12 +55,28 @@ const RoomsContainer = (props) => {
         const deleteProject = async () => {
 
             // console.log(usersToAddToTask);
+            console.log("In delete");
     
             await axios.post(`http://localhost:8080/api/delete-project/${props.project.id}`);
     
             window.location.reload();
     
             }    
+/*
+            const reject = () => {}
+
+
+            const confirm2 = () => {
+                confirmDialog({
+                    message: 'Do you want to delete this record?',
+                    header: 'Delete Confirmation',
+                    icon: 'pi pi-info-circle',
+                    acceptClassName: 'p-button-danger',
+                    deleteProject,
+                    reject
+                });
+            };
+        */
 
         
 
@@ -80,9 +97,11 @@ const RoomsContainer = (props) => {
             <div className='rooms-Style'>{rooms}
             {myUserDetails.role < 1 ? 
                 <div className="addMemberToTaskButton">
-                            <Button label="X" onClick={(e) => {
+                            <Button icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded" onClick={(e) => {
                                 e.preventDefault();
-                                deleteProject();
+                              //  confirm2();
+                              deleteProject();
+                                
                             }} />
                 </div>
                 : null}
@@ -97,9 +116,10 @@ const RoomsContainer = (props) => {
                 <CreateWorkspaceButton projectId={props.project.id} />
                 {myUserDetails.role < 1 ? 
                 <div className="addMemberToTaskButton">
-                            <Button label="X" onClick={(e) => {
+                            <Button icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded p-button-lg" onClick={(e) => {
                                 e.preventDefault();
-                                deleteProject();
+                               // confirm2();
+                               deleteProject();
                             }} />
                 </div>
                 : null}

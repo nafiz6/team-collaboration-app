@@ -3,6 +3,7 @@ import ProjectAddButton from "../Components/ProjectAddButton";
 import ProjectButton from "../Components/ProjectButton";
 import { Link } from 'react-router-dom';
 import '../MyStyles.css'
+import { Button } from 'primereact/button';
 
 
 const ProjectContainer = (props) => 
@@ -16,6 +17,7 @@ const ProjectContainer = (props) =>
         <div className='project-Style'>
             {projButtons}
             <ProjectAddButton/>
+
         </div>
     );
     }

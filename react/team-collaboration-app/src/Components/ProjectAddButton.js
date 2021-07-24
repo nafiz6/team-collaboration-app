@@ -77,7 +77,9 @@ const ProjectAddButton = () => {
 
     return (
         <div>
-            <button className='projectAddButton-Style' position={position} onClick={() => onClick('displayBasic')}>+</button>
+            <div className = "projectAddButton-Style ">
+            <Button icon="pi pi-plus" className="p-button-raised p-button-rounded p-button-lg" onClick={() => onClick('displayBasic')}></Button>
+            </div>
             <Dialog header="Create Project" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateProjectFrom}
             </Dialog>
