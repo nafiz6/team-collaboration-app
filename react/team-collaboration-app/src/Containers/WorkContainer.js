@@ -43,7 +43,7 @@ const WorkContainer = (props) => {
     if(props.tab === "stats")
     {
         return (
-            <StatPage {...props} />
+            <StatPage {...props} ws={props.ws}/>
         )
     }
 

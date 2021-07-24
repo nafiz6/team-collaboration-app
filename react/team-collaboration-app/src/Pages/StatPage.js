@@ -319,11 +319,15 @@ const StatPage = (props) => {
 
     // console.log(tasksSpendingTable)
 
+    const deleteWorkspace = async () => {
 
+        // console.log(usersToAddToTask);
 
+        await axios.post(`http://localhost:8080/api/delete-workspace/${props.ws}`);
 
+        window.location.reload();
 
-
+        }
 
     return (
 
@@ -393,6 +397,15 @@ const StatPage = (props) => {
 
 
             </DataTable>
+
+            {myUserDetails.role < 2 ? 
+            <div className="addMemberToTaskButton">
+                        <Button label="- Delete Workspace" onClick={(e) => {
+                            e.preventDefault();
+                            deleteWorkspace();
+                        }} />
+            </div>
+            : null}
 
         </div>
 
