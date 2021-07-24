@@ -63,16 +63,38 @@ const StatPage = (props) => {
 
     const fetchWorkspaceTasksSpending = async () => {
         const workspaceId = props.ws;
-        let res = await axios.get(`http://localhost:8080/api/workspace-tasks-budget-breakdown/${workspaceId}`)
+        let res = await axios.get(`http://localhost:8080/api/task/${workspaceId}`)
         setWorkspaceBudget(res.data);
+        res.data.map(w=>{
+            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            let createdDate = new Date(w.Date_created);
+            let deadline = new Date(w.Deadline);
+            let now = new Date();
+
+            if (w.ManMonthRate == 0){
+                console.log("Null")
+                w.ManMonthRate = 100;
+            }
+            else{
+                console.log("NOT NULL")
+            }
+
+            let projectDays = Math.round(Math.abs((deadline - createdDate) / oneDay)); 
+            let daysFromCreation = Math.round(Math.abs((now - createdDate) / oneDay)); 
+                        
+            w.Budget = w.ManMonthRate * w.Assigned_users.length * projectDays;
+            w.Spent = w.ManMonthRate * w.Assigned_users.length * daysFromCreation;
+        })
+
+        console.log(res.data)
 
         setTasksSpendingTable(res.data.map(w => ({
             ...w,
-            progress: (w.Total_spent / w.Task_budget) * 100,
-            spentString: w.Total_spent.toString() + "/" + w.Task_budget.toString()
+            progress: ((w.Spent / w.Budget) * 100).toFixed(2),
+            spentString: w.Spent.toString() + "/" + w.Budget.toString()
         })))
         setChartData({
-            labels: res.data.map(w => w.Task_name),
+            labels: res.data.map(w => w.Name),
             datasets: [
                 {
                     data: workspaceBudget.map(w => w.Total_spent)
@@ -337,7 +359,7 @@ const StatPage = (props) => {
             <h2>Total workspace budget: {workspaceBudget[0]?.Task_budget}</h2> */}
 
             <DataTable value={tasksSpendingTable} emptyMessage="No tasks yet" header={<h2>Task Spending</h2>}>
-                <Column field="Task_name" header="Task"></Column>
+                <Column field="Name" header="Task"></Column>
                 <Column header="Spending" body={(rowData) => <ProgressBar value={isNaN(rowData?.progress) ? 0 : rowData?.progress} />}></Column>
                 {/* <Column field="Task_budget" header="Budget"></Column>
                 <Column field="Total_spent" header="Spent"></Column> */}
