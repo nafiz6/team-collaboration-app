@@ -9,6 +9,7 @@ import { useHistory } from "react-router-dom";
 import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
 
+
 const CreateTaskButton = (props) => {
     const [displayBasic, setDisplayBasic] = useState(false);
 
@@ -17,7 +18,8 @@ const CreateTaskButton = (props) => {
     const [task, setTask] = useState({
         Name: '',
         Deadline: '',
-        Budget: 0,
+        ManMonthRate: 0,
+        OverheadPercentage: 0,
         Description: ''
     });
 
@@ -56,6 +58,7 @@ const CreateTaskButton = (props) => {
     }
 
     const handleChange = e => {
+        console.log(e)
 
 
         let { name, value } = e.target;
@@ -86,6 +89,17 @@ const CreateTaskButton = (props) => {
             [name]: value
         }));
     };
+            /*
+            <h5>Budget</h5>
+            <Dropdown options={[10, 100, 1000, 5000, 10000]} value={task.Budget} onChange={(e) => {
+                handleChange({
+                    target: {
+                        name: "Budget",
+                        value: e.value
+                    }
+                })
+            }} name="Budget" />
+            */
 
     const CreateTaskForm =
         <div>
@@ -96,16 +110,26 @@ const CreateTaskButton = (props) => {
             <h5>Deadline</h5>
             <Calendar value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
             {/* <InputText value={task.Deadline} onChange={handleChange} name="Deadline" /> */}
-            <h5>Budget</h5>
             
-            <Dropdown options={[10, 100, 1000, 5000, 10000]} value={task.Budget} onChange={(e) => {
+            <h5>Man Month Rate</h5>
+            <InputNumber value={task.ManMonthRate} onChange={(e) => {
                 handleChange({
                     target: {
-                        name: "Budget",
+                        name: "ManMonthRate",
                         value: e.value
                     }
                 })
-            }} name="Budget" />
+            }} />
+            <h5>Overhead Percentage</h5>
+            <InputNumber value={task.OverheadPercentage} onChange={(e) => {
+                handleChange({
+                    target: {
+                        name: "OverheadPercentage",
+                        value: e.value
+                    }
+                })
+            }}
+             />
         </div>
 
 
