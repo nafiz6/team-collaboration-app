@@ -5,6 +5,7 @@ import TaskFiles from '../Containers/TaskFiles'
 import axios from 'axios'
 import CreateSubtaskButton from '../Components/SubtaskButton'
 import { InputText } from 'primereact/inputtext';
+import { InputTextarea } from 'primereact/inputtextarea';
 import { Button } from 'primereact/button';
 import { InputNumber } from 'primereact/inputnumber';
 import { Dialog } from 'primereact/dialog';
@@ -61,16 +62,7 @@ const TaskDetailPage = (props) => {
             <h5>Subtask Title</h5>
             <InputText value={subtask.Name} onChange={handleChange} name="Name" />
             <h5>Description</h5>
-            <InputText value={subtask.Description} onChange={handleChange} name="Description" />
-            <h5>Budget</h5>
-            <InputNumber value={subtask.Budget} onChange={(e) => {
-                handleChange({
-                    target: {
-                        name: "Budget",
-                        value: e.value
-                    }
-                })
-            }} name="Budget" />
+            <InputTextarea rows={5} cols={30} value={subtask.Description} onChange={handleChange} name="Description" />
         </div>
 
     const getSubtasks = async () => {
