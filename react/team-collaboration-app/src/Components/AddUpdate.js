@@ -96,11 +96,11 @@ const AddUpdate = (props) => {
 
     const CreateUpdateForm =
         <div>
-            <h5>Update </h5>
-            <InputText value={subtask.Text} onChange={handleChange} name="Text" />
+            <h4>Update </h4>
+            <InputText placeholder="Type update..." className="form-text" value={subtask.Text} onChange={handleChange} name="Text" />
             <h5>File</h5>
             {filenames}
-            <FileUpload auto mode="basic" name="files[]" multiple customUpload maxFileSize={99000000} uploadHandler={onFileSelect} />
+            <FileUpload className="form-text" auto mode="basic" name="files[]" multiple customUpload maxFileSize={99000000} uploadHandler={onFileSelect} />
 
         </div>
 

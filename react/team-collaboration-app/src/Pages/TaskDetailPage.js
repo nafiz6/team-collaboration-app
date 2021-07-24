@@ -58,11 +58,11 @@ const TaskDetailPage = (props) => {
     };
 
     const CreateSubtaskForm =
-        <div>
+        <div className="create-form">
             <h5>Subtask Title</h5>
-            <InputText value={subtask.Name} onChange={handleChange} name="Name" />
+            <InputText className="form-text" value={subtask.Name} onChange={handleChange} name="Name" />
             <h5>Description</h5>
-            <InputTextarea rows={5} cols={30} value={subtask.Description} onChange={handleChange} name="Description" />
+            <InputTextarea className="form-text" rows={5} cols={30} value={subtask.Description} onChange={handleChange} name="Description" />
         </div>
 
     const getSubtasks = async () => {
@@ -89,25 +89,36 @@ const TaskDetailPage = (props) => {
     let staskArr;
     if (subtasks) {
         staskArr = subtasks.map(
-            subtask => <SubtaskContainer  key={subtask.id} subtask={subtask} taskId={props.tid} />)
+            subtask => <SubtaskContainer key={subtask.id} subtask={subtask} taskId={props.tid} />)
 
     }
 
     return (
         <div class="taskPageContainer">
 
-<Button label="Add Subtask" onClick={() => onClick('displayBasic')} />
+
             <div className="taskPage-Style">
                 <TaskFiles taskId={props.tid} />
                 {/*<CreateSubtaskButton taskId={props.tid} />*/}
                 <h1>{props.taskname}</h1>
                 <p className="task-page-description">{props.description}</p>
                 <Deadline time={props.deadline}></Deadline>
-                
+
+                <div>
+                    <Button className="p-button-raised" label="Add Subtask" onClick={() => onClick('displayBasic')} />
+                </div>
+
+
+                <h2>Subtasks</h2>
+
                 {subtasks ? staskArr : null}
             </div>
-            
-            <Dialog header="Create Subtask" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+
+            <Dialog header="Create Subtask" visible={displayBasic} style={
+                {
+                    width: '500px',
+                    // 'min-width': '300px'
+                }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateSubtaskForm}
             </Dialog>
         </div>

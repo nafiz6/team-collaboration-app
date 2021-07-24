@@ -352,10 +352,10 @@ const StatPage = (props) => {
 
     return (
 
-        <div>
-            <br></br>
-            <br></br>
-            <br></br>
+        <div className="createTask">
+            <h1> Workspace Stats</h1>
+ 
+        
             {/* <div>Stat Page</div>
 
             <h2>Total spent: {workspaceBudget[0]?.Total_spent}</h2>
