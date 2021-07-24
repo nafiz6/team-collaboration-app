@@ -148,6 +148,7 @@ h1 {
 }
 
 .workspace-form {
+    position: relative;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -410,7 +411,8 @@ a {
     width: 300px;
     overflow: hidden;
     margin-left: 20px;
-    margin-top: 20px;
+    margin-top: 40px;
+    margin-bottom: 20px;
     padding-bottom: 15px;
     padding-top: 15px;
     cursor: pointer;

@@ -27,7 +27,7 @@ const CreateTaskButton = (props) => {
     });
 
     useEffect(() => {
-        if(props.isEdit) {
+        if (props.isEdit) {
             console.log(props.task)
             setTask(props.task)
         }
@@ -135,7 +135,7 @@ const CreateTaskButton = (props) => {
             <h5>Description</h5>
             <InputTextarea className="form-text" rows={5} cols={30} value={task.Description} onChange={handleChange} name="Description" />
             <h5>Deadline</h5>
-            <Calendar minDate={new Date()} className="form-text" value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
+            <Calendar minDate={new Date()} className="form-text"  value={new Date(task.Deadline)} onChange={handleChange} name="Deadline"></Calendar>
             {/* <InputText value={task.Deadline} onChange={handleChange} name="Deadline" /> */}
 
             <h3>Budgeting</h3>
@@ -169,10 +169,21 @@ const CreateTaskButton = (props) => {
     return (
         <div className="workspace-form">
 
-            <Button label="Add Task" icon="pi pi-plus" className="p-button-raised p-button-rounded" onClick={(e) => {
+            <Button style={ props.isEdit ? {
+                'position': 'absolute',
+                'margin': '0px',
+                'left': '20px',
+                'top': '30px'
+
+             
+            } : null} label={props.isEdit ? "" : "Add Task"} icon={props.isEdit ? 'pi pi-pencil' : "pi pi-plus"} className={props.isEdit ? "p-button-raised p-button-rounded p-button-warning p-button-sm" : "p-button-raised p-button-rounded" } onClick={(e) => {
+                
                 e.preventDefault();
                 e.stopPropagation();
+           
                 onClick('displayBasic');
+                e.preventDefault();
+                e.stopPropagation();
 
 
             }} />
@@ -184,7 +195,14 @@ const CreateTaskButton = (props) => {
             } footer={renderFooter('displayBasic')} onHide={() => {
                 console.log("HIDDEEE")
                 onHide('displayBasic')
-            }} >
+            }}
+            
+            // onShow={() => }
+            onDragStart={(e) => {
+                console.log("DRFASRFASR");
+                e.preventDefault();
+            } } 
+            >
                 {CreateTaskForm}
             </Dialog>
         </div>

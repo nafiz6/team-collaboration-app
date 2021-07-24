@@ -439,6 +439,60 @@ func EditTaskNew(w http.ResponseWriter, r *http.Request) {
 
 	}
 
+	if !newTask.Deadline.Time().IsZero() {
+		//description isnt empty
+		insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", objID},
+		}, bson.D{
+			{"$set", bson.D{{"deadline", newTask.Deadline}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
+	if newTask.ManMonthRate > 0 {
+		//description isnt empty
+		insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", objID},
+		}, bson.D{
+			{"$set", bson.D{{"manmonthrate", newTask.ManMonthRate}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
+	if newTask.ManMonthRate > 0 {
+		//description isnt empty
+		insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
+			{"_id", objID},
+		}, bson.D{
+			{"$set", bson.D{{"overheadpercentage", newTask.OverheadPercentage}}},
+		})
+
+		if err != nil {
+			fmt.Printf("Error: %s", err.Error())
+			json.NewEncoder(w).Encode(err.Error())
+			return
+		}
+
+		json.NewEncoder(w).Encode(insertResult)
+
+	}
+
 	if newTask.Budget > 0 {
 		//budget isnt empty
 		insertResult, err := db.Tasks.UpdateOne(context.TODO(), bson.D{
