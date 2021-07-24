@@ -39,7 +39,8 @@ const MainPage = (props) => {
 
             setWs(res.data);
 
-            if (res.data.length > 0) {
+            if (res.data.length > 0 ) {
+                console.log("workspace RESET", projId)
                 setInitialWS(res.data[0]);
                 setWsId(res.data[0].id);
             }
@@ -48,12 +49,13 @@ const MainPage = (props) => {
 
     const getProjects = async () => {
         let res = await axios.get('http://localhost:8080/api/project', { withCredentials: true })
-        setProjects(res.data);
 
 
         if (res.data.length > 0) {
+            console.log(projId + " reset1 ")
             setInitialProject(res.data[0]);
             setProjId(res.data[0].id);
+            setProjects(res.data);
         }
     }
 
@@ -62,7 +64,6 @@ const MainPage = (props) => {
     }, [])
 
     useEffect(() => {
-
         getWs();
     }, [projects, projId])
 
@@ -76,6 +77,7 @@ const MainPage = (props) => {
                 projects.forEach(element => {
                     if (element.id === props.match.params.id) {
                         setSelectedProject(element);
+                        console.log(projId + " reset2 ")
                         setProjId(element.id);
 
 
@@ -88,6 +90,7 @@ const MainPage = (props) => {
         else {
             if (projects.length > 0) {
                 setSelectedProject(projects[0]);
+                console.log(projId + " reset3 ")
                 setProjId(projects[0].id);
             }
         }
@@ -112,6 +115,8 @@ const MainPage = (props) => {
         }
         else {
             if (ws.length > 0) {
+
+                console.log("workspace RESET")
                 setSelectedWS(ws[0]);
                 setWsId(ws[0].id);
             }
