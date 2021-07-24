@@ -8,7 +8,7 @@ const RoomButton = (props) => {
 
     let id = url[6];
     return (
-        <Link to={`/project/${props.projId}/ws/${props.workspace.id}`}>
+        <Link className="room-button-link" to={`/project/${props.projId}/ws/${props.workspace.id}`}>
             <button className={id === props.workspace.id ? 'roomButton-Style-select' : 'roomButton-Style'}>{props.workspace.Name}</button>
         </Link>
     )

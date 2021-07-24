@@ -23,17 +23,17 @@ const RoomsContainer = (props) => {
             getWorkspace();
     }, [props.project])
 
-    useEffect(()=>{
-        if(workspace) fetchMyDetails();
-     },[workspace])
+    useEffect(() => {
+        if (workspace) fetchMyDetails();
+    }, [workspace])
 
-     const [myUserDetails, setMyUserDetails ] = useState({role: 100});
+    const [myUserDetails, setMyUserDetails] = useState({ role: 100 });
 
     if (!props.project) {
         return <div className='rooms-Style'></div>
     }
 
-    
+
 
     const fetchMyDetails = async () => {
 
@@ -52,7 +52,8 @@ const RoomsContainer = (props) => {
 
     }
 
-    console.log(myUserDetails);
+
+
 
     const deleteProject = async () => {
 
