@@ -154,7 +154,7 @@ button {
 .chat-message-box-self {
     /* width: 40%; */
     /* min-height: 50px; */
-    background-color: white;
+    background-color: lightblue;
     color: black;
     padding:15px;
     border-radius: 15px;
