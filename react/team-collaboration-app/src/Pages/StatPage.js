@@ -81,8 +81,8 @@ const StatPage = (props) => {
             let projectDays = Math.round(Math.abs((deadline - createdDate) / oneDay)); 
             let daysFromCreation = Math.round(Math.abs((now - createdDate) / oneDay)); 
                         
-            w.Budget = (w.ManMonthRate * w.Assigned_users.length * projectDays * ( 1 + w.OverheadPercentage / 100)).toFixed(0);
-            w.Spent = (w.ManMonthRate * w.Assigned_users.length * daysFromCreation * ( 1 + w.OverheadPercentage / 100)).toFixed(0);
+            w.Budget = Math.round(w.ManMonthRate * w.Assigned_users.length * projectDays * ( 1 + w.OverheadPercentage / 100));
+            w.Spent = Math.round(w.ManMonthRate * w.Assigned_users.length * daysFromCreation * ( 1 + w.OverheadPercentage / 100));
         })
 
         console.log(res.data)
