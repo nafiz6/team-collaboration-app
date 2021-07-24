@@ -5,6 +5,7 @@ import { Button } from 'primereact/button';
 import { Dialog } from 'primereact/dialog';
 import { MultiSelect } from 'primereact/multiselect';
 import { Avatar } from 'primereact/avatar';
+import Time from '../Components/Time';
 
 
 const SubtaskContainer = (props) => {
@@ -93,10 +94,9 @@ const SubtaskContainer = (props) => {
     }
     const CreateProjectFrom =
         <div>
-            <h5>Add Users To Task</h5>
 
-            <h5>Select Users to add to Project</h5>
-            <MultiSelect optionLabel="name" value={usersToAddToSubtask} options={taskUsersNotInSubtask} onChange={(e) => {
+            <h3>Select Team members to add to Subtask</h3>
+            <MultiSelect placeholder="select team members" className="form-text" optionLabel="name" value={usersToAddToSubtask} options={taskUsersNotInSubtask} onChange={(e) => {
                 setUsersToAddtoSubtask(e.value)
                 console.log(e.value);
 
@@ -111,16 +111,26 @@ const SubtaskContainer = (props) => {
             update =>
                 <div className="subtask-update">
                     <div className="subtask-update-content">
-                        <Avatar label={update.User.Name[0]} image={taskUsers.find(u => u.id === update.User.id)?.Dp} />
+                        <Avatar style={{
+                            'margin': '0px 20px'
+                        }} label={taskUsers.find(u => u.id === update.User.id)?.Dp ? null : update.User.Name[0]} image={taskUsers.find(u => u.id === update.User.id)?.Dp} />
                         {/* <p>{update.User.Name}</p> */}
-                        <p key={update.id}>{update.Text}</p>
+                        <p className="subtask-update-text" key={update.id}>{update.Text}</p>
                     </div>
 
-                    
-                    <p className="subtask-update-time">{update.Timestamp.split("T")[0]}</p>
+
+                    <Time className="subtask-update-time" time={update.Timestamp} />
                 </div>
 
         )
+    }
+    else {
+        updateArr = 
+        <div className="centered" style={{
+            height: '100px'
+        }}>
+            <h3>No Updates yet</h3>
+        </div> 
     }
 
     let assUserArr = [];
@@ -132,7 +142,9 @@ const SubtaskContainer = (props) => {
         assUserArr = props.subtask.Assigned_users.map(
             user =>
                 <div class="subtask-user">
-                    <Avatar label={user.Name[0]} image={taskUsers.find(u => u.id === user.id)?.Dp} />
+                    <Avatar style={{
+                        'margin-right': '20px'
+                    }} label={taskUsers.find(u => u.id === user.id)?.Dp ? null : user.Name[0]} image={taskUsers.find(u => u.id === user.id)?.Dp} />
                     <p>{user.Name}</p>
 
                 </div>
@@ -147,20 +159,23 @@ const SubtaskContainer = (props) => {
 
     return (
         <div className='subtaskPage-Style'>
-            <h2>{props.subtask.Name}</h2>
+            <h1 className="subtask-name">{props.subtask.Name}</h1>
             <p className="task-page-description">{props.subtask.Description}</p>
-            <text> Budget: {props.subtask.Budget}</text>
-            <h2>Assigned Users</h2>
-            <div className="subtask-users">
-                {assUserArr}
+            {/* <text> Budget: {props.subtask.Budget}</text> */}
+            <div class="subtask-users-container">
+                {/* <h2>Assigned Users</h2> */}
+                <div className="subtask-users">
+                    {assUserArr}
+                </div>
             </div>
 
-            <h2>Updates</h2>
+
+            <h1>Updates</h1>
 
             {updateArr}
             <AddUpdate user={userObj} subtaskId={props.subtask.id} taskId={props.subtask.task_id} />
             <Button className="addUserToTaskButton" label="Assign User to Subtask" onClick={() => onClick('displayBasic')} />
-            <Dialog header="Add Users To Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+            <Dialog header="Assign Team Members to Subtask" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateProjectFrom}
             </Dialog>
         </div>
