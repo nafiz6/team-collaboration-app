@@ -87,7 +87,7 @@ func Router() *mux.Router {
 	router.HandleFunc("/api/set-workspace-user-role/{workspace-id}", workspaceHandler.SetWorkspaceUserRole).Methods("POST", "OPTIONS") //DONE
 
 	// delete workspace
-	router.HandleFunc("/api/delete-workspace/{worspace-id}", workspaceHandler.DeleteWorkspace).Methods("POST", "OPTIONS")
+	router.HandleFunc("/api/delete-workspace/{workspace-id}", workspaceHandler.DeleteWorkspace).Methods("POST", "OPTIONS")
 
 	/*
 		PROJECT
