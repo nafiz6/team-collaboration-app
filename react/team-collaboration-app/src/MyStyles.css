@@ -351,6 +351,8 @@ a {
 
 .addMemberToTaskButton {
     justify-content: flex-end;
+    padding-top: 5px;
+    padding-bottom: 5px;
 }
 
 .subtaskPage-Style

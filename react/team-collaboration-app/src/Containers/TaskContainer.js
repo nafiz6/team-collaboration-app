@@ -11,6 +11,7 @@ import { MultiSelect } from 'primereact/multiselect';
 import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { ProgressBar } from 'primereact/progressbar';
+import { PrimeIcons } from 'primereact/api';
 
 const TaskContainer = (props) => {
 
@@ -213,13 +214,13 @@ const TaskContainer = (props) => {
 
 
                     <div className="addMemberToTaskButton">
-                        <Button label="+ Assign Member" onClick={(e) => {
+                        <Button icon="pi pi-plus" iconPos="left" label="Assign Member" className="p-button-raised p-button-rounded" onClick={(e) => {
                             e.preventDefault();
                             onClick('displayBasic');
                         }} />
                     </div>
                     <div className="addMemberToTaskButton">
-                        <Button label="- Delete Task" onClick={(e) => {
+                        <Button icon="pi pi-trash" iconPos="left" label="Delete Task" className="p-button-raised p-button-rounded p-button-danger" onClick={(e) => {
                             e.preventDefault();
                             deleteTask();
                         }} />
