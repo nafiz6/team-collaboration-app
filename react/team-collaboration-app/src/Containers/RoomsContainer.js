@@ -1,13 +1,16 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef  } from "react"
 import RoomButton from "../Components/RoomButton";
 import '../MyStyles.css'
 import CreateWorkspaceButton from "../Components/CreateWorkspaceButton";
 import axios from 'axios'
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 
 const RoomsContainer = (props) => {
-
+    const [visible, setVisible] = useState(false);
+    const toast = useRef(null);
     const [workspace, setWorkspace] = useState(null);
 
     const getWorkspace = async () => {
@@ -36,32 +39,49 @@ const RoomsContainer = (props) => {
 
         //call this func after workspace details
 
-           let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${workspace[0].id}`)
+        let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${workspace[0].id}`)
 
-       // if (usersTable) {
-            let res = await axios.get(`http://localhost:8080/api/my-details`, { withCredentials: true });
-            // console.log(res.data);
+        // if (usersTable) {
+        let res = await axios.get(`http://localhost:8080/api/my-details`, { withCredentials: true });
+        // console.log(res.data);
 
 
-            let workspaceUser = users.data.find(u => u._id === res.data.id)
+        let workspaceUser = users.data.find(u => u._id === res.data.id)
 
-            setMyUserDetails(workspaceUser);
+        setMyUserDetails(workspaceUser);
 
-        }
+    }
 
-        console.log(myUserDetails);
+    console.log(myUserDetails);
 
-        const deleteProject = async () => {
+    const deleteProject = async () => {
 
-            // console.log(usersToAddToTask);
-    
-            await axios.post(`http://localhost:8080/api/delete-project/${props.project.id}`);
-    
-            window.location.reload();
-    
-            }    
+        // console.log(usersToAddToTask);
 
-        
+        await axios.post(`http://localhost:8080/api/delete-project/${props.project.id}`);
+
+        window.location.reload();
+
+    }
+    const accept = () => {
+        console.log("ACCEPTED")
+        deleteProject();
+    }
+
+    const reject = () => {
+        console.log("REJECTED")
+    }
+
+    const confirm2 = () => {
+        confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept,
+            reject
+        });
+    };
 
     if (workspace) {
 
@@ -76,17 +96,18 @@ const RoomsContainer = (props) => {
         ]
 
         return (
-            
+
             <div className='rooms-Style'>{rooms}
-            {myUserDetails.role < 1 ? 
-                <div className="addMemberToTaskButton">
-                            <Button label="X" onClick={(e) => {
-                                e.preventDefault();
-                                deleteProject();
-                            }} />
-                </div>
-                : null}
-            </div>    
+                {myUserDetails.role < 1 ?
+                    <div className="addMemberToTaskButton">
+                        <Button label="X" onClick={(e) => {
+                            e.preventDefault();
+                            confirm2();
+                            //deleteProject();
+                        }} />
+                    </div>
+                    : null}
+            </div>
         );
 
     }
@@ -95,14 +116,15 @@ const RoomsContainer = (props) => {
             <div className='rooms-Style'>
                 <div className='projName-Style'>{props.project.Name}</div>
                 <CreateWorkspaceButton projectId={props.project.id} />
-                {myUserDetails.role < 1 ? 
-                <div className="addMemberToTaskButton">
-                            <Button label="X" onClick={(e) => {
-                                e.preventDefault();
-                                deleteProject();
-                            }} />
-                </div>
-                : null}
+                {myUserDetails.role < 1 ?
+                    <div className="addMemberToTaskButton">
+                        <Button label="X" onClick={(e) => {
+                            e.preventDefault();
+                            confirm2();
+                            //deleteProject();
+                        }} />
+                    </div>
+                    : null}
             </div>
         )
     }

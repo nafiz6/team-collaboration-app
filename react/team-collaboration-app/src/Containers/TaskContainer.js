@@ -12,7 +12,7 @@ import { Avatar } from 'primereact/avatar';
 import { AvatarGroup } from 'primereact/avatargroup';
 import { ProgressBar } from 'primereact/progressbar';
 import { PrimeIcons } from 'primereact/api';
-
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 const TaskContainer = (props) => {
 
     const [subtasks, setSubtasks] = useState([])
@@ -72,6 +72,23 @@ const TaskContainer = (props) => {
 
 
     }
+    const accept = () => {
+        deleteTask();
+    }
+
+    const reject = () => {
+    }
+
+    const confirm2 = () => {
+        confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept,
+            reject
+        });
+    };
 
     const deleteTask = async () => {
 
@@ -213,7 +230,8 @@ const TaskContainer = (props) => {
                     <div className="addMemberToTaskButton">
                         <Button icon="pi pi-trash" iconPos="left" label="Delete Task" className="p-button-raised p-button-rounded p-button-danger" onClick={(e) => {
                             e.preventDefault();
-                            deleteTask();
+                            //deleteTask();
+                            confirm2();
                         }} />
                     </div>
 
