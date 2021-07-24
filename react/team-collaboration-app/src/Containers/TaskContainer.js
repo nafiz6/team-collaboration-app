@@ -159,16 +159,7 @@ const TaskContainer = (props) => {
             )
         }
 
-        console.log(props.task.Assigned_users);
-        console.log(userDetails);
 
-        props.task.Assigned_users.map(u => {
-            // <Avatar label={u.Name[0]} image={userDetails.find(d => d.id === u.id)?.Dp} shape="circle" size="large" />
-            
-            console.log( "imag", userDetails.find(d => d.id === u.id)?.Dp);
-            console.log("u", u.id);
-
-        })
 
 
 
