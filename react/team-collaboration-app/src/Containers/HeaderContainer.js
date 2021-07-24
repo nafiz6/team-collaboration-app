@@ -9,8 +9,7 @@ const HeaderContainer = (props) =>
 {
     return (
         <div className='header-Style'>
-            <NotifyButton/>
-            <ManageButton/>
+         { /*  <NotifyButton/>
             <LogOutButton {...props}/>
         </div>
     )
