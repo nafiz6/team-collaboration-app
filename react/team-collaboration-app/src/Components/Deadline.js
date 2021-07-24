@@ -13,7 +13,7 @@ const Deadline = (props) => {
         },
         {
             diff: 7 * 24 * 60 * 60 * 1000,
-            color: "yellow"
+            color: "orange"
         },
         {
             diff: -1,
@@ -28,19 +28,22 @@ const Deadline = (props) => {
     let diff = time.getTime() - now.getTime();
 
     let color;
-    if(diff < colors[0].diff) color = colors[0].color;
-    else if(diff < colors[1].diff) color = colors[1].color;
+    if (diff < colors[0].diff) color = colors[0].color;
+    else if (diff < colors[1].diff) color = colors[1].color;
     else color = colors[2].color
-    time = monthNames[time.getMonth()].slice(0, 3) + " " + time.getDate();
+    let timeString = monthNames[time.getMonth()].slice(0, 3) + " " + time.getDate();
     return (
         <div style={
             {
                 "backgroundColor": color
             }
         } className='deadline-Style'>
-              <i className="pi pi-clock"></i>  
-              <p>{time}</p>
-              </div>
+            <div className="deadline-row">
+                <i className="pi pi-clock "></i>
+                <p>{timeString}</p>
+            </div>
+            <p className="deadline-passed">{diff < 0 ? "Deadline passed!" : null}</p>
+        </div>
     )
 }
 

@@ -75,7 +75,7 @@ const RoomsContainer = (props) => {
 
     const confirm2 = () => {
         confirmDialog({
-            message: 'Do you want to delete this record?',
+            message: 'Do you want to delete this Project?',
             header: 'Delete Confirmation',
             icon: 'pi pi-info-circle',
             acceptClassName: 'p-button-danger',

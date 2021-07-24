@@ -301,7 +301,7 @@ const StatPage = (props) => {
     const addUsersForm =
         <div>
             <h5>Select Users to add to Workspace</h5>
-            <MultiSelect value={usersToAdd} options={allUsers} onChange={(e) => {
+            <MultiSelect placeholder="Select users to add to project" value={usersToAdd} options={allUsers} onChange={(e) => {
                 console.log(e.value)
                 setUsersToAdd(e.value)
                 // console.log(e);
@@ -414,14 +414,15 @@ const StatPage = (props) => {
                 <Column field="countTasks" header="Tasks"></Column>
 
 
-                {myUserDetails.role < 2 ? <Column header="" body={(rowData) => <Button label="Remove" onClick={() => handleRemoveUser(rowData._id)} />}></Column> : null}
+                {myUserDetails.role < 2 ? <Column header="" body={(rowData) => <Button 
+                icon="pi pi-trash" iconPos="left" label="Remove"  className="p-button-raised p-button-rounded p-button-danger" onClick={() => handleRemoveUser(rowData._id)} />}></Column> : null}
 
 
             </DataTable>
 
             {myUserDetails.role < 2 ? 
             <div className="addMemberToTaskButton">
-                        <Button label="- Delete Workspace" onClick={(e) => {
+                        <Button  icon="pi pi-trash" iconPos="left" className="p-button-raised p-button-rounded p-button-danger" label="Delete Workspace" onClick={(e) => {
                             e.preventDefault();
                             deleteWorkspace();
                         }} />

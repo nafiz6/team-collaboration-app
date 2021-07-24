@@ -68,6 +68,8 @@ const CreateTaskButton = (props) => {
 
 
         if (name === "Deadline") {
+
+        
             value = new Date(value);
 
             let month = value.getMonth() + 1;
@@ -78,6 +80,10 @@ const CreateTaskButton = (props) => {
             }
             if (date < 10) {
                 date = `0${date}`
+            }
+
+            if(value.getTime() - new Date().getTime() < 0) {
+
             }
 
 
@@ -105,15 +111,22 @@ const CreateTaskButton = (props) => {
 
     const CreateTaskForm =
         <div className="create-form">
+
+            <h3>Task Details</h3>
             <h5>Task Title</h5>
             <InputText className="form-text" value={task.Name} onChange={handleChange} name="Name" />
             <h5>Description</h5>
             <InputTextarea className="form-text" rows={5} cols={30} value={task.Description} onChange={handleChange} name="Description" />
             <h5>Deadline</h5>
-            <Calendar className="form-text" value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
+            <Calendar minDate={new Date()}  className="form-text" value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
             {/* <InputText value={task.Deadline} onChange={handleChange} name="Deadline" /> */}
 
-            <h5>Man Month Rate ({TAKA})</h5>
+            <h3>Budgeting</h3>
+
+            <p className="form-description">Enter Estimated Man Month Rate and Overhead Percentage to get an estimated budget for this task</p>
+
+            <h5 className="form-label">Man Month Rate ({TAKA})</h5>
+            <p className="form-description">Average Cost spent per team member per month</p>
             <InputNumber className="form-text" value={task.ManMonthRate} onChange={(e) => {
                 handleChange({
                     target: {
@@ -122,7 +135,8 @@ const CreateTaskButton = (props) => {
                     }
                 })
             }} />
-            <h5>Overhead Percentage</h5>
+            <h5 className="form-label">Overhead Percentage (%)</h5>
+            <p className="form-description">Overhead costs associated with equipment, fringe benefits etc. (This is added as a % of man month rate)</p>
             <InputNumber  className="form-text" value={task.OverheadPercentage} onChange={(e) => {
                 handleChange({
                     target: {
@@ -138,7 +152,7 @@ const CreateTaskButton = (props) => {
     return (
         <div className="workspace-form">
             
-            <Button className="p-button-raised p-button-rounded" label="Add Task" icon="pi pi-plus" onClick={() => onClick('displayBasic')} />
+            <Button className="p-button-raised p-button-rounded p-button-lg"  label="Add Task" icon="pi pi-plus" onClick={() => onClick('displayBasic')} />
             <Dialog header="Create Task" visible={displayBasic} style={
                 {
                     width: '500px',

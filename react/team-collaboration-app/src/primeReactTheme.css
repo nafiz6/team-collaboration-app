@@ -86,6 +86,16 @@ button {
     width: 100%;
 }
 
+.form-description {
+    color: grey;
+    margin-bottom: 5px;
+}
+
+.form-label {
+    margin: 0px;
+    margin-top: 30px;
+}
+
 .chat-page {
     height: 100%;
     overflow: hidden;

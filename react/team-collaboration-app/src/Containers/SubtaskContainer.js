@@ -60,6 +60,7 @@ const SubtaskContainer = (props) => {
             }))
             setChanges(c => c + 1);
         })
+        window.location.reload();
 
 
 
@@ -125,12 +126,12 @@ const SubtaskContainer = (props) => {
         )
     }
     else {
-        updateArr = 
-        <div className="centered" style={{
-            height: '100px'
-        }}>
-            <h3>No Updates yet</h3>
-        </div> 
+        updateArr =
+            <div className="centered" style={{
+                height: '100px'
+            }}>
+                <h3>No Updates yet</h3>
+            </div>
     }
 
     let assUserArr = [];
@@ -146,6 +147,7 @@ const SubtaskContainer = (props) => {
                         'margin-right': '20px'
                     }} label={taskUsers.find(u => u.id === user.id)?.Dp ? null : user.Name[0]} image={taskUsers.find(u => u.id === user.id)?.Dp} />
                     <p>{user.Name}</p>
+
 
                 </div>
         )
@@ -167,6 +169,10 @@ const SubtaskContainer = (props) => {
                 <div className="subtask-users">
                     {assUserArr}
                 </div>
+
+                <Button className="addUserToTaskButton" label="+Member" onClick={() => onClick('displayBasic')} />
+
+
             </div>
 
 
@@ -174,7 +180,7 @@ const SubtaskContainer = (props) => {
 
             {updateArr}
             <AddUpdate user={userObj} subtaskId={props.subtask.id} taskId={props.subtask.task_id} />
-            <Button className="addUserToTaskButton" label="Assign User to Subtask" onClick={() => onClick('displayBasic')} />
+
             <Dialog header="Assign Team Members to Subtask" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateProjectFrom}
             </Dialog>

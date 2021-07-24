@@ -81,7 +81,7 @@ const TaskContainer = (props) => {
 
     const confirm2 = () => {
         confirmDialog({
-            message: 'Do you want to delete this record?',
+            message: 'Do you want to delete this Task?',
             header: 'Delete Confirmation',
             icon: 'pi pi-info-circle',
             acceptClassName: 'p-button-danger',
@@ -159,10 +159,10 @@ const TaskContainer = (props) => {
         }
         const CreateProjectFrom =
             <div>
-                <h5>Add Users To Task</h5>
+                {/* <h2>Add Users To Task</h2> */}
 
-                <h5>Select Users to add to Project</h5>
-                <MultiSelect optionLabel="name" value={usersToAddToTask} options={workspaceUsersNotInTask} onChange={(e) => {
+                {/* <h5>Select Users to add to Project</h5> */}
+                <MultiSelect placeholder="Add members to task" className="form-text" optionLabel="name" value={usersToAddToTask} options={workspaceUsersNotInTask} onChange={(e) => {
                     setUsersToAddtoTask(e.value)
                     console.log(e.value);
 
@@ -217,7 +217,7 @@ const TaskContainer = (props) => {
 
 
                     <div className="subtasks">
-                        {subtasks ? subtasksArr : null}
+                        {subtasks ? subtasksArr : <p>(no subtasks)</p>}
                     </div>
 
 

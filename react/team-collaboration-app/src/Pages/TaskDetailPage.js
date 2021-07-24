@@ -104,14 +104,16 @@ const TaskDetailPage = (props) => {
                 <p className="task-page-description">{props.description}</p>
                 <Deadline time={props.deadline}></Deadline>
 
-                <div>
+                <div className="add-subtask-button">
                     <Button className="p-button-raised" label="Add Subtask" onClick={() => onClick('displayBasic')} />
                 </div>
 
 
                 <h2>Subtasks</h2>
 
-                {subtasks ? staskArr : null}
+                {subtasks ? staskArr : <h2 style={{
+                    'height': '50px'
+                }} className="centered">No Subtasks Yet</h2>}
             </div>
 
             <Dialog header="Create Subtask" visible={displayBasic} style={

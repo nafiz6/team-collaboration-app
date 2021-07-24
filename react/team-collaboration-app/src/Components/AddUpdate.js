@@ -108,7 +108,7 @@ const AddUpdate = (props) => {
     return (
         <div className="workspace-form">
 
-            <Button label="Add Update" onClick={() => onClick('displayBasic')} />
+            <Button label="+Update" onClick={() => onClick('displayBasic')} />
             <Dialog header="Add Update" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateUpdateForm}
             </Dialog>
