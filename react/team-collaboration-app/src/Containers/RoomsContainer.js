@@ -1,14 +1,16 @@
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useRef  } from "react"
 import RoomButton from "../Components/RoomButton";
 import '../MyStyles.css'
 import CreateWorkspaceButton from "../Components/CreateWorkspaceButton";
 import axios from 'axios'
 import { Button } from 'primereact/button';
+import { Toast } from 'primereact/toast';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 
 const RoomsContainer = (props) => {
-
+    const [visible, setVisible] = useState(false);
+    const toast = useRef(null);
     const [workspace, setWorkspace] = useState(null);
 
     const getWorkspace = async () => {
@@ -50,7 +52,8 @@ const RoomsContainer = (props) => {
 
     }
 
-    console.log(myUserDetails);
+
+
 
     const deleteProject = async () => {
 
@@ -61,24 +64,25 @@ const RoomsContainer = (props) => {
         window.location.reload();
 
     }
+    const accept = () => {
+        console.log("ACCEPTED")
+        deleteProject();
+    }
 
-            
-/*
-            const reject = () => {}
+    const reject = () => {
+        console.log("REJECTED")
+    }
 
-
-            const confirm2 = () => {
-                confirmDialog({
-                    message: 'Do you want to delete this record?',
-                    header: 'Delete Confirmation',
-                    icon: 'pi pi-info-circle',
-                    acceptClassName: 'p-button-danger',
-                    deleteProject,
-                    reject
-                });
-            };
-        */
-
+    const confirm2 = () => {
+        confirmDialog({
+            message: 'Do you want to delete this record?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept,
+            reject
+        });
+    };
 
     if (workspace) {
 
@@ -99,8 +103,8 @@ const RoomsContainer = (props) => {
                 <div className="addMemberToTaskButton">
                             <Button icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded" onClick={(e) => {
                                 e.preventDefault();
-                              //  confirm2();
-                              deleteProject();
+                                confirm2();
+                              //deleteProject();
                                 
                             }} />
                 </div>
@@ -118,8 +122,8 @@ const RoomsContainer = (props) => {
                 <div className="addMemberToTaskButton">
                             <Button icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded p-button-lg" onClick={(e) => {
                                 e.preventDefault();
-                               // confirm2();
-                               deleteProject();
+                                confirm2();
+                               //deleteProject();
                             }} />
                 </div>
                 : null}
