@@ -38,8 +38,8 @@
     flex-direction: row;
     color: white;
     align-items: center;
-    width: 140px;
-    justify-content: space-between;
+    /* width: 140px; */
+    /* justify-content: space-between; */
     /* margin-left: 20px; */
     margin: 10px 20px;
 

@@ -33,7 +33,9 @@ const HeaderContainer = (props) => {
         <div className='header-Style'>
             {/* <NotifyButton/> */}
             <div class="header-user-details">
-                <Avatar label={userDetails?.Dp ? null : userDetails?.Name[0]} image={userDetails?.Dp ? userDetails?.Dp : null} shape="circle" size="large" />
+                <Avatar style={{
+                    'margin-right': '10px'
+                }} label={userDetails?.Dp ? null : userDetails?.Name[0]} image={userDetails?.Dp ? userDetails?.Dp : null} shape="circle" size="large" />
                 <h3 className="header-user-name">{userDetails?.Name}</h3>
             </div>
             <LogOutButton {...props} />
