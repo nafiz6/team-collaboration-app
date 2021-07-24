@@ -13,6 +13,7 @@ import { AvatarGroup } from 'primereact/avatargroup';
 import { ProgressBar } from 'primereact/progressbar';
 import { PrimeIcons } from 'primereact/api';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import CreateTaskButton from '../Components/CreateTask'
 const TaskContainer = (props) => {
 
     const [subtasks, setSubtasks] = useState([])
@@ -206,6 +207,8 @@ const TaskContainer = (props) => {
 
 
                     {/* <ProgressBar value={isNaN((props.task.Spent / props.task.Budget )* 100) ? 0 : (props.task.Spent / props.task.Budget )* 100} /> */}
+
+                    <CreateTaskButton  key={props.ws} workspaceId={props.ws} taskId={props.task.id} isEdit={true} task={props.task}  />
 
                     <Deadline time={props.task.Deadline.split("T")[0]} />
                     <AvatarGroup>

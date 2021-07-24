@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import '../MyStyles.css'
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
@@ -10,6 +10,7 @@ import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
 import TAKA from './Taka';
 import { InputTextarea } from 'primereact/inputtextarea';
+import axios from 'axios';
 
 
 const CreateTaskButton = (props) => {
@@ -24,6 +25,16 @@ const CreateTaskButton = (props) => {
         OverheadPercentage: 0,
         Description: ''
     });
+
+    useEffect(() => {
+        if(props.isEdit) {
+            console.log(props.task)
+            setTask(props.task)
+        }
+
+    }, [props.task, props.isEdit])
+
+    // console.log(task)
 
     const dialogFuncMap = {
         'displayBasic': setDisplayBasic,
@@ -44,8 +55,14 @@ const CreateTaskButton = (props) => {
     const creatingTask = async (name) => {
         dialogFuncMap[`${name}`](false);
 
+        if (props.isEdit) {
+            await axios.post(`http://localhost:8080/api/update-task/${props.taskId}`, JSON.stringify(task))
 
-        await createTask(task, props.workspaceId)
+        }
+        else {
+            await createTask(task, props.workspaceId)
+        }
+
         window.location.reload();
 
 
@@ -69,7 +86,7 @@ const CreateTaskButton = (props) => {
 
         if (name === "Deadline") {
 
-        
+
             value = new Date(value);
 
             let month = value.getMonth() + 1;
@@ -82,7 +99,7 @@ const CreateTaskButton = (props) => {
                 date = `0${date}`
             }
 
-            if(value.getTime() - new Date().getTime() < 0) {
+            if (value.getTime() - new Date().getTime() < 0) {
 
             }
 
@@ -118,7 +135,7 @@ const CreateTaskButton = (props) => {
             <h5>Description</h5>
             <InputTextarea className="form-text" rows={5} cols={30} value={task.Description} onChange={handleChange} name="Description" />
             <h5>Deadline</h5>
-            <Calendar minDate={new Date()}  className="form-text" value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
+            <Calendar minDate={new Date()} className="form-text" value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
             {/* <InputText value={task.Deadline} onChange={handleChange} name="Deadline" /> */}
 
             <h3>Budgeting</h3>
@@ -137,7 +154,7 @@ const CreateTaskButton = (props) => {
             }} />
             <h5 className="form-label">Overhead Percentage (%)</h5>
             <p className="form-description">Overhead costs associated with equipment, fringe benefits etc. (This is added as a % of man month rate)</p>
-            <InputNumber  className="form-text" value={task.OverheadPercentage} onChange={(e) => {
+            <InputNumber className="form-text" value={task.OverheadPercentage} onChange={(e) => {
                 handleChange({
                     target: {
                         name: "OverheadPercentage",
@@ -151,14 +168,23 @@ const CreateTaskButton = (props) => {
 
     return (
         <div className="workspace-form">
-            
-            <Button className="p-button-raised p-button-rounded"  label="Add Task" icon="pi pi-plus" onClick={() => onClick('displayBasic')} />
-            <Dialog header="Create Task" visible={displayBasic} style={
+
+            <Button label="Add Task" icon="pi pi-plus" className="p-button-raised p-button-rounded" onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onClick('displayBasic');
+
+
+            }} />
+            <Dialog dismissableMask={true} header="Create Task" visible={displayBasic} style={
                 {
                     width: '500px',
                     // 'min-width': '300px'
                 }
-            } footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+            } footer={renderFooter('displayBasic')} onHide={() => {
+                console.log("HIDDEEE")
+                onHide('displayBasic')
+            }} >
                 {CreateTaskForm}
             </Dialog>
         </div>
