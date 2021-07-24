@@ -61,7 +61,7 @@ const ProjectAddButton = () => {
 
     const CreateProjectFrom =
         <div>
-            <h5>Project Name</h5>
+            <h5>Project Title</h5>
             <InputText value={projectName} onChange={(e) => setProjectName(e.target.value)} />
             <h5>Project Description</h5>
             <InputTextarea value={description} onChange={(e) => setDescription(e.target.value)} />

@@ -39,45 +39,26 @@ const ChatPage = (props) => {
 
 
 
-            return <div className="p-mb-2 chat-message-container">
-
-                {
-                    user?.id === myUserDetails?.id ?
-                        <div className="p-grid ">
-                            <div className="p-col-1">
-                                <img className="chat-img" src={user?.Dp}  />
-                            </div>
+            return <div >
 
 
-                            <div className="p-col-10"
-                            >
-                                <div className="chat-username">
-                                    {user?.Username}
-                                </div>
-                                <div className="chat-message-box">
-                                    {c.Body}
-                                </div>
-                            </div>
 
-                        </div>
+                <div className={user?.id === myUserDetails?.id ? "chat-message-container-self" : "chat-message-container"}>
 
-                        :
-                        <div className="p-grid" >
-                            <div className="p-col-1">
-                                <img className="chat-img" src={user?.Dp} />
-                            </div>
+                    <img className="chat-img" src={user?.Dp} />
 
-                            <div className="p-col-10">
-                                <div className="chat-username">
-                                    {user?.Username}
-                                </div>
-                                <div className="chat-message-box">
-                                    {c.Body}
-                                </div>
-                            </div>
-                        </div>
+                    <div className={user?.id === myUserDetails?.id ? "chat-contents-self" : "chat-contents"}>
+                        <p className="chat-username">{user?.Username}</p>
+                        <div className={user?.id === myUserDetails?.id ? "chat-message-box-self" : "chat-message-box"}>{c.Body}</div>
+                    </div>
 
-                }
+
+                </div>
+
+
+
+
+
 
             </div>
         }))
@@ -167,9 +148,9 @@ const ChatPage = (props) => {
 
         let users = []
 
-        console.log(res.data);  
+        console.log(res.data);
 
-        if(!res.data) {
+        if (!res.data) {
             return;
         }
 
@@ -218,7 +199,7 @@ const ChatPage = (props) => {
             </div>
 
             <form onSubmit={sendMessage}>
-                <InputText onkeypress={sendMessage} className="chat-input-area" value={messageText} onChange={(e) => setMessageText(e.target.value)} />
+                <InputText placeholder="Type your Message..." onkeypress={sendMessage} className="chat-input-area" value={messageText} onChange={(e) => setMessageText(e.target.value)} />
             </form>
         </div>
     )

@@ -2,18 +2,21 @@ import React from "react"
 import '../MyStyles.css'
 import { Link } from "react-router-dom";
 import { logout } from '../api/Login.js';
+import { Button } from 'primereact/button';
 
-const LogOutButton = ({history}) => 
-{
+const LogOutButton = ({ history }) => {
 
-    const logoutButton = async () =>{
+    const logoutButton = async () => {
         history.push('/logout')
     }
 
 
     return (
-        <button onClick={logoutButton} className='button-Style'>Log Out</button>
-        
+        <div className="button-Style">
+            <Button onClick={logoutButton} className='p-button-danger p-button-sm' >Log Out</Button>
+        </div>
+
+
     );
 }
 

@@ -77,6 +77,15 @@ button {
     color: #ff3c3c;
 }
 
+.create-form {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.form-text {
+    width: 100%;
+}
+
 .chat-page {
     height: 100%;
     overflow: hidden;
@@ -91,6 +100,24 @@ button {
     position: relative;
 }
 
+.chat-message-container {
+    display: flex;
+    /* background-color: purple; */
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
+.chat-message-container-self {
+    display: flex;
+    /* background-color: purple; */
+    flex-direction: row-reverse;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+
 .chat-message-groups {
     /* position: absolute; */
     bottom: 0;
@@ -98,18 +125,29 @@ button {
 }
 
 .chat-input-area {
-    height: 8%;
+    border-radius: 20px;
+    /* height: 8%; */
+    height: 50px;
     width: 90%;
     margin: 0 5% 0 5%;
 }
 
 .chat-message-box {
-    width: 40%;
-    min-height: 50px;
+    /* width: 40%; */
+    /* min-height: 50px; */
     background-color: #2b323c;
     color: rgba(255, 255, 255, 1);
-    padding: 15px;
-    border-radius: 5px;
+    padding:15px;
+    border-radius: 15px;
+    overflow-wrap: break-word;
+}
+.chat-message-box-self {
+    /* width: 40%; */
+    /* min-height: 50px; */
+    background-color: white;
+    color: black;
+    padding:15px;
+    border-radius: 15px;
     overflow-wrap: break-word;
 }
 
@@ -121,6 +159,7 @@ button {
 }
 
 .chat-username {
+    display: flex;
     color: rgb(230, 230, 230);
     font-weight: bold;
     margin-left: 15px;
@@ -130,8 +169,19 @@ button {
 .chat-message-container {
     margin-top: 5px;
 }
+.chat-contents {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.chat-contents-self {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
 
 .files-page {
+    position: relative;
     height: 100%;
     overflow: hidden; 
 }
@@ -142,8 +192,14 @@ button {
 }
 
 .files-upload-area{
-    height: 20%;
+    position: absolute;
+    width: 100%;
+    bottom: 0px;
+    right: 0px;
+    height: 30%;
     background-color:#2a323d;
+    overflow-y: scroll;
+    
 }
 
 .files-file {
@@ -154,11 +210,10 @@ button {
 .files-files-list{
     overflow: overlay;
 }
-/* .chat-container {
-    overflow-y: scroll;
-    overflow-x: hidden;
+.chat-container {
+margin-bottom: 50px;
 
-} */
+}
 
 .files-anchor {
     text-decoration: inherit;

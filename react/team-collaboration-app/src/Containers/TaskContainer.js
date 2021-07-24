@@ -21,6 +21,7 @@ const TaskContainer = (props) => {
     const [workspaceUsersNotInTask, setWorkspaceUsersNotInTask] = useState([]);
     const [retAddr, setRetAddr] = useState(window.location.href);
     const [changes, setChanges] = useState(0);
+    const [userDetails, setUserDetails] = useState([]);
 
     const dialogFuncMap = {
         'displayBasic': setDisplayBasic,
@@ -31,6 +32,17 @@ const TaskContainer = (props) => {
         if (props.task.id) {
             let res = await axios.get(`http://localhost:8080/api/subtask/${props.task.id}`)
             setSubtasks(res.data)
+        }
+
+    }
+
+    const getUserDetails = async () => {
+
+        if (props.task.id) {
+            props.task.Assigned_users.forEach(async u => {
+                let res = await axios.get(`http://localhost:8080/api/user-details/${u.id}`);
+                setUserDetails(u => [...u, res.data]);
+            });
         }
 
     }
@@ -97,6 +109,7 @@ const TaskContainer = (props) => {
         useEffect(() => {
             getWorkspaceUsers();
             getSubtasks();
+            getUserDetails();
         }, [props.task.id, changes])
 
 
@@ -146,10 +159,16 @@ const TaskContainer = (props) => {
             )
         }
 
-        props.task.Assigned_users.map(u => (
-            // <Avatar label={u.Name[0]} image={u.Dp} shape="circle" size="large" />
-            console.log(u)
-        ));
+        console.log(props.task.Assigned_users);
+        console.log(userDetails);
+
+        props.task.Assigned_users.map(u => {
+            // <Avatar label={u.Name[0]} image={userDetails.find(d => d.id === u.id)?.Dp} shape="circle" size="large" />
+            
+            console.log( "imag", userDetails.find(d => d.id === u.id)?.Dp);
+            console.log("u", u.id);
+
+        })
 
 
 
@@ -182,7 +201,7 @@ const TaskContainer = (props) => {
                     <Deadline time={props.task.Deadline.split("T")[0]} />
                     <AvatarGroup>
                         {props.task.Assigned_users.map(u => (
-                            <Avatar label={u.Name[0]} image={u.Dp} shape="circle" size="large" />
+                            <Avatar label={userDetails.find(d => d.id === u.id)?.Dp ? null : u.Name[0]} image={userDetails.find(d => d.id === u.id)?.Dp ? userDetails.find(d => d.id === u.id)?.Dp : null} shape="circle" size="large" />
 
                         ))}
                     </AvatarGroup>

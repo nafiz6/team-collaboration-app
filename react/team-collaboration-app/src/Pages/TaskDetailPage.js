@@ -58,7 +58,7 @@ const TaskDetailPage = (props) => {
 
     const CreateSubtaskForm =
         <div>
-            <h5>Subtask Name</h5>
+            <h5>Subtask Title</h5>
             <InputText value={subtask.Name} onChange={handleChange} name="Name" />
             <h5>Description</h5>
             <InputText value={subtask.Description} onChange={handleChange} name="Description" />

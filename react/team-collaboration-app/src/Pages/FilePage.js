@@ -14,7 +14,7 @@ const FilePage = (props) => {
         ]
     )
 
-    
+
 
 
     useEffect(() => {
@@ -104,7 +104,8 @@ const FilePage = (props) => {
             </div>
 
             <div className="files-upload-area">
-                <FileUpload name="files[]" url="http://localhost:8080/api/upload-file/"
+                <FileUpload
+                    name="files[]" url="http://localhost:8080/api/upload-file/"
                     onUpload={onUpload} multiple
                     maxFileSize={99000000}
                     emptyTemplate={<p className="p-m-0">Drag and drop files to here to upload.</p>} />

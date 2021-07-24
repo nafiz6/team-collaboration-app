@@ -8,6 +8,8 @@ import { createTask } from '../api/Task.js';
 import { useHistory } from "react-router-dom";
 import { Calendar } from 'primereact/calendar';
 import { Dropdown } from 'primereact/dropdown';
+import TAKA from './Taka';
+import { InputTextarea } from 'primereact/inputtextarea';
 
 
 const CreateTaskButton = (props) => {
@@ -89,30 +91,30 @@ const CreateTaskButton = (props) => {
             [name]: value
         }));
     };
-            /*
-            <h5>Budget</h5>
-            <Dropdown options={[10, 100, 1000, 5000, 10000]} value={task.Budget} onChange={(e) => {
-                handleChange({
-                    target: {
-                        name: "Budget",
-                        value: e.value
-                    }
-                })
-            }} name="Budget" />
-            */
+    /*
+    <h5>Budget</h5>
+    <Dropdown options={[10, 100, 1000, 5000, 10000]} value={task.Budget} onChange={(e) => {
+        handleChange({
+            target: {
+                name: "Budget",
+                value: e.value
+            }
+        })
+    }} name="Budget" />
+    */
 
     const CreateTaskForm =
-        <div>
-            <h5>Task Name</h5>
-            <InputText value={task.Name} onChange={handleChange} name="Name" />
+        <div className="create-form">
+            <h5>Task Title</h5>
+            <InputText className="form-text" value={task.Name} onChange={handleChange} name="Name" />
             <h5>Description</h5>
-            <InputText value={task.Description} onChange={handleChange} name="Description" />
+            <InputTextarea className="form-text" rows={5} cols={30} value={task.Description} onChange={handleChange} name="Description" />
             <h5>Deadline</h5>
-            <Calendar value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
+            <Calendar className="form-text" value={task.Deadline} onChange={handleChange} name="Deadline"></Calendar>
             {/* <InputText value={task.Deadline} onChange={handleChange} name="Deadline" /> */}
-            
-            <h5>Man Month Rate</h5>
-            <InputNumber value={task.ManMonthRate} onChange={(e) => {
+
+            <h5>Man Month Rate ({TAKA})</h5>
+            <InputNumber className="form-text" value={task.ManMonthRate} onChange={(e) => {
                 handleChange({
                     target: {
                         name: "ManMonthRate",
@@ -121,7 +123,7 @@ const CreateTaskButton = (props) => {
                 })
             }} />
             <h5>Overhead Percentage</h5>
-            <InputNumber value={task.OverheadPercentage} onChange={(e) => {
+            <InputNumber  className="form-text" value={task.OverheadPercentage} onChange={(e) => {
                 handleChange({
                     target: {
                         name: "OverheadPercentage",
@@ -129,15 +131,20 @@ const CreateTaskButton = (props) => {
                     }
                 })
             }}
-             />
+            />
         </div>
 
 
     return (
         <div className="workspace-form">
 
-            <Button className=" newTaskButton" label="Add Task" icon="pi pi-plus"  onClick={() => onClick('displayBasic')} />
-            <Dialog header="Create Task" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
+            <Button className=" newTaskButton" label="Add Task" icon="pi pi-plus" onClick={() => onClick('displayBasic')} />
+            <Dialog header="Create Task" visible={displayBasic} style={
+                {
+                    width: '500px',
+                    // 'min-width': '300px'
+                }
+            } footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateTaskForm}
             </Dialog>
         </div>

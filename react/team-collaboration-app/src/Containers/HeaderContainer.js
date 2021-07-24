@@ -9,7 +9,7 @@ const HeaderContainer = (props) =>
 {
     return (
         <div className='header-Style'>
-         { /*  <NotifyButton/>
+          {/* <NotifyButton/> */}
             <LogOutButton {...props}/>
         </div>
     )

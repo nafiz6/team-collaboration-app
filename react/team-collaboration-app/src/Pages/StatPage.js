@@ -12,6 +12,7 @@ import { RadioButton } from 'primereact/radiobutton';
 import { Dropdown } from 'primereact/dropdown';
 import { roles } from '../api/Workspace';
 import { Avatar } from 'primereact/avatar';
+import TAKA from '../Components/Taka';
 
 const StatPage = (props) => {
 
@@ -91,7 +92,7 @@ const StatPage = (props) => {
         setTasksSpendingTable(res.data.map(w => ({
             ...w,
             progress: ((w.Spent / w.Budget) * 100).toFixed(2),
-            spentString: w.Spent.toString() + "/" + w.Budget.toString()
+            spentString: TAKA + w.Spent.toString() + "/" + TAKA +w.Budget.toString()
         })))
         setChartData({
             labels: res.data.map(w => w.Name),
@@ -383,7 +384,7 @@ const StatPage = (props) => {
 
 
             <DataTable value={usersTable} emptyMessage="No users yet" header={<h2>Workspace Users</h2>}>
-                <Column body={(rowData) => <Avatar label={rowData.name[0]} size="large" image={rowData.dp} />}></Column>
+                <Column body={(rowData) => <Avatar label={rowData.dp === null ? rowData.name[0] : null} size="large" image={rowData.dp === null ? null : rowData.dp} />}></Column>
                 <Column field="name" header="User"></Column>
                 <Column
                     header={
