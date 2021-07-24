@@ -67,8 +67,9 @@ const StatPage = (props) => {
         let res = await axios.get(`http://localhost:8080/api/task/${workspaceId}`)
         setWorkspaceBudget(res.data);
         res.data.map(w=>{
-            const oneDay = 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
+            const oneDay = 30 * 24 * 60 * 60 * 1000; // hours*minutes*seconds*milliseconds
             let createdDate = new Date(w.Date_created);
+           // console.log(createdDate);
             let deadline = new Date(w.Deadline);
             let now = new Date();
 
@@ -78,11 +79,14 @@ const StatPage = (props) => {
             if (w.OverheadPercentage == 0)
                 w.OverheadPercentage = 100;
 
-            let projectDays = Math.round(Math.abs((deadline - createdDate) / oneDay)); 
-            let daysFromCreation = Math.round(Math.abs((now - createdDate) / oneDay)); 
+            let projectDays = Math.ceil(Math.abs((deadline - createdDate) / oneDay)); 
+            //console.log(projectDays);
+            let daysFromCreation = Math.ceil(Math.abs((now - createdDate) / oneDay)); 
                         
-            w.Budget = Math.round(w.ManMonthRate * w.Assigned_users.length * projectDays * ( 1 + w.OverheadPercentage / 100));
-            w.Spent = Math.round(w.ManMonthRate * w.Assigned_users.length * daysFromCreation * ( 1 + w.OverheadPercentage / 100));
+            w.Budget = Math.ceil(w.ManMonthRate * w.Assigned_users.length * projectDays * ( 1 + w.OverheadPercentage / 100));
+            w.Spent = Math.ceil(w.ManMonthRate * w.Assigned_users.length * daysFromCreation * ( 1 + w.OverheadPercentage / 100));
+
+            console.log(w.Budget);
         })
 
         console.log(res.data)
