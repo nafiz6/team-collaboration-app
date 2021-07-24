@@ -20,48 +20,48 @@ const RoomsContainer = (props) => {
             getWorkspace();
     }, [props.project])
 
-    useEffect(()=>{
-        if(workspace) fetchMyDetails();
-     },[workspace])
+    useEffect(() => {
+        if (workspace) fetchMyDetails();
+    }, [workspace])
 
-     const [myUserDetails, setMyUserDetails ] = useState({role: 100});
+    const [myUserDetails, setMyUserDetails] = useState({ role: 100 });
 
     if (!props.project) {
         return <div className='rooms-Style'></div>
     }
 
-    
+
 
     const fetchMyDetails = async () => {
 
         //call this func after workspace details
 
-           let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${workspace[0].id}`)
+        let users = await axios.get(`http://localhost:8080/api/workspace-user-tasks/${workspace[0].id}`)
 
-       // if (usersTable) {
-            let res = await axios.get(`http://localhost:8080/api/my-details`, { withCredentials: true });
-            // console.log(res.data);
+        // if (usersTable) {
+        let res = await axios.get(`http://localhost:8080/api/my-details`, { withCredentials: true });
+        // console.log(res.data);
 
 
-            let workspaceUser = users.data.find(u => u._id === res.data.id)
+        let workspaceUser = users.data.find(u => u._id === res.data.id)
 
-            setMyUserDetails(workspaceUser);
+        setMyUserDetails(workspaceUser);
 
-        }
+    }
 
-        console.log(myUserDetails);
+    console.log(myUserDetails);
 
-        const deleteProject = async () => {
+    const deleteProject = async () => {
 
-            // console.log(usersToAddToTask);
-    
-            await axios.post(`http://localhost:8080/api/delete-project/${props.project.id}`);
-    
-            window.location.reload();
-    
-            }    
+        // console.log(usersToAddToTask);
 
-        
+        await axios.post(`http://localhost:8080/api/delete-project/${props.project.id}`);
+
+        window.location.reload();
+
+    }
+
+
 
     if (workspace) {
 
@@ -76,17 +76,17 @@ const RoomsContainer = (props) => {
         ]
 
         return (
-            
+
             <div className='rooms-Style'>{rooms}
-            {myUserDetails.role < 1 ? 
-                <div className="addMemberToTaskButton">
-                            <Button label="X" onClick={(e) => {
-                                e.preventDefault();
-                                deleteProject();
-                            }} />
-                </div>
-                : null}
-            </div>    
+                {myUserDetails.role < 1 ?
+                    <div className="addMemberToTaskButton">
+                        <Button label="X" onClick={(e) => {
+                            e.preventDefault();
+                            deleteProject();
+                        }} />
+                    </div>
+                    : null}
+            </div>
         );
 
     }
@@ -95,14 +95,14 @@ const RoomsContainer = (props) => {
             <div className='rooms-Style'>
                 <div className='projName-Style'>{props.project.Name}</div>
                 <CreateWorkspaceButton projectId={props.project.id} />
-                {myUserDetails.role < 1 ? 
-                <div className="addMemberToTaskButton">
-                            <Button label="X" onClick={(e) => {
-                                e.preventDefault();
-                                deleteProject();
-                            }} />
-                </div>
-                : null}
+                {myUserDetails.role < 1 ?
+                    <div className="addMemberToTaskButton">
+                        <Button label="X" onClick={(e) => {
+                            e.preventDefault();
+                            deleteProject();
+                        }} />
+                    </div>
+                    : null}
             </div>
         )
     }
