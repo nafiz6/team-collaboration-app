@@ -37,13 +37,13 @@ const MainPage = (props) => {
                 res = await axios.get(`http://localhost:8080/api/workspace/${projects[0].id}`, { withCredentials: true })
             }
 
-            setWs(res.data);
 
             if (res.data.length > 0 ) {
                 console.log("workspace RESET", projId)
                 setInitialWS(res.data[0]);
                 setWsId(res.data[0].id);
             }
+            setWs(res.data);
         }
     }
 
