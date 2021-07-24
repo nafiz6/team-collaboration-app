@@ -87,15 +87,17 @@ type NewWorkspace struct {
 }
 
 type NewTask struct {
-	ID             primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Workspace_ID   primitive.ObjectID `json:"workspace_id" bson:"_workspace_id,omitempty"`
-	Name           string
-	Deadline       primitive.DateTime
-	Budget         int
-	Description    string
-	Spent          int                //probably ignore for now
-	Date_created   primitive.DateTime //not assigned in backend yet
-	Assigned_users []struct {         //this represents superset of all subtask users
+	ID                 primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Workspace_ID       primitive.ObjectID `json:"workspace_id" bson:"_workspace_id,omitempty"`
+	Name               string
+	Deadline           primitive.DateTime
+	Budget             int
+	ManMonthRate       int
+	OverheadPercentage int
+	Description        string
+	Spent              int                //probably ignore for now
+	Date_created       primitive.DateTime //not assigned in backend yet
+	Assigned_users     []struct {         //this represents superset of all subtask users
 		ID   primitive.ObjectID `json:"id" bson:"_id,omitempty"`
 		Name string             //maybe
 		Role int                //implement later
