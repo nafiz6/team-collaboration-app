@@ -13,10 +13,11 @@ import { Dropdown } from 'primereact/dropdown';
 import { roles } from '../api/Workspace';
 import { Avatar } from 'primereact/avatar';
 import TAKA from '../Components/Taka';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const StatPage = (props) => {
 
-    //get workspace id from url later
+    const [visible, setVisible] = useState(false);
     // const workspaceId = "60ca3b1640dfba660867877a";
 
 
@@ -246,6 +247,7 @@ const StatPage = (props) => {
     }
 
     const handleRemoveUser = (userID) => {
+        console.log("REMOVING USER NOW " + userID)
 
         setUserIDToRemove(userID)
 
@@ -354,6 +356,28 @@ const StatPage = (props) => {
 
         }
 
+
+    const accept = () => {
+        deleteWorkspace();
+    }
+
+    const reject = () => {
+    }
+
+
+
+    const confirm2 = () => {
+        confirmDialog({
+            message: 'Do you want to delete this Workspace?',
+            header: 'Delete Confirmation',
+            icon: 'pi pi-info-circle',
+            acceptClassName: 'p-button-danger',
+            accept,
+            reject
+        });
+    };
+
+
     return (
 
         <div className="createTask">
@@ -418,8 +442,14 @@ const StatPage = (props) => {
                 <Column field="countTasks" header="Tasks"></Column>
 
 
-                {myUserDetails.role < 2 ? <Column header="" body={(rowData) => <Button 
-                icon="pi pi-trash" iconPos="left" label="Remove"  className="p-button-raised p-button-rounded p-button-danger" onClick={() => handleRemoveUser(rowData._id)} />}></Column> : null}
+                {myUserDetails.role < 2 ? <Column header="" body={(rowData) => <div>
+                <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Are you sure you want to remove this user?"
+                    header="Confirmation" icon="pi pi-exclamation-triangle" accept={()=> handleRemoveUser(rowData._id)} reject={reject} />
+                    <Button 
+                icon="pi pi-trash" iconPos="left" label="Remove"  className="p-button-raised p-button-rounded p-button-danger" onClick={() => setVisible(true)} />
+                </div>}>
+
+                </Column> : null}
 
 
             </DataTable>
@@ -428,7 +458,8 @@ const StatPage = (props) => {
             <div className="addMemberToTaskButton">
                         <Button  icon="pi pi-trash" iconPos="left" className="p-button-raised p-button-rounded p-button-danger" label="Delete Workspace" onClick={(e) => {
                             e.preventDefault();
-                            deleteWorkspace();
+                            //deleteWorkspace();
+                            confirm2();
                         }} />
             </div>
             : null}
