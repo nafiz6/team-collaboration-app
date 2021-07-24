@@ -54,7 +54,9 @@ const CreateWorkspaceButton = (props) => {
     return (
         <div className="workspace-form">
 
-            <Button label="Add Workspace" className="p-button-text" onClick={() => onClick('displayBasic')} />
+            
+            <Button label="Workspace" icon="pi pi-plus" className="p-button-raised p-button-rounded p-button-sm" onClick={() => onClick('displayBasic')} />
+            
             <Dialog header="Create Workspace" visible={displayBasic} style={{ width: '50vw' }} footer={renderFooter('displayBasic')} onHide={() => onHide('displayBasic')}>
                 {CreateWorkspaceForm}
             </Dialog>

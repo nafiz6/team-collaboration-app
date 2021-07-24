@@ -101,7 +101,7 @@ const RoomsContainer = (props) => {
             <div className='rooms-Style'>{rooms}
             {myUserDetails.role < 1 ? 
                 <div className="addMemberToTaskButton">
-                            <Button icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded" onClick={(e) => {
+                            <Button label="Project" icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded" onClick={(e) => {
                                 e.preventDefault();
                                 confirm2();
                               //deleteProject();
@@ -120,7 +120,7 @@ const RoomsContainer = (props) => {
                 <CreateWorkspaceButton projectId={props.project.id} />
                 {myUserDetails.role < 1 ? 
                 <div className="addMemberToTaskButton">
-                            <Button icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded p-button-lg" onClick={(e) => {
+                            <Button label="Project" icon="pi pi-trash" className="p-button-danger p-button-raised p-button-rounded " onClick={(e) => {
                                 e.preventDefault();
                                 confirm2();
                                //deleteProject();
