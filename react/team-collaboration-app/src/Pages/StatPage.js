@@ -309,7 +309,7 @@ const StatPage = (props) => {
     const addUsersForm =
         <div>
             <h5>Select Users to add to Workspace</h5>
-            <MultiSelect placeholder="Select users to add to project" value={usersToAdd} options={allUsers} onChange={(e) => {
+            <MultiSelect placeholder="Select users to add to Workspace" value={usersToAdd} options={allUsers} onChange={(e) => {
                 console.log(e.value)
                 setUsersToAdd(e.value)
                 // console.log(e);
@@ -400,8 +400,15 @@ const StatPage = (props) => {
                 <Column field="Total_spent" header="Spent"></Column> */}
                 <Column field="spentString" header=""></Column>
 
+            <br></br>
+            <br></br>
+            <br></br>
+
 
             </DataTable>
+            <br></br>
+            <br></br>
+            <br></br>
             {myUserDetails.role < 2 ? <>
                 <Button label="Add Users" icon="pi pi-external-link" onClick={() => onClick("addUsers")} />  <Dialog header="Add users to workspace" visible={showAddUsers} style={{ width: '50vw' }} footer={renderFooter('addUsers')} onHide={() => onHide('addUsers')}>
                     {addUsersForm}
@@ -457,6 +464,10 @@ const StatPage = (props) => {
 
 
             </DataTable>
+
+            <br></br>
+            <br></br>
+            <br></br>
 
             {myUserDetails.role < 2 ? 
             <div className="addMemberToTaskButton">
