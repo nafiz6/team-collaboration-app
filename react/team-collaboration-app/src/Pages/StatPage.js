@@ -385,7 +385,7 @@ const StatPage = (props) => {
         <div className="createTask">
             <h1>Manage Workspace</h1>
 
-            <p className="ws-desc">{props.workspace.Description}</p>
+            <p className="ws-desc">{props.workspace?.Description}</p>
  
         
             {/* <div>Stat Page</div>
