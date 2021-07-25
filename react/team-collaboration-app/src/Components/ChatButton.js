@@ -6,7 +6,7 @@ const ChatButton = (props) =>
 {
     return (
         <Link to = {`/project/${props.id}/ws/${props.wsid}/chats`}>
-        <button className={props.tab === "chats" ? "navBarButton-Style-select" : "navBarButton-Style"}>Chats</button>
+        <button className={props.tab === "chats" ? "navBarButton-Style-select" : "navBarButton-Style"}> <i className="pi pi-comment"></i>Chats</button>
         </Link>
     )
 }
