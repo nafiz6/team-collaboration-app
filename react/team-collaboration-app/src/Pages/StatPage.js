@@ -409,18 +409,21 @@ const StatPage = (props) => {
             <br></br>
             <br></br>
             <br></br>
-            {myUserDetails.role < 2 ? <>
+           
+            
+
+
+
+
+
+            <DataTable value={usersTable} emptyMessage="No users yet" header={<span>
+                <h2>Workspace Users</h2>
+                {myUserDetails.role < 2 ? <>
                 <Button label="Add Users" icon="pi pi-external-link" onClick={() => onClick("addUsers")} />  <Dialog header="Add users to workspace" visible={showAddUsers} style={{ width: '50vw' }} footer={renderFooter('addUsers')} onHide={() => onHide('addUsers')}>
                     {addUsersForm}
                 </Dialog>
             </> : null}
-
-
-
-
-
-
-            <DataTable value={usersTable} emptyMessage="No users yet" header={<h2>Workspace Users</h2>}>
+            </span>}>
                 <Column body={(rowData) => <Avatar label={rowData.dp === null ? rowData.name[0] : null} size="large" image={rowData.dp === null ? null : rowData.dp} />}></Column>
                 <Column field="name" header="User"></Column>
                 <Column
