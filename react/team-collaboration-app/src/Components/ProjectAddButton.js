@@ -61,18 +61,18 @@ const ProjectAddButton = () => {
 
     const CreateProjectFrom =
         <div>
-            <h5>Project Title</h5>
-            <InputText className="form-text" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
-            <h5>Project Description</h5>
-            <InputTextarea className="form-text" rows={5} cols={30} value={description} onChange={(e) => setDescription(e.target.value)} />
+            <h3>Project Title</h3>
+            <InputText placeholder="Project Title" className="form-text" value={projectName} onChange={(e) => setProjectName(e.target.value)} />
+            <h3>Project Description</h3>
+            <InputTextarea placeholder="Project Description"  className="form-text" rows={5} cols={30} value={description} onChange={(e) => setDescription(e.target.value)} />
 
-            <h5>Select Users to add to Project</h5>
-            <p className="form-description">You can add members to this project later from the "Stats" Tab</p>
-            <MultiSelect placeholder="Select Users" className="form-text" optionLabel="name" value={users} options={allUsers} onChange={(e) => {
+            {/* <h5>Select Users to add to Project</h5> */}
+            <p className="form-description">You can add members to this project later from the "Manage" Tab</p>
+            {/* <MultiSelect placeholder="Select Users" className="form-text" optionLabel="name" value={users} options={allUsers} onChange={(e) => {
                 setUsers(e.value)
                 console.log(e.value);
 
-            }} optionLabel="Name" optionValue="id" />
+            }} optionLabel="Name" optionValue="id" /> */}
         </div>
 
 

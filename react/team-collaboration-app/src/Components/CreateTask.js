@@ -187,7 +187,7 @@ const CreateTaskButton = (props) => {
 
 
             }} />
-            <Dialog dismissableMask={true} header="Create Task" visible={displayBasic} style={
+            <Dialog dismissableMask={true} header={props.isEdit ?  "Edit Task" :  "Create Task"} visible={displayBasic} style={
                 {
                     width: '500px',
                     // 'min-width': '300px'

@@ -482,6 +482,11 @@ a {
     font-size: 30px;
     margin: 0px;
 }
+.subtask-users {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+}
 
 .subtask-user {
     display: flex;
@@ -548,7 +553,7 @@ a {
 
 .addUserToTaskButton
 {
-    width: 80%;
+    width: 100px
 }
 
 

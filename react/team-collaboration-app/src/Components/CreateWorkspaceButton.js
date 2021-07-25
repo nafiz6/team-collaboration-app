@@ -4,6 +4,7 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import { createWorkspace } from '../api/Workspace.js';
+import { InputTextarea } from 'primereact/inputtextarea';
 
 const CreateWorkspaceButton = (props) => {
     const [displayBasic, setDisplayBasic] = useState(false);
@@ -44,10 +45,12 @@ const CreateWorkspaceButton = (props) => {
 
     const CreateWorkspaceForm =
         <div>
+
+            <p className="form-description"> New Project will be added to currently selected Project</p>
             <h5>Workspace Name</h5>
-            <InputText value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} />
+            <InputText  className="form-text" value={workspaceName} onChange={(e) => setWorkspaceName(e.target.value)} />
             <h5>Workspace Description</h5>
-            <InputText value={description} onChange={(e) => setDescription(e.target.value)} />
+            <InputTextarea rows={5} cols={30} className="form-text" value={description} onChange={(e) => setDescription(e.target.value)} />
         </div>
 
 

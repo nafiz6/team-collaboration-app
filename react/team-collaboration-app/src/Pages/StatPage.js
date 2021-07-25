@@ -17,6 +17,8 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const StatPage = (props) => {
 
+    console.log(props)
+
     const [visible, setVisible] = useState(false);
     // const workspaceId = "60ca3b1640dfba660867877a";
 
@@ -29,7 +31,7 @@ const StatPage = (props) => {
     const [workspaceBudget, setWorkspaceBudget] = useState([]);
     const [myUserDetails, setMyUserDetails] = useState({
 
-        role: 100   //placeholder for when userDetails arent loaded
+        role: 2   //placeholder for when userDetails arent loaded
     });
     const [chartData, setChartData] = useState(null)
     const [tasksSpendingTable, setTasksSpendingTable] = useState(null)
@@ -381,7 +383,9 @@ const StatPage = (props) => {
     return (
 
         <div className="createTask">
-            <h1> Workspace Stats</h1>
+            <h1>Manage Workspace</h1>
+
+            <p className="ws-desc">{props.workspace.Description}</p>
  
         
             {/* <div>Stat Page</div>

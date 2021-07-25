@@ -169,8 +169,10 @@ const SubtaskContainer = (props) => {
                 <div className="subtask-users">
                     {assUserArr}
                 </div>
+            
+                    <Button className="addUserToTaskButton" label="+Member" onClick={() => onClick('displayBasic')} />
+           
 
-                <Button className="addUserToTaskButton" label="+Member" onClick={() => onClick('displayBasic')} />
 
 
             </div>
